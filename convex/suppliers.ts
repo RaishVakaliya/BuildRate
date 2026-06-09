@@ -1,5 +1,5 @@
-import { mutation, query } from './_generated/server';
-import { v } from 'convex/values';
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
 
 export const addSupplier = mutation({
   args: {
@@ -15,9 +15,9 @@ export const addSupplier = mutation({
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert('suppliers', {
+    return await ctx.db.insert("suppliers", {
       ...args,
-      status: 'active',
+      status: "active",
       verified: true,
       createdAt: Date.now(),
     });
@@ -27,12 +27,12 @@ export const addSupplier = mutation({
 export const listSuppliers = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query('suppliers').order('desc').collect();
+    return await ctx.db.query("suppliers").order("desc").collect();
   },
 });
 
 export const getSupplier = query({
-  args: { id: v.id('suppliers') },
+  args: { id: v.id("suppliers") },
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id);
   },
@@ -40,7 +40,7 @@ export const getSupplier = query({
 
 export const updateSupplier = mutation({
   args: {
-    id: v.id('suppliers'),
+    id: v.id("suppliers"),
     businessName: v.optional(v.string()),
     email: v.optional(v.string()),
     phone: v.optional(v.string()),
@@ -53,26 +53,36 @@ export const updateSupplier = mutation({
   },
   handler: async (ctx, { id, ...fields }) => {
     const cleaned = Object.fromEntries(
-      Object.entries(fields).filter(([, v]) => v !== undefined)
+      Object.entries(fields).filter(([, v]) => v !== undefined),
     );
     await ctx.db.patch(id, cleaned);
   },
 });
 
 export const toggleStatus = mutation({
-  args: { id: v.id('suppliers') },
+  args: { id: v.id("suppliers") },
   handler: async (ctx, { id }) => {
     const supplier = await ctx.db.get(id);
-    if (!supplier) throw new Error('Supplier not found');
-    const next = supplier.status === 'active' ? 'suspended' : 'active';
+    if (!supplier) throw new Error("Supplier not found");
+    const next = supplier.status === "active" ? "suspended" : "active";
     await ctx.db.patch(id, { status: next });
     return next;
   },
 });
 
 export const deleteSupplier = mutation({
-  args: { id: v.id('suppliers') },
+  args: { id: v.id("suppliers") },
   handler: async (ctx, { id }) => {
     await ctx.db.delete(id);
+  },
+});
+
+export const getSupplierByPhone = query({
+  args: { phone: v.string() },
+  handler: async (ctx, { phone }) => {
+    return await ctx.db
+      .query("suppliers")
+      .filter((q) => q.eq(q.field("phone"), phone))
+      .first();
   },
 });

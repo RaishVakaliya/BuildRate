@@ -59,7 +59,7 @@ function LoginScreen({ isDark }: { isDark: boolean }) {
   const { login } = useAuth();
   const insets = useSafeAreaInsets();
 
-  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -67,19 +67,25 @@ function LoginScreen({ isDark }: { isDark: boolean }) {
 
   const gradientColors = isDark
     ? (["#1E293B", "#111827"] as const)
-    : (["#E6F2FF", "#FFFFFF"] as const);
+    : (["#E6F2FF", "#F5F7FA"] as const);
 
   const handleLogin = async () => {
-    if (!username.trim() || !password.trim()) {
-      setError("Please enter username and password.");
+    if (!phone.trim() || !password.trim()) {
+      setError("Please enter phone number and password.");
       return;
     }
     setError("");
     setLoading(true);
     try {
-      await login(username.trim(), password);
+      await login(phone.trim(), password);
     } catch (e: any) {
-      setError(e?.message ?? "Login failed. Please try again.");
+      const msg = e?.message ?? "Login failed. Please try again.";
+      // Clean up Convex system stack traces and prefixes
+      const match =
+        msg.match(/Uncaught Error:\s*([^.]+)/) ||
+        msg.match(/Server Error:\s*([^.]+)/);
+      const cleanMsg = match && match[1] ? match[1].trim() : msg;
+      setError(cleanMsg);
     } finally {
       setLoading(false);
     }
@@ -139,16 +145,17 @@ function LoginScreen({ isDark }: { isDark: boolean }) {
           ) : null}
 
           <TextInput
-            label="Username"
-            value={username}
+            label="Phone Number"
+            value={phone}
             onChangeText={(t) => {
-              setUsername(t);
+              setPhone(t);
               setError("");
             }}
             mode="outlined"
             autoCapitalize="none"
             autoCorrect={false}
-            left={<TextInput.Icon icon="account" />}
+            keyboardType="phone-pad"
+            left={<TextInput.Icon icon="phone" />}
             style={styles.input}
             outlineColor={theme.colors.outline}
             activeOutlineColor={theme.colors.primary}
@@ -210,7 +217,7 @@ function ProfileScreen({
 
   const gradientColors = isDark
     ? (["#1E293B", "#111827"] as const)
-    : (["#E6F2FF", "#FFFFFF"] as const);
+    : (["#E6F2FF", "#F5F7FA"] as const);
 
   const initial = user?.username?.charAt(0)?.toUpperCase() ?? "A";
 
@@ -267,14 +274,14 @@ function ProfileScreen({
           ]}
         >
           <MaterialCommunityIcons
-            name="shield-check"
+            name={user?.role === "admin" ? "shield-check" : "storefront"}
             size={13}
             color={isDark ? "#4F8EF7" : "#1A56DB"}
           />
           <Text
             style={[styles.roleText, { color: isDark ? "#4F8EF7" : "#1A56DB" }]}
           >
-            Admin
+            {user?.role === "admin" ? "Admin" : "Supplier"}
           </Text>
         </View>
       </LinearGradient>
@@ -371,22 +378,250 @@ function ProfileScreen({
           </View>
         </Surface>
 
-        {user?.role === 'admin' && (
+        {user?.role === "supplier" && (
+          <Surface
+            style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+            elevation={1}
+          >
+            <Text
+              style={[
+                styles.cardTitle,
+                { color: theme.colors.onSurfaceVariant },
+              ]}
+            >
+              Business Details
+            </Text>
+
+            {user?.businessName && (
+              <>
+                <View style={styles.infoRow}>
+                  <MaterialCommunityIcons
+                    name="store"
+                    size={18}
+                    color={theme.colors.onSurfaceVariant}
+                  />
+                  <View style={styles.infoTextWrap}>
+                    <Text
+                      style={[
+                        styles.infoLabel,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      Business Name
+                    </Text>
+                    <Text
+                      style={[
+                        styles.infoValue,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
+                      {user.businessName}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.divider} />
+              </>
+            )}
+
+            {user?.phone && (
+              <>
+                <View style={styles.infoRow}>
+                  <MaterialCommunityIcons
+                    name="phone-outline"
+                    size={18}
+                    color={theme.colors.onSurfaceVariant}
+                  />
+                  <View style={styles.infoTextWrap}>
+                    <Text
+                      style={[
+                        styles.infoLabel,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      Phone Number
+                    </Text>
+                    <Text
+                      style={[
+                        styles.infoValue,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
+                      {user.phone}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.divider} />
+              </>
+            )}
+
+            {user?.city && (
+              <>
+                <View style={styles.infoRow}>
+                  <MaterialCommunityIcons
+                    name="map-marker-outline"
+                    size={18}
+                    color={theme.colors.onSurfaceVariant}
+                  />
+                  <View style={styles.infoTextWrap}>
+                    <Text
+                      style={[
+                        styles.infoLabel,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      City / Location
+                    </Text>
+                    <Text
+                      style={[
+                        styles.infoValue,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
+                      {user.city}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.divider} />
+              </>
+            )}
+
+            {user?.address && (
+              <>
+                <View style={styles.infoRow}>
+                  <MaterialCommunityIcons
+                    name="home-outline"
+                    size={18}
+                    color={theme.colors.onSurfaceVariant}
+                  />
+                  <View style={styles.infoTextWrap}>
+                    <Text
+                      style={[
+                        styles.infoLabel,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      Full Address
+                    </Text>
+                    <Text
+                      style={[
+                        styles.infoValue,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
+                      {user.address}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.divider} />
+              </>
+            )}
+
+            {user?.gstNumber && (
+              <>
+                <View style={styles.infoRow}>
+                  <MaterialCommunityIcons
+                    name="file-certificate-outline"
+                    size={18}
+                    color={theme.colors.onSurfaceVariant}
+                  />
+                  <View style={styles.infoTextWrap}>
+                    <Text
+                      style={[
+                        styles.infoLabel,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      GST Number
+                    </Text>
+                    <Text
+                      style={[
+                        styles.infoValue,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
+                      {user.gstNumber}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.divider} />
+              </>
+            )}
+
+            {user?.categories && user.categories.length > 0 && (
+              <View
+                style={[
+                  styles.infoRow,
+                  { flexDirection: "column", alignItems: "flex-start", gap: 8 },
+                ]}
+              >
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                >
+                  <MaterialCommunityIcons
+                    name="tag-multiple-outline"
+                    size={18}
+                    color={theme.colors.onSurfaceVariant}
+                  />
+                  <Text
+                    style={[
+                      styles.infoLabel,
+                      { color: theme.colors.onSurfaceVariant },
+                    ]}
+                  >
+                    Dealing Categories
+                  </Text>
+                </View>
+                <View style={styles.categoryWrap}>
+                  {user.categories.map((cat) => (
+                    <View
+                      key={cat}
+                      style={[
+                        styles.catChip,
+                        { backgroundColor: theme.colors.surfaceVariant },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.catText,
+                          { color: theme.colors.onSurface },
+                        ]}
+                      >
+                        {cat}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
+          </Surface>
+        )}
+
+        {user?.role === "admin" && (
           <TouchableOpacity
-            style={[styles.adminPanelBtn, { backgroundColor: '#1A56DB' }]}
-            onPress={() => router.push('/admin')}
+            style={[styles.adminPanelBtn, { backgroundColor: "#1A56DB" }]}
+            onPress={() => router.push("/admin")}
             activeOpacity={0.85}
           >
             <View style={styles.adminPanelLeft}>
               <View style={styles.adminPanelIconWrap}>
-                <MaterialCommunityIcons name="shield-crown" size={24} color="#FFF" />
+                <MaterialCommunityIcons
+                  name="shield-crown"
+                  size={24}
+                  color="#FFF"
+                />
               </View>
               <View>
                 <Text style={styles.adminPanelTitle}>Admin Panel</Text>
-                <Text style={styles.adminPanelSub}>Manage suppliers & categories</Text>
+                <Text style={styles.adminPanelSub}>
+                  Manage suppliers & categories
+                </Text>
               </View>
             </View>
-            <MaterialCommunityIcons name="chevron-right" size={22} color="rgba(255,255,255,0.7)" />
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={22}
+              color="rgba(255,255,255,0.7)"
+            />
           </TouchableOpacity>
         )}
 
@@ -541,22 +776,45 @@ const styles = StyleSheet.create({
   logoutContent: { height: 50 },
 
   adminPanelBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     borderRadius: 18,
     paddingHorizontal: 18,
     paddingVertical: 16,
   },
-  adminPanelLeft: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  adminPanelLeft: { flexDirection: "row", alignItems: "center", gap: 14 },
   adminPanelIconWrap: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "rgba(255,255,255,0.15)",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  adminPanelTitle: { color: '#FFF', fontSize: 15, fontWeight: '800' },
-  adminPanelSub: { color: 'rgba(255,255,255,0.65)', fontSize: 12, fontWeight: '500', marginTop: 1 },
+  adminPanelTitle: { color: "#FFF", fontSize: 15, fontWeight: "800" },
+  adminPanelSub: {
+    color: "rgba(255,255,255,0.65)",
+    fontSize: 12,
+    fontWeight: "500",
+    marginTop: 1,
+  },
+  categoryWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 4,
+  },
+  catChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    borderRadius: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  catText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
 });

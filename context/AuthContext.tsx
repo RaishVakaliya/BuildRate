@@ -4,17 +4,24 @@ import { useAction } from 'convex/react';
 import { api } from '../convex/_generated/api';
 
 export interface AuthUser {
+  id?: string;
   username: string;
   email: string;
-  role: 'admin';
+  role: 'admin' | 'supplier';
   memberSince: string;
+  phone?: string;
+  businessName?: string;
+  city?: string;
+  address?: string;
+  categories?: string[];
+  gstNumber?: string;
 }
 
 interface AuthContextValue {
   user: AuthUser | null;
   token: string | null;
   isLoading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (phone: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -34,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loginAdmin = useAction(api.auth.loginAdmin);
+  const loginAction = useAction(api.auth.login);
 
   useEffect(() => {
     (async () => {
@@ -54,8 +61,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
 
-  const login = async (username: string, password: string) => {
-    const result = await loginAdmin({ username, password });
+  const login = async (phone: string, password: string) => {
+    const result = await loginAction({ phone, password });
     setToken(result.token);
     setUser(result.user);
     await Promise.all([

@@ -152,7 +152,7 @@ export default function HomeScreen() {
   const isDark = resolvedScheme === "dark";
   const gradientColors = isDark
     ? (["#1E293B", "#111827"] as const)
-    : (["#E6F2FF", "#FFFFFF"] as const);
+    : (["#E6F2FF", "#F5F7FA"] as const);
 
   return (
     <View

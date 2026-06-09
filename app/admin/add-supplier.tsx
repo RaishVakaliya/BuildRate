@@ -15,6 +15,7 @@ import { useMutation } from "convex/react";
 import { useRouter } from "expo-router";
 import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 
 const ALL_CATEGORIES = [
   { label: "Cement", icon: "circle-outline", color: "#6B7280" },
@@ -30,7 +31,14 @@ export default function AddSupplierScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { resolvedScheme } = useAppTheme();
+  const { user } = useAuth();
   const isDark = resolvedScheme === "dark";
+
+  React.useEffect(() => {
+    if (user?.role !== "admin") {
+      router.replace("/(tabs)/account");
+    }
+  }, [user, router]);
 
   const addSupplier = useMutation(api.suppliers.addSupplier);
 

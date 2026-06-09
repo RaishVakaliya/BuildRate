@@ -14,6 +14,7 @@ import { useQuery, useMutation } from "convex/react";
 import { useRouter } from "expo-router";
 import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 
 const STATUS_COLOR: Record<string, { bg: string; text: string; icon: string }> =
   {
@@ -36,7 +37,14 @@ export default function AdminPanelScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { resolvedScheme } = useAppTheme();
+  const { user } = useAuth();
   const isDark = resolvedScheme === "dark";
+
+  React.useEffect(() => {
+    if (user?.role !== "admin") {
+      router.replace("/(tabs)/account");
+    }
+  }, [user, router]);
 
   const suppliers = useQuery(api.suppliers.listSuppliers);
   const toggleStatus = useMutation(api.suppliers.toggleStatus);
