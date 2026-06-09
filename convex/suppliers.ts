@@ -1,0 +1,78 @@
+import { mutation, query } from './_generated/server';
+import { v } from 'convex/values';
+
+export const addSupplier = mutation({
+  args: {
+    businessName: v.string(),
+    username: v.string(),
+    email: v.string(),
+    phone: v.string(),
+    password: v.string(),
+    city: v.string(),
+    address: v.optional(v.string()),
+    categories: v.array(v.string()),
+    gstNumber: v.optional(v.string()),
+    notes: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert('suppliers', {
+      ...args,
+      status: 'active',
+      verified: true,
+      createdAt: Date.now(),
+    });
+  },
+});
+
+export const listSuppliers = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query('suppliers').order('desc').collect();
+  },
+});
+
+export const getSupplier = query({
+  args: { id: v.id('suppliers') },
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id);
+  },
+});
+
+export const updateSupplier = mutation({
+  args: {
+    id: v.id('suppliers'),
+    businessName: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    city: v.optional(v.string()),
+    address: v.optional(v.string()),
+    categories: v.optional(v.array(v.string())),
+    gstNumber: v.optional(v.string()),
+    notes: v.optional(v.string()),
+    verified: v.optional(v.boolean()),
+  },
+  handler: async (ctx, { id, ...fields }) => {
+    const cleaned = Object.fromEntries(
+      Object.entries(fields).filter(([, v]) => v !== undefined)
+    );
+    await ctx.db.patch(id, cleaned);
+  },
+});
+
+export const toggleStatus = mutation({
+  args: { id: v.id('suppliers') },
+  handler: async (ctx, { id }) => {
+    const supplier = await ctx.db.get(id);
+    if (!supplier) throw new Error('Supplier not found');
+    const next = supplier.status === 'active' ? 'suspended' : 'active';
+    await ctx.db.patch(id, { status: next });
+    return next;
+  },
+});
+
+export const deleteSupplier = mutation({
+  args: { id: v.id('suppliers') },
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id);
+  },
+});

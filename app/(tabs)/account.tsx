@@ -19,6 +19,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useRouter } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { useAppTheme } from "../../context/ThemeContext";
 
@@ -204,6 +205,7 @@ function ProfileScreen({
   insets: ReturnType<typeof useSafeAreaInsets>;
 }) {
   const theme = useTheme();
+  const router = useRouter();
   const { user, logout } = useAuth();
 
   const gradientColors = isDark
@@ -369,6 +371,25 @@ function ProfileScreen({
           </View>
         </Surface>
 
+        {user?.role === 'admin' && (
+          <TouchableOpacity
+            style={[styles.adminPanelBtn, { backgroundColor: '#1A56DB' }]}
+            onPress={() => router.push('/admin')}
+            activeOpacity={0.85}
+          >
+            <View style={styles.adminPanelLeft}>
+              <View style={styles.adminPanelIconWrap}>
+                <MaterialCommunityIcons name="shield-crown" size={24} color="#FFF" />
+              </View>
+              <View>
+                <Text style={styles.adminPanelTitle}>Admin Panel</Text>
+                <Text style={styles.adminPanelSub}>Manage suppliers & categories</Text>
+              </View>
+            </View>
+            <MaterialCommunityIcons name="chevron-right" size={22} color="rgba(255,255,255,0.7)" />
+          </TouchableOpacity>
+        )}
+
         <Surface
           style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
           elevation={1}
@@ -518,4 +539,24 @@ const styles = StyleSheet.create({
 
   logoutBtn: { borderRadius: 12, borderWidth: 1.5, marginTop: 4 },
   logoutContent: { height: 50 },
+
+  adminPanelBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderRadius: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+  },
+  adminPanelLeft: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  adminPanelIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  adminPanelTitle: { color: '#FFF', fontSize: 15, fontWeight: '800' },
+  adminPanelSub: { color: 'rgba(255,255,255,0.65)', fontSize: 12, fontWeight: '500', marginTop: 1 },
 });

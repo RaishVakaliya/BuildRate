@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, Searchbar, useTheme, Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -231,7 +226,7 @@ export default function HomeScreen() {
         </View>
 
         <Searchbar
-          placeholder="Search cement, steel, tiles..."
+          placeholder="Search cement, steel, sand..."
           onChangeText={setSearchQuery}
           value={searchQuery}
           style={[
