@@ -4,13 +4,13 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  useColorScheme,
 } from "react-native";
 import { Text, Searchbar, useTheme, Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { COLORS } from "../../constants/theme";
+import { useAppTheme } from "../../context/ThemeContext";
 
 const CATEGORIES = [
   { id: "1", label: "Cement", icon: "circle-outline", color: "#6B7280" },
@@ -151,10 +151,10 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState("Surat");
   const theme = useTheme();
-  const colorScheme = useColorScheme();
+  const { resolvedScheme } = useAppTheme();
   const insets = useSafeAreaInsets();
 
-  const isDark = colorScheme === "dark";
+  const isDark = resolvedScheme === "dark";
   const gradientColors = isDark
     ? (["#1E293B", "#111827"] as const)
     : (["#E6F2FF", "#FFFFFF"] as const);
