@@ -52,7 +52,6 @@ const CATEGORY_ICONS: Record<string, string> = {
   Bricks: "wall",
 };
 
-// Generates stable and visually distinct colors for supplier avatars
 const getAvatarColor = (name: string) => {
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
@@ -112,19 +111,16 @@ export default function SuppliersScreen() {
     );
     const url = `whatsapp://send?phone=${cleanPhone}&text=${message}`;
     Linking.openURL(url).catch(() => {
-      // Fallback to web WhatsApp link
       Linking.openURL(`https://wa.me/${cleanPhone}?text=${message}`).catch(
         () => {},
       );
     });
   };
 
-  // Filter lists based on role, search, categories, and status filters
   const filteredSuppliers = useMemo(() => {
     if (!suppliers) return [];
 
     return suppliers.filter((supplier) => {
-      // 1. Role-based view rules
       if (user?.role !== "admin") {
         if (supplier.status !== "active") return false;
       } else {
@@ -135,7 +131,6 @@ export default function SuppliersScreen() {
           return false;
       }
 
-      // 2. Search filtering
       const queryLower = searchQuery.toLowerCase().trim();
       if (queryLower) {
         const matchName = supplier.businessName
@@ -146,7 +141,6 @@ export default function SuppliersScreen() {
         if (!matchName && !matchCity && !matchPhone) return false;
       }
 
-      // 3. Category filtering
       if (selectedCategory !== "All") {
         if (!supplier.categories.includes(selectedCategory)) return false;
       }
@@ -155,7 +149,6 @@ export default function SuppliersScreen() {
     });
   }, [suppliers, user, searchQuery, selectedCategory, adminStatusFilter]);
 
-  // Sort: Move currently logged-in supplier's card to the very top
   const sortedSuppliers = useMemo(() => {
     if (user?.role === "supplier" && user?.id) {
       const listCopy = [...filteredSuppliers];
@@ -438,7 +431,6 @@ export default function SuppliersScreen() {
                   activeOpacity={0.7}
                   style={styles.cardPressable}
                 >
-                  {/* Business Tag Header for Owner / Admin status indicator */}
                   <View style={styles.cardHeader}>
                     <View
                       style={[styles.avatarCircle, { backgroundColor: avatarBg }]}
@@ -632,7 +624,6 @@ export default function SuppliersScreen() {
                       <Text style={styles.contactCallText}>Call</Text>
                     </TouchableOpacity>
 
-                    {/* Admin edit button removed per request */}
                   </View>
                 </View>
               </Surface>

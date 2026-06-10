@@ -304,6 +304,19 @@ export default function SupplierDetailScreen() {
         </LinearGradient>
 
         <View style={styles.infoSheetContainer}>
+          {user?.role === "supplier" && (
+            <Button
+              mode="contained"
+              icon="package-variant-closed"
+              onPress={() => router.push("/manage-materials")}
+              style={{ backgroundColor: "#F97316", borderRadius: 14 }}
+              contentStyle={{ height: 48 }}
+              labelStyle={{ fontSize: 13, fontWeight: "700" }}
+            >
+              Manage Materials
+            </Button>
+          )}
+
           {/* Categories Offered */}
           <Surface
             style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
@@ -494,11 +507,19 @@ export default function SupplierDetailScreen() {
                 </View>
               </View>
 
-              {supplier.address && (
+              {(supplier.address || supplier.mapUrl) && (
                 <Button
                   mode="outlined"
                   icon="map"
-                  onPress={() => openMaps(supplier.address!, supplier.city)}
+                  onPress={() => {
+                    if (supplier.mapUrl) {
+                      Linking.openURL(supplier.mapUrl).catch(() => {
+                        showToast("Could not open maps link.");
+                      });
+                    } else {
+                      openMaps(supplier.address || "", supplier.city);
+                    }
+                  }}
                   style={styles.mapsActionButton}
                   labelStyle={styles.mapsButtonLabel}
                 >

@@ -13,6 +13,7 @@ export const addSupplier = mutation({
     categories: v.array(v.string()),
     gstNumber: v.optional(v.string()),
     notes: v.optional(v.string()),
+    mapUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("suppliers", {
@@ -50,6 +51,7 @@ export const updateSupplier = mutation({
     gstNumber: v.optional(v.string()),
     notes: v.optional(v.string()),
     verified: v.optional(v.boolean()),
+    mapUrl: v.optional(v.string()),
   },
   handler: async (ctx, { id, ...fields }) => {
     const cleaned = Object.fromEntries(

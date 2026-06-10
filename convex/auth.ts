@@ -36,7 +36,6 @@ export const login = action({
       );
     }
 
-    // 1. Check if Admin credentials match
     if (phone === adminPhone && password === adminPassword) {
       const token = `admin_${Date.now()}_${Math.random().toString(36).slice(2)}`;
       return {
@@ -52,7 +51,6 @@ export const login = action({
       };
     }
 
-    // 2. Check if Supplier credentials match (lookup by phone)
     const supplier = await ctx.runQuery(api.suppliers.getSupplierByPhone, {
       phone,
     });

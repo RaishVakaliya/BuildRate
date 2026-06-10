@@ -15,6 +15,18 @@ export default defineSchema({
     verified: v.boolean(),
     gstNumber: v.optional(v.string()),
     notes: v.optional(v.string()),
+    mapUrl: v.optional(v.string()),
     createdAt: v.number(),
   }),
+  materials: defineTable({
+    supplierId: v.id("suppliers"),
+    category: v.string(),
+    name: v.string(),
+    brand: v.string(),
+    unit: v.string(),
+    price: v.number(),
+    status: v.union(v.literal("available"), v.literal("out_of_stock")),
+    notes: v.optional(v.string()),
+    createdAt: v.number(),
+  }).index("by_supplier", ["supplierId"]),
 });

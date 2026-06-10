@@ -94,7 +94,6 @@ function LoginScreen({
       await login(phone.trim(), password);
     } catch (e: any) {
       const msg = e?.message ?? "Login failed. Please try again.";
-      // Clean up Convex system stack traces and prefixes
       const match =
         msg.match(/Uncaught Error:\s*([^.]+)/) ||
         msg.match(/Server Error:\s*([^.]+)/);
@@ -336,6 +335,35 @@ function ProfileScreen({
         ]}
         showsVerticalScrollIndicator={false}
       >
+        {user?.role === "supplier" && (
+          <TouchableOpacity
+            style={[styles.adminPanelBtn, { backgroundColor: "#F97316", marginBottom: 2 }]}
+            onPress={() => router.push("/manage-materials")}
+            activeOpacity={0.85}
+          >
+            <View style={styles.adminPanelLeft}>
+              <View style={styles.adminPanelIconWrap}>
+                <MaterialCommunityIcons
+                  name="package-variant-closed"
+                  size={24}
+                  color="#FFF"
+                />
+              </View>
+              <View>
+                <Text style={styles.adminPanelTitle}>Manage Materials</Text>
+                <Text style={styles.adminPanelSub}>
+                  Update your material prices & stock
+                </Text>
+              </View>
+            </View>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={22}
+              color="rgba(255,255,255,0.7)"
+            />
+          </TouchableOpacity>
+        )}
+
         <Surface
           style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
           elevation={1}

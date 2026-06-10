@@ -51,6 +51,7 @@ export default function AddSupplierScreen() {
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
   const [gstNumber, setGstNumber] = useState("");
+  const [mapUrl, setMapUrl] = useState("");
   const [notes, setNotes] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [error, setError] = useState("");
@@ -90,6 +91,7 @@ export default function AddSupplierScreen() {
         categories: selectedCategories,
         gstNumber: gstNumber.trim() || undefined,
         notes: notes.trim() || undefined,
+        mapUrl: mapUrl.trim() || undefined,
       });
       router.back();
     } catch (e: any) {
@@ -227,6 +229,17 @@ export default function AddSupplierScreen() {
             mode="outlined"
             autoCapitalize="characters"
             left={<TextInput.Icon icon="file-certificate" />}
+            style={styles.input}
+            outlineColor={theme.colors.outline}
+            activeOutlineColor={theme.colors.primary}
+          />
+          <TextInput
+            label="Google Map URL"
+            value={mapUrl}
+            onChangeText={setMapUrl}
+            mode="outlined"
+            autoCapitalize="none"
+            left={<TextInput.Icon icon="map-marker-outline" />}
             style={styles.input}
             outlineColor={theme.colors.outline}
             activeOutlineColor={theme.colors.primary}
@@ -429,5 +442,3 @@ export default function AddSupplierScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-
