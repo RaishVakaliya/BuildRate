@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { View, ScrollView, TouchableOpacity } from "react-native";
+import { styles } from "../../components/styles/homeStyles";
 import { Text, Searchbar, useTheme, Surface } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -25,7 +26,7 @@ const TRENDING_PRICES = [
     unit: "bag",
     change: -2.5,
     suppliers: 12,
-    city: "Surat",
+    city: "Ahmedabad",
   },
   {
     id: "2",
@@ -35,7 +36,7 @@ const TRENDING_PRICES = [
     unit: "MT",
     change: +1.8,
     suppliers: 8,
-    city: "Surat",
+    city: "Ahmedabad",
   },
   {
     id: "3",
@@ -45,7 +46,7 @@ const TRENDING_PRICES = [
     unit: "brass",
     change: 0,
     suppliers: 15,
-    city: "Surat",
+    city: "Ahmedabad",
   },
   {
     id: "4",
@@ -55,7 +56,7 @@ const TRENDING_PRICES = [
     unit: "1000 pcs",
     change: -1.2,
     suppliers: 20,
-    city: "Surat",
+    city: "Ahmedabad",
   },
 ];
 
@@ -65,7 +66,7 @@ const TOP_SUPPLIERS = [
     name: "Ravi Building Materials",
     rating: 4.8,
     materials: 24,
-    city: "Surat",
+    city: "Ahmedabad",
     verified: true,
   },
   {
@@ -73,7 +74,7 @@ const TOP_SUPPLIERS = [
     name: "Gujarat Cement Hub",
     rating: 4.6,
     materials: 15,
-    city: "Surat",
+    city: "Ahmedabad",
     verified: true,
   },
   {
@@ -81,7 +82,7 @@ const TOP_SUPPLIERS = [
     name: "Modi Steel Centre",
     rating: 4.5,
     materials: 8,
-    city: "Surat",
+    city: "Ahmedabad",
     verified: false,
   },
 ];
@@ -509,186 +510,3 @@ export default function HomeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-  scrollContent: { paddingBottom: 24 },
-
-  header: {
-    paddingHorizontal: 20,
-    paddingBottom: 36,
-  },
-  headerTop: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 20,
-  },
-  headerGreeting: { fontSize: 13, fontWeight: "600" },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: "800",
-    letterSpacing: -0.5,
-    marginVertical: 2,
-  },
-  headerSubtitle: { fontSize: 12, fontWeight: "500" },
-  locationBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    gap: 4,
-    marginTop: 4,
-  },
-  locationText: { fontSize: 13, fontWeight: "600" },
-
-  searchBar: {
-    borderRadius: 14,
-    backgroundColor: "#FFFFFF",
-    elevation: 0,
-  },
-  searchInput: { fontSize: 14 },
-
-  scrollView: {
-    marginTop: -20,
-    backgroundColor: "transparent",
-  },
-
-  contentSheet: {
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    paddingTop: 12,
-    flex: 1,
-  },
-  sheetHandle: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: "#E2E8F0",
-    alignSelf: "center",
-    marginBottom: 16,
-  },
-
-  statsRow: {
-    flexDirection: "row",
-    paddingHorizontal: 16,
-    gap: 10,
-    marginBottom: 8,
-  },
-  statCard: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: 12,
-    borderRadius: 12,
-    borderLeftWidth: 3,
-    gap: 2,
-  },
-  statValue: {
-    fontSize: 15,
-    fontWeight: "800",
-    color: "#111827",
-    marginTop: 4,
-  },
-  statLabel: { fontSize: 10, color: "#6B7280", fontWeight: "500" },
-
-  section: { paddingHorizontal: 16, marginTop: 24 },
-  lastSection: { marginBottom: 8 },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 14,
-  },
-  sectionTitle: { fontSize: 17, fontWeight: "700", letterSpacing: -0.3 },
-  seeAll: { fontSize: 13, fontWeight: "600" },
-  updatedBadge: { flexDirection: "row", alignItems: "center", gap: 5 },
-  liveDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: COLORS.success,
-  },
-  updatedText: { fontSize: 12, color: COLORS.success, fontWeight: "600" },
-
-  categoryScroll: { marginHorizontal: -16, paddingHorizontal: 16 },
-  categoryItem: {
-    alignItems: "center",
-    marginRight: 12,
-    padding: 12,
-    borderRadius: 14,
-    width: 80,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  categoryIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 8,
-  },
-  categoryLabel: {
-    fontSize: 11,
-    fontWeight: "600",
-    textAlign: "center",
-    lineHeight: 14,
-  },
-
-  priceCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 14,
-    borderRadius: 14,
-    marginBottom: 10,
-  },
-  priceCardLeft: { flex: 1 },
-  materialName: { fontSize: 14, fontWeight: "700", marginBottom: 2 },
-  brandName: { fontSize: 12, marginBottom: 4 },
-  supplierCount: { flexDirection: "row", alignItems: "center", gap: 4 },
-  supplierText: { fontSize: 11 },
-  priceCardRight: { alignItems: "flex-end", gap: 4 },
-  priceValue: { fontSize: 18, fontWeight: "800" },
-  priceUnit: { fontSize: 11 },
-  changeTag: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 20,
-  },
-  changeText: { fontSize: 11, fontWeight: "700" },
-
-  supplierCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 14,
-    borderRadius: 14,
-    marginBottom: 10,
-    gap: 12,
-  },
-  supplierAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  supplierInitial: { fontSize: 18, fontWeight: "800" },
-  supplierInfo: { flex: 1 },
-  supplierNameRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    marginBottom: 3,
-  },
-  supplierName: { fontSize: 14, fontWeight: "700" },
-  supplierMeta: { flexDirection: "row", alignItems: "center", gap: 4 },
-  supplierMetaText: { fontSize: 12 },
-});
