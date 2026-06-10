@@ -41,7 +41,13 @@ export default function AccountScreen() {
   }
 
   if (!user) {
-    return <LoginScreen isDark={isDark} />;
+    return (
+      <LoginScreen
+        isDark={isDark}
+        preference={preference}
+        setPreference={setPreference}
+      />
+    );
   }
 
   return (
@@ -54,7 +60,15 @@ export default function AccountScreen() {
   );
 }
 
-function LoginScreen({ isDark }: { isDark: boolean }) {
+function LoginScreen({
+  isDark,
+  preference,
+  setPreference,
+}: {
+  isDark: boolean;
+  preference: "light" | "dark" | "system";
+  setPreference: (p: "light" | "dark" | "system") => void;
+}) {
   const theme = useTheme();
   const { login } = useAuth();
   const insets = useSafeAreaInsets();
@@ -194,6 +208,34 @@ function LoginScreen({ isDark }: { isDark: boolean }) {
           >
             {loading ? "Signing In..." : "Sign In"}
           </Button>
+        </Surface>
+
+        <View style={{ height: 16 }} />
+
+        <Surface
+          style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+          elevation={1}
+        >
+          <Text
+            style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant }]}
+          >
+            Preferences
+          </Text>
+          <Text style={[styles.prefLabel, { color: theme.colors.onSurface }]}>
+            App Theme
+          </Text>
+          <SegmentedButtons
+            value={preference}
+            onValueChange={(v) =>
+              setPreference(v as "light" | "dark" | "system")
+            }
+            style={styles.segmented}
+            buttons={[
+              { value: "light", label: "Light", icon: "white-balance-sunny" },
+              { value: "system", label: "System", icon: "theme-light-dark" },
+              { value: "dark", label: "Dark", icon: "weather-night" },
+            ]}
+          />
         </Surface>
       </ScrollView>
     </KeyboardAvoidingView>

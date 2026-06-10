@@ -144,7 +144,7 @@ function PriceChangeTag({ change }: { change: number }) {
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCity, setSelectedCity] = useState("Surat");
+  const [selectedCity, setSelectedCity] = useState("Ahmedabad");
   const theme = useTheme();
   const { resolvedScheme } = useAppTheme();
   const insets = useSafeAreaInsets();
