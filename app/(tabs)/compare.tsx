@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
-import { View, ScrollView, TouchableOpacity, Linking } from "react-native";
-import { Text, useTheme, Surface, ActivityIndicator } from "react-native-paper";
+import React, { useMemo, useState } from "react";
+import { View, ScrollView, TouchableOpacity, Linking, Platform } from "react-native";
+import { Text, useTheme, Surface, ActivityIndicator, Snackbar } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -11,6 +11,10 @@ import { useAppTheme } from "../../context/ThemeContext";
 import { useCompare } from "../../context/CompareContext";
 import { COLORS } from "../../constants/theme";
 import { styles, SCREEN_WIDTH } from "../../components/styles/compareStyles";
+import {
+  handleCall as contactCall,
+  handleWhatsApp as contactWhatsApp,
+} from "../../utils/contact";
 
 const CATEGORY_ICONS: Record<string, string> = {
   Cement: "circle-outline",
@@ -179,22 +183,20 @@ export default function CompareScreen() {
     return (SCREEN_WIDTH - 40 - totalGaps * 8) / count;
   }, [selectedSuppliers.length]);
 
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const showToast = (msg: string) => {
+    setSnackbarMessage(msg);
+    setSnackbarVisible(true);
+  };
+
   const handleCall = (phone: string) => {
-    Linking.openURL(`tel:${phone.replace(/\s+/g, "")}`).catch(() => {});
+    contactCall(phone, showToast);
   };
 
   const handleWhatsApp = (phone: string, businessName: string) => {
-    const cleanPhone = phone.replace(/[^\d+]/g, "");
-    const message = encodeURIComponent(
-      `Hello ${businessName}, I found your listing on RateGuru and would like to inquire about material prices.`,
-    );
-    Linking.openURL(
-      `whatsapp://send?phone=${cleanPhone}&text=${message}`,
-    ).catch(() =>
-      Linking.openURL(`https://wa.me/${cleanPhone}?text=${message}`).catch(
-        () => {},
-      ),
-    );
+    contactWhatsApp(phone, businessName, showToast);
   };
 
   const isLoading = allSuppliers === undefined;
@@ -338,49 +340,60 @@ export default function CompareScreen() {
                     />
                   </TouchableOpacity>
 
-                  <View
-                    style={[styles.avatarCircle, { backgroundColor: avatarBg }]}
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/supplier-detail",
+                        params: { id: supplier._id },
+                      })
+                    }
+                    activeOpacity={0.7}
+                    style={{ alignItems: "center", width: "100%" }}
                   >
-                    <Text style={[styles.avatarLetter, { color: avatarText }]}>
-                      {supplier.businessName.charAt(0).toUpperCase()}
-                    </Text>
-                  </View>
+                    <View
+                      style={[styles.avatarCircle, { backgroundColor: avatarBg }]}
+                    >
+                      <Text style={[styles.avatarLetter, { color: avatarText }]}>
+                        {supplier.businessName.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
 
-                  <Text
-                    style={[
-                      styles.supplierName,
-                      { color: theme.colors.onSurface },
-                    ]}
-                    numberOfLines={2}
-                  >
-                    {supplier.businessName}
-                  </Text>
-
-                  {supplier.verified && (
-                    <MaterialCommunityIcons
-                      name="check-decagram"
-                      size={14}
-                      color={COLORS.primary}
-                      style={{ marginTop: 3 }}
-                    />
-                  )}
-
-                  <View style={styles.cityRow}>
-                    <MaterialCommunityIcons
-                      name="map-marker"
-                      size={11}
-                      color={theme.colors.onSurfaceVariant}
-                    />
                     <Text
                       style={[
-                        styles.cityText,
-                        { color: theme.colors.onSurfaceVariant },
+                        styles.supplierName,
+                        { color: theme.colors.onSurface },
                       ]}
-                      numberOfLines={1}
+                      numberOfLines={2}
                     >
-                      {supplier.city}
+                      {supplier.businessName}
                     </Text>
-                  </View>
+
+                    {supplier.verified && (
+                      <MaterialCommunityIcons
+                        name="check-decagram"
+                        size={14}
+                        color={COLORS.primary}
+                        style={{ marginTop: 3 }}
+                      />
+                    )}
+
+                    <View style={styles.cityRow}>
+                      <MaterialCommunityIcons
+                        name="map-marker"
+                        size={11}
+                        color={theme.colors.onSurfaceVariant}
+                      />
+                      <Text
+                        style={[
+                          styles.cityText,
+                          { color: theme.colors.onSurfaceVariant },
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {supplier.city}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
 
                   <View style={styles.quickContactRow}>
                     <TouchableOpacity
@@ -496,6 +509,14 @@ export default function CompareScreen() {
           )}
         </ScrollView>
       )}
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={2500}
+        style={{ marginBottom: Platform.OS === "ios" ? 96 : 80 }}
+      >
+        {snackbarMessage}
+      </Snackbar>
     </View>
   );
 }

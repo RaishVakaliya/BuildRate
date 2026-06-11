@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -27,6 +27,11 @@ import { useAppTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { useCompare } from "../context/CompareContext";
 import { COLORS } from "../constants/theme";
+import {
+  handleCall as contactCall,
+  handleEmail as contactEmail,
+  handleWhatsApp as contactWhatsApp,
+} from "../utils/contact";
 
 const CATEGORY_DETAILS: Record<string, { color: string; icon: string }> = {
   Cement: { color: "#6B7280", icon: "circle-outline" },
@@ -76,6 +81,31 @@ export default function SupplierDetailScreen() {
     id ? { id: id as any } : ("skip" as any),
   );
 
+  const materials = useQuery(
+    api.materials.listSupplierMaterials,
+    id ? { supplierId: id as any } : "skip",
+  );
+
+  const materialCategories = useMemo(() => {
+    if (!materials) return [];
+    const cats = new Set<string>();
+    materials.forEach((m) => cats.add(m.category));
+    return Array.from(cats);
+  }, [materials]);
+
+  const [selectedMatCat, setSelectedMatCat] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (materialCategories.length > 0 && !selectedMatCat) {
+      setSelectedMatCat(materialCategories[0]);
+    }
+  }, [materialCategories, selectedMatCat]);
+
+  const displayedMaterials = useMemo(() => {
+    if (!materials || !selectedMatCat) return [];
+    return materials.filter((m) => m.category === selectedMatCat);
+  }, [materials, selectedMatCat]);
+
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
@@ -89,32 +119,15 @@ export default function SupplierDetailScreen() {
   };
 
   const handleCall = (phone: string) => {
-    Linking.openURL(`tel:${phone.replace(/\s+/g, "")}`).catch(() => {
-      showToast("Could not open dialer.");
-    });
+    contactCall(phone, showToast);
   };
 
   const handleEmail = (email: string, businessName: string) => {
-    Linking.openURL(
-      `mailto:${email}?subject=Inquiry from RateGuru to ${businessName}`,
-    ).catch(() => {
-      showToast("Could not open email client.");
-    });
+    contactEmail(email, businessName, showToast);
   };
 
   const handleWhatsApp = (phone: string, businessName: string) => {
-    const cleanPhone = phone.replace(/[^\d+]/g, "");
-    const message = encodeURIComponent(
-      `Hello ${businessName}, I found your business on RateGuru and would like to inquire about material pricing.`,
-    );
-    const url = `whatsapp://send?phone=${cleanPhone}&text=${message}`;
-    Linking.openURL(url).catch(() => {
-      Linking.openURL(`https://wa.me/${cleanPhone}?text=${message}`).catch(
-        () => {
-          showToast("WhatsApp is not available.");
-        },
-      );
-    });
+    contactWhatsApp(phone, businessName, showToast);
   };
 
   const openMaps = (address: string, city: string) => {
@@ -304,7 +317,7 @@ export default function SupplierDetailScreen() {
         </LinearGradient>
 
         <View style={styles.infoSheetContainer}>
-          {user?.role === "supplier" && (
+          {user?.role === "supplier" && user?.id === supplier._id && (
             <Button
               mode="contained"
               icon="package-variant-closed"
@@ -356,6 +369,207 @@ export default function SupplierDetailScreen() {
               })}
             </View>
           </Surface>
+
+          {materials === undefined ? (
+            <Surface
+              style={[styles.contentCard, { backgroundColor: theme.colors.surface, padding: 24, alignItems: "center" }]}
+              elevation={1}
+            >
+              <ActivityIndicator size="small" color={theme.colors.primary} />
+            </Surface>
+          ) : materials.length > 0 ? (
+            <Surface
+              style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
+              elevation={1}
+            >
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <MaterialCommunityIcons
+                    name="tag-multiple-outline"
+                    size={18}
+                    color={theme.colors.primary}
+                  />
+                  <Text style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant, marginBottom: 0 }]}>
+                    Material Catalog
+                  </Text>
+                </View>
+                <Surface
+                  style={{
+                    backgroundColor: isDark ? "rgba(79,142,247,0.12)" : "rgba(26,86,219,0.08)",
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
+                    borderRadius: 8,
+                  }}
+                  elevation={0}
+                >
+                  <Text style={{ fontSize: 11, fontWeight: "700", color: theme.colors.primary }}>
+                    {materials.length} Item{materials.length > 1 ? "s" : ""}
+                  </Text>
+                </Surface>
+              </View>
+
+              {/* Horizontal category selector */}
+              {materialCategories.length > 0 && (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{ gap: 6, marginBottom: 12, paddingBottom: 4 }}
+                >
+                  {materialCategories.map((cat) => {
+                    const isSelected = selectedMatCat === cat;
+                    const catDetails = CATEGORY_DETAILS[cat];
+                    const catColor = catDetails?.color ?? theme.colors.primary;
+                    return (
+                      <TouchableOpacity
+                        key={cat}
+                        onPress={() => setSelectedMatCat(cat)}
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 6,
+                          paddingHorizontal: 12,
+                          paddingVertical: 6,
+                          borderRadius: 20,
+                          backgroundColor: isSelected
+                            ? theme.colors.primary
+                            : isDark
+                              ? "rgba(255,255,255,0.05)"
+                              : "rgba(0,0,0,0.04)",
+                          borderWidth: 1,
+                          borderColor: isSelected
+                            ? theme.colors.primary
+                            : isDark
+                              ? "rgba(255,255,255,0.1)"
+                              : "rgba(0,0,0,0.08)",
+                        }}
+                        activeOpacity={0.8}
+                      >
+                        <MaterialCommunityIcons
+                          name={(catDetails?.icon ?? "circle-outline") as any}
+                          size={12}
+                          color={isSelected ? "#FFF" : catColor}
+                        />
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            fontWeight: "700",
+                            color: isSelected ? "#FFF" : theme.colors.onSurface,
+                          }}
+                        >
+                          {cat}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+              )}
+
+              {/* Material List */}
+              <View style={{ gap: 8 }}>
+                {displayedMaterials.map((mat, idx) => {
+                  const isAvailable = mat.status === "available";
+                  return (
+                    <View key={mat._id}>
+                      {idx > 0 && (
+                        <View
+                          style={{
+                            height: 1,
+                            backgroundColor: isDark
+                              ? "rgba(255,255,255,0.06)"
+                              : "rgba(0,0,0,0.05)",
+                            marginVertical: 8,
+                          }}
+                        />
+                      )}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <View style={{ flex: 1, marginRight: 16 }}>
+                          <Text
+                            style={{
+                              fontSize: 13,
+                              fontWeight: "600",
+                              color: theme.colors.onSurface,
+                            }}
+                          >
+                            {mat.name}
+                          </Text>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 2 }}>
+                            <Text
+                              style={{
+                                fontSize: 11,
+                                color: theme.colors.onSurfaceVariant,
+                              }}
+                            >
+                              Brand: {mat.brand}
+                            </Text>
+                            {mat.notes && (
+                              <>
+                                <View
+                                  style={{
+                                    width: 3,
+                                    height: 3,
+                                    borderRadius: 1.5,
+                                    backgroundColor: theme.colors.onSurfaceVariant,
+                                    opacity: 0.5,
+                                  }}
+                                />
+                                <Text
+                                  style={{
+                                    fontSize: 11,
+                                    color: theme.colors.onSurfaceVariant,
+                                    fontStyle: "italic",
+                                  }}
+                                  numberOfLines={1}
+                                >
+                                  {mat.notes}
+                                </Text>
+                              </>
+                            )}
+                          </View>
+                        </View>
+
+                        <View style={{ alignItems: "flex-end" }}>
+                          <Text
+                            style={{
+                              fontSize: 14,
+                              fontWeight: "700",
+                              color: theme.colors.primary,
+                            }}
+                          >
+                            ₹{mat.price}
+                            <Text
+                              style={{
+                                fontSize: 11,
+                                fontWeight: "500",
+                                color: theme.colors.onSurfaceVariant,
+                              }}
+                            >
+                              {" "}/ {mat.unit}
+                            </Text>
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 10,
+                              fontWeight: "600",
+                              color: isAvailable ? "#16A34A" : "#DC2626",
+                              marginTop: 2,
+                            }}
+                          >
+                            {isAvailable ? "Available" : "Out of Stock"}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  );
+                })}
+              </View>
+            </Surface>
+          ) : null}
 
           <Surface
             style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}

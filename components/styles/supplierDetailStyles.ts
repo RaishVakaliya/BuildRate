@@ -2,7 +2,12 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   root: { flex: 1 },
-  centered: { flex: 1, alignItems: "center", justifyContent: "center", padding: 20 },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
   headerBlock: {
     paddingHorizontal: 16,
     paddingBottom: 24,
@@ -13,7 +18,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    // marginBottom: 0,
   },
   iconCircleButton: {
     width: 38,
@@ -31,7 +36,7 @@ export const styles = StyleSheet.create({
     borderRadius: 40,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 12,
+    marginBottom: 8,
   },
   largeAvatarLetter: {
     fontSize: 32,
@@ -57,7 +62,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-    marginTop: 12,
+    marginTop: 8,
     justifyContent: "center",
   },
   statusBadge: {
@@ -76,7 +81,7 @@ export const styles = StyleSheet.create({
   infoSheetContainer: {
     padding: 16,
     gap: 12,
-    marginTop: 4,
+    // marginTop: 4,
   },
   contentCard: {
     borderRadius: 20,

@@ -26,6 +26,11 @@ import { useRouter } from "expo-router";
 import { styles } from "../../components/styles/suppliersStyles";
 import { COLORS } from "../../constants/theme";
 import { useCompare } from "../../context/CompareContext";
+import {
+  handleCall as contactCall,
+  handleEmail as contactEmail,
+  handleWhatsApp as contactWhatsApp,
+} from "../../utils/contact";
 
 const CATEGORIES = [
   { label: "All", icon: "apps", color: "#1A56DB" },
@@ -98,26 +103,15 @@ export default function SuppliersScreen() {
     : (["#E6F2FF", "#F5F7FA"] as const);
 
   const handleCall = (phone: string) => {
-    Linking.openURL(`tel:${phone.replace(/\s+/g, "")}`).catch(() => {});
+    contactCall(phone, showToast);
   };
 
   const handleEmail = (email: string, businessName: string) => {
-    Linking.openURL(
-      `mailto:${email}?subject=Inquiry from RateGuru to ${businessName}`,
-    ).catch(() => {});
+    contactEmail(email, businessName, showToast);
   };
 
   const handleWhatsApp = (phone: string, businessName: string) => {
-    const cleanPhone = phone.replace(/[^\d+]/g, "");
-    const message = encodeURIComponent(
-      `Hello ${businessName}, I found your listing on RateGuru and would like to inquire about material prices.`,
-    );
-    const url = `whatsapp://send?phone=${cleanPhone}&text=${message}`;
-    Linking.openURL(url).catch(() => {
-      Linking.openURL(`https://wa.me/${cleanPhone}?text=${message}`).catch(
-        () => {},
-      );
-    });
+    contactWhatsApp(phone, businessName, showToast);
   };
 
   const filteredSuppliers = useMemo(() => {
