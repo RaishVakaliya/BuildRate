@@ -2,7 +2,12 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   root: { flex: 1 },
-  centered: { flex: 1, alignItems: "center", justifyContent: "center", padding: 20 },
+  centered: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
   header: { paddingHorizontal: 20, paddingBottom: 24 },
   headerRow: {
     flexDirection: "row",
@@ -33,7 +38,7 @@ export const styles = StyleSheet.create({
   addBtn: {
     borderRadius: 14,
     marginHorizontal: 16,
-    marginTop: 12,
+    // marginTop: 0,
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -43,14 +48,23 @@ export const styles = StyleSheet.create({
   addBtnContent: { height: 50 },
   addBtnLabel: { fontSize: 14, fontWeight: "700", letterSpacing: 0.3 },
 
-  scrollView: { marginTop: -12 },
+  scrollView: { marginTop: 0 },
   listContent: { padding: 16, gap: 12 },
-  emptyWrap: { alignItems: "center", paddingTop: 60, gap: 10, paddingHorizontal: 24 },
+  emptyWrap: {
+    alignItems: "center",
+    paddingTop: 60,
+    gap: 10,
+    paddingHorizontal: 24,
+  },
   emptyTitle: { fontSize: 18, fontWeight: "700" },
   emptySubtitle: { fontSize: 13, textAlign: "center", lineHeight: 18 },
 
   card: { borderRadius: 18, padding: 16, gap: 12 },
-  cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
   catBadge: {
     flexDirection: "row",
     alignItems: "center",
@@ -78,7 +92,11 @@ export const styles = StyleSheet.create({
 
   divider: { height: 1, marginVertical: 2 },
 
-  cardFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  cardFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   statusBadge: {
     flexDirection: "row",
     alignItems: "center",

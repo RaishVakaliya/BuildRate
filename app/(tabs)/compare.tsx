@@ -1,6 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { View, ScrollView, TouchableOpacity, Linking, Platform } from "react-native";
-import { Text, useTheme, Surface, ActivityIndicator, Snackbar } from "react-native-paper";
+import { View, ScrollView, TouchableOpacity, Platform } from "react-native";
+import {
+  Text,
+  useTheme,
+  Surface,
+  ActivityIndicator,
+  Snackbar,
+} from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -351,9 +357,14 @@ export default function CompareScreen() {
                     style={{ alignItems: "center", width: "100%" }}
                   >
                     <View
-                      style={[styles.avatarCircle, { backgroundColor: avatarBg }]}
+                      style={[
+                        styles.avatarCircle,
+                        { backgroundColor: avatarBg },
+                      ]}
                     >
-                      <Text style={[styles.avatarLetter, { color: avatarText }]}>
+                      <Text
+                        style={[styles.avatarLetter, { color: avatarText }]}
+                      >
                         {supplier.businessName.charAt(0).toUpperCase()}
                       </Text>
                     </View>
@@ -675,14 +686,30 @@ function PriceCompareTable({
 }) {
   const allItems = useMemo(() => {
     const seen = new Set<string>();
-    const items: { category: string; name: string; key: string }[] = [];
+    const items: {
+      category: string;
+      name: string;
+      brand: string;
+      unit: string;
+      key: string;
+    }[] = [];
     for (const mats of supplierMaterials) {
       if (!mats) continue;
       for (const m of mats) {
-        const key = `${m.category}__${m.name}`;
-        if (!seen.has(key)) {
-          seen.add(key);
-          items.push({ category: m.category, name: m.name, key });
+        const normCategory = m.category.toLowerCase().trim();
+        const normName = m.name.toLowerCase().trim();
+        const normBrand = m.brand.toLowerCase().trim();
+        const normUnit = m.unit.toLowerCase().trim();
+        const matchKey = `${normCategory}__${normName}__${normBrand}__${normUnit}`;
+        if (!seen.has(matchKey)) {
+          seen.add(matchKey);
+          items.push({
+            category: m.category,
+            name: m.name,
+            brand: m.brand,
+            unit: m.unit,
+            key: matchKey,
+          });
         }
       }
     }
@@ -692,7 +719,13 @@ function PriceCompareTable({
   const grouped = useMemo(() => {
     const map: Record<
       string,
-      { category: string; name: string; key: string }[]
+      {
+        category: string;
+        name: string;
+        brand: string;
+        unit: string;
+        key: string;
+      }[]
     > = {};
     for (const item of allItems) {
       if (!map[item.category]) map[item.category] = [];
@@ -759,7 +792,14 @@ function PriceCompareTable({
               if (!mats) return null;
               const found = mats.find(
                 (m: any) =>
-                  m.category === item.category && m.name === item.name,
+                  m.category.toLowerCase().trim() ===
+                    item.category.toLowerCase().trim() &&
+                  m.name.toLowerCase().trim() ===
+                    item.name.toLowerCase().trim() &&
+                  m.brand.toLowerCase().trim() ===
+                    item.brand.toLowerCase().trim() &&
+                  m.unit.toLowerCase().trim() ===
+                    item.unit.toLowerCase().trim(),
               );
               return found ? found.price : null;
             });
@@ -767,19 +807,6 @@ function PriceCompareTable({
             const validPrices = prices.filter((p): p is number => p !== null);
             const minPrice =
               validPrices.length > 0 ? Math.min(...validPrices) : null;
-
-            const unitStr = (() => {
-              for (let idx = 0; idx < suppliers.length; idx++) {
-                const mats = supplierMaterials[idx];
-                if (!mats) continue;
-                const found = mats.find(
-                  (m: any) =>
-                    m.category === item.category && m.name === item.name,
-                );
-                if (found?.unit) return found.unit;
-              }
-              return "";
-            })();
 
             return (
               <View
@@ -794,17 +821,30 @@ function PriceCompareTable({
                   },
                 ]}
               >
-                <Text
-                  style={[
-                    styles.priceRowName,
-                    { color: theme.colors.onSurfaceVariant },
-                  ]}
-                >
-                  {item.name}
-                  {unitStr ? (
-                    <Text style={styles.priceRowUnit}> / {unitStr}</Text>
+                <View style={{ marginBottom: 4 }}>
+                  <Text
+                    style={[
+                      styles.priceRowName,
+                      { color: theme.colors.onSurface, marginBottom: 2 },
+                    ]}
+                  >
+                    {item.name}
+                    {item.unit ? (
+                      <Text style={styles.priceRowUnit}> / {item.unit}</Text>
+                    ) : null}
+                  </Text>
+                  {item.brand ? (
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        color: theme.colors.onSurfaceVariant,
+                        fontWeight: "500",
+                      }}
+                    >
+                      Brand: {item.brand}
+                    </Text>
                   ) : null}
-                </Text>
+                </View>
 
                 <View style={styles.priceRowValues}>
                   {prices.map((price, i) => {

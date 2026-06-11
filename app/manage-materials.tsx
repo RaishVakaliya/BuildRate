@@ -16,7 +16,6 @@ import {
   useTheme,
   ActivityIndicator,
   SegmentedButtons,
-  Portal,
 } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -26,8 +25,8 @@ import { useRouter } from "expo-router";
 import { api } from "../convex/_generated/api";
 import { useAuth } from "../context/AuthContext";
 import { useAppTheme } from "../context/ThemeContext";
-import { COLORS } from "../constants/theme";
 import { styles } from "../components/styles/manageMaterialsStyles";
+import { Dropdown } from "react-native-element-dropdown";
 
 const CATEGORIES = [
   { label: "Cement", icon: "circle-outline", color: "#6B7280" },
@@ -45,6 +44,99 @@ const CATEGORY_MAP: Record<string, { color: string; icon: string }> = {
   Sand: { color: "#D97706", icon: "wave" },
   Aggregate: { color: "#92400E", icon: "terrain" },
   Bricks: { color: "#B91C1C", icon: "wall" },
+};
+
+const SUGGESTIONS: Record<
+  string,
+  { names: string[]; brands: string[]; units: string[] }
+> = {
+  Cement: {
+    names: [
+      "OPC 53 Grade",
+      "OPC 43 Grade",
+      "PPC (Portland Pozzolana)",
+      "PSC (Portland Slag)",
+      "White Cement",
+    ],
+    brands: [
+      "UltraTech",
+      "Ambuja",
+      "ACC",
+      "Shree Cement",
+      "Birla Gold",
+      "Dalmia",
+      "JK Lakshmi",
+      "Nuvoco",
+    ],
+    units: ["bag", "MT"],
+  },
+  Steel: {
+    names: [
+      "TMT Bar Fe 500D",
+      "TMT Bar Fe 550D",
+      "TMT Bar Fe 600",
+      "Binding Wire",
+      "Structural Steel",
+    ],
+    brands: [
+      "Tata Tiscon",
+      "JSW Neosteel",
+      "SAIL",
+      "Jindal Panther",
+      "Vizag Steel",
+      "Shyam Steel",
+    ],
+    units: ["MT", "kg", "ton"],
+  },
+  RMC: {
+    names: ["M20 Grade", "M25 Grade", "M30 Grade", "M35 Grade", "M40 Grade"],
+    brands: [
+      "UltraTech RMC",
+      "ACC RMC",
+      "Aparna RMC",
+      "RMC Readymix India",
+      "Local RMC",
+    ],
+    units: ["cum", "brass"],
+  },
+  Sand: {
+    names: [
+      "River Sand",
+      "M-Sand (Manufactured Sand)",
+      "Plaster Sand",
+      "Concrete Sand",
+    ],
+    brands: ["Premium Quality", "VSI Sand", "Local Sand", "Wash Sand"],
+    units: ["brass", "ton", "cum"],
+  },
+  Aggregate: {
+    names: [
+      "10mm Aggregate",
+      "20mm Aggregate",
+      "40mm Aggregate",
+      "Crushed Stone Dust",
+    ],
+    brands: ["Premium Hard Granite", "Local Blue Metal", "Crushed Trap Rock"],
+    units: ["brass", "ton", "cum"],
+  },
+  Bricks: {
+    names: [
+      "Red Clay Bricks",
+      "Fly Ash Bricks",
+      "AAC Blocks (4 inch)",
+      "AAC Blocks (6 inch)",
+      "AAC Blocks (8 inch)",
+      "Concrete Blocks",
+    ],
+    brands: [
+      "JK SmartBlox",
+      "Aerocon Blocks",
+      "Biltech AAC",
+      "Premium Clay Bricks",
+      "Local Brick Kiln",
+    ],
+    units: ["piece", "thousand", "brass"],
+  },
 };
 
 export default function ManageMaterialsScreen() {
@@ -72,20 +164,26 @@ export default function ManageMaterialsScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  
+
   const [category, setCategory] = useState("Cement");
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
   const [unit, setUnit] = useState("");
   const [price, setPrice] = useState("");
-  const [status, setStatus] = useState<"available" | "out_of_stock">("available");
+  const [status, setStatus] = useState<"available" | "out_of_stock">(
+    "available",
+  );
   const [notes, setNotes] = useState("");
+
+  const [isCustomNameSelected, setIsCustomNameSelected] = useState(false);
+  const [isCustomBrandSelected, setIsCustomBrandSelected] = useState(false);
+  const [isCustomUnitSelected, setIsCustomUnitSelected] = useState(false);
 
   const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const filteredCategories = CATEGORIES.filter((cat) =>
-    user?.categories ? user.categories.includes(cat.label) : true
+    user?.categories ? user.categories.includes(cat.label) : true,
   );
 
   const gradientColors = isDark
@@ -94,7 +192,10 @@ export default function ManageMaterialsScreen() {
 
   const openAddModal = () => {
     setEditingId(null);
-    const defaultCat = user?.categories && user.categories.length > 0 ? user.categories[0] : "Cement";
+    const defaultCat =
+      user?.categories && user.categories.length > 0
+        ? user.categories[0]
+        : "Cement";
     setCategory(defaultCat);
     setName("");
     setBrand("");
@@ -103,6 +204,9 @@ export default function ManageMaterialsScreen() {
     setStatus("available");
     setNotes("");
     setFormError("");
+    setIsCustomNameSelected(false);
+    setIsCustomBrandSelected(false);
+    setIsCustomUnitSelected(false);
     setModalVisible(true);
   };
 
@@ -116,6 +220,21 @@ export default function ManageMaterialsScreen() {
     setStatus(material.status);
     setNotes(material.notes ?? "");
     setFormError("");
+
+    const nameSuggestions = SUGGESTIONS[material.category]?.names || [];
+    const brandSuggestions = SUGGESTIONS[material.category]?.brands || [];
+    const unitSuggestions = SUGGESTIONS[material.category]?.units || [];
+
+    setIsCustomNameSelected(
+      material.name !== "" && !nameSuggestions.includes(material.name),
+    );
+    setIsCustomBrandSelected(
+      material.brand !== "" && !brandSuggestions.includes(material.brand),
+    );
+    setIsCustomUnitSelected(
+      material.unit !== "" && !unitSuggestions.includes(material.unit),
+    );
+
     setModalVisible(true);
   };
 
@@ -235,16 +354,24 @@ export default function ManageMaterialsScreen() {
         </View>
       </LinearGradient>
 
-      <Button
-        mode="contained"
-        onPress={openAddModal}
-        icon="plus"
-        style={[styles.addBtn, { backgroundColor: "#F97316" }]}
-        contentStyle={styles.addBtnContent}
-        labelStyle={styles.addBtnLabel}
+      <View
+        style={{
+          backgroundColor: theme.colors.background,
+          paddingVertical: 12,
+          zIndex: 10,
+        }}
       >
-        Add Material
-      </Button>
+        <Button
+          mode="contained"
+          onPress={openAddModal}
+          icon="plus"
+          style={[styles.addBtn, { backgroundColor: "#F97316", marginTop: 0 }]}
+          contentStyle={styles.addBtnContent}
+          labelStyle={styles.addBtnLabel}
+        >
+          Add Material
+        </Button>
+      </View>
 
       <ScrollView
         style={styles.scrollView}
@@ -276,7 +403,8 @@ export default function ManageMaterialsScreen() {
                 { color: theme.colors.onSurfaceVariant },
               ]}
             >
-              Tap "Add Material" above to list your construction materials and set current prices.
+              Tap "Add Material" above to list your construction materials and
+              set current prices.
             </Text>
           </View>
         ) : (
@@ -306,25 +434,47 @@ export default function ManageMaterialsScreen() {
                       size={12}
                       color={catInfo.color}
                     />
-                    <Text style={[styles.catBadgeText, { color: theme.colors.onSurface }]}>
+                    <Text
+                      style={[
+                        styles.catBadgeText,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
                       {item.category}
                     </Text>
                   </View>
                   <View style={styles.priceContainer}>
-                    <Text style={[styles.priceTag, { color: theme.colors.primary }]}>
+                    <Text
+                      style={[styles.priceTag, { color: theme.colors.primary }]}
+                    >
                       ₹{item.price.toLocaleString("en-IN")}
                     </Text>
-                    <Text style={[styles.unitText, { color: theme.colors.onSurfaceVariant }]}>
+                    <Text
+                      style={[
+                        styles.unitText,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
                       per {item.unit}
                     </Text>
                   </View>
                 </View>
 
                 <View style={styles.cardBody}>
-                  <Text style={[styles.materialName, { color: theme.colors.onSurface }]}>
+                  <Text
+                    style={[
+                      styles.materialName,
+                      { color: theme.colors.onSurface },
+                    ]}
+                  >
                     {item.name}
                   </Text>
-                  <Text style={[styles.materialBrand, { color: theme.colors.onSurfaceVariant }]}>
+                  <Text
+                    style={[
+                      styles.materialBrand,
+                      { color: theme.colors.onSurfaceVariant },
+                    ]}
+                  >
                     {item.brand}
                   </Text>
                 </View>
@@ -346,7 +496,12 @@ export default function ManageMaterialsScreen() {
                       color={theme.colors.onSurfaceVariant}
                       style={{ marginTop: 1 }}
                     />
-                    <Text style={[styles.notesText, { color: theme.colors.onSurfaceVariant }]}>
+                    <Text
+                      style={[
+                        styles.notesText,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
                       {item.notes}
                     </Text>
                   </View>
@@ -437,7 +592,9 @@ export default function ManageMaterialsScreen() {
             ]}
             elevation={4}
           >
-            <Text style={[styles.modalTitle, { color: theme.colors.onSurface }]}>
+            <Text
+              style={[styles.modalTitle, { color: theme.colors.onSurface }]}
+            >
               {editingId ? "Edit Material" : "Add Material"}
             </Text>
 
@@ -452,8 +609,14 @@ export default function ManageMaterialsScreen() {
                   gap: 6,
                 }}
               >
-                <MaterialCommunityIcons name="alert-circle" size={16} color="#DC2626" />
-                <Text style={{ color: "#DC2626", fontSize: 12, fontWeight: "500" }}>
+                <MaterialCommunityIcons
+                  name="alert-circle"
+                  size={16}
+                  color="#DC2626"
+                />
+                <Text
+                  style={{ color: "#DC2626", fontSize: 12, fontWeight: "500" }}
+                >
                   {formError}
                 </Text>
               </View>
@@ -466,7 +629,12 @@ export default function ManageMaterialsScreen() {
             >
               <View style={styles.modalForm}>
                 <View>
-                  <Text style={[styles.fieldLabel, { color: theme.colors.onSurfaceVariant }]}>
+                  <Text
+                    style={[
+                      styles.fieldLabel,
+                      { color: theme.colors.onSurfaceVariant },
+                    ]}
+                  >
                     Category *
                   </Text>
                   <View style={styles.categoryGrid}>
@@ -481,11 +649,15 @@ export default function ManageMaterialsScreen() {
                               backgroundColor: isSelected
                                 ? cat.color + "20"
                                 : theme.colors.surfaceVariant,
-                              borderColor: isSelected ? cat.color : "transparent",
+                              borderColor: isSelected
+                                ? cat.color
+                                : "transparent",
                               borderWidth: isSelected ? 1.5 : 0,
                             },
                           ]}
-                          onPress={() => setCategory(cat.label)}
+                          onPress={() => {
+                            setCategory(cat.label);
+                          }}
                           activeOpacity={0.7}
                         >
                           <View
@@ -503,7 +675,11 @@ export default function ManageMaterialsScreen() {
                           <Text
                             style={[
                               styles.catTileLabel,
-                              { color: isSelected ? cat.color : theme.colors.onSurface },
+                              {
+                                color: isSelected
+                                  ? cat.color
+                                  : theme.colors.onSurface,
+                              },
                             ]}
                           >
                             {cat.label}
@@ -514,36 +690,186 @@ export default function ManageMaterialsScreen() {
                   </View>
                 </View>
 
-                <TextInput
-                  label="Material Name *"
-                  value={name}
-                  onChangeText={(t) => {
-                    setName(t);
-                    setFormError("");
-                  }}
-                  mode="outlined"
-                  style={styles.input}
-                  outlineColor={theme.colors.outline}
-                  activeOutlineColor={theme.colors.primary}
-                />
-
-                <TextInput
-                  label="Brand / Manufacturer *"
-                  value={brand}
-                  onChangeText={(t) => {
-                    setBrand(t);
-                    setFormError("");
-                  }}
-                  mode="outlined"
-                  style={styles.input}
-                  outlineColor={theme.colors.outline}
-                  activeOutlineColor={theme.colors.primary}
-                />
-
-                <View style={styles.rowInputs}>
-                  <View style={styles.halfInput}>
+                {/* Material Name Dropdown */}
+                <View style={{ zIndex: 3 }}>
+                  <Text
+                    style={[
+                      styles.fieldLabel,
+                      { color: theme.colors.onSurfaceVariant },
+                    ]}
+                  >
+                    Material Name *
+                  </Text>
+                  <Dropdown
+                    style={{
+                      height: 50,
+                      borderColor: theme.colors.outline,
+                      borderWidth: 1,
+                      borderRadius: 12,
+                      paddingHorizontal: 12,
+                      backgroundColor: "transparent",
+                      marginTop: 4,
+                    }}
+                    placeholderStyle={{
+                      fontSize: 14,
+                      color: theme.colors.onSurfaceVariant,
+                    }}
+                    selectedTextStyle={{
+                      fontSize: 14,
+                      color: theme.colors.onSurface,
+                    }}
+                    containerStyle={{
+                      backgroundColor:
+                        theme.colors.elevation.level3 || theme.colors.surface,
+                      borderRadius: 8,
+                      borderColor:
+                        theme.colors.outlineVariant ||
+                        theme.colors.outline ||
+                        "rgba(0,0,0,0.1)",
+                      borderWidth: 1,
+                    }}
+                    activeColor={
+                      isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"
+                    }
+                    itemTextStyle={{
+                      color: theme.colors.onSurface,
+                      fontSize: 14,
+                    }}
+                    iconColor={theme.colors.onSurfaceVariant}
+                    data={[
+                      ...(SUGGESTIONS[category]?.names || []).map((n) => ({
+                        label: n,
+                        value: n,
+                      })),
+                      { label: "Other / Write Custom Name", value: "custom" },
+                    ]}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Select Material Name"
+                    value={isCustomNameSelected ? "custom" : name}
+                    onChange={(item) => {
+                      if (item.value === "custom") {
+                        setIsCustomNameSelected(true);
+                        setName("");
+                      } else {
+                        setIsCustomNameSelected(false);
+                        setName(item.value);
+                      }
+                      setFormError("");
+                    }}
+                  />
+                  {isCustomNameSelected && (
                     <TextInput
-                      label="Price (₹) *"
+                      label="Enter Custom Material Name *"
+                      value={name}
+                      onChangeText={(t) => {
+                        setName(t);
+                        setFormError("");
+                      }}
+                      mode="outlined"
+                      style={[styles.input, { marginTop: 8 }]}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
+                  )}
+                </View>
+
+                {/* Brand / Manufacturer Dropdown */}
+                <View style={{ zIndex: 2 }}>
+                  <Text
+                    style={[
+                      styles.fieldLabel,
+                      { color: theme.colors.onSurfaceVariant },
+                    ]}
+                  >
+                    Brand / Manufacturer *
+                  </Text>
+                  <Dropdown
+                    style={{
+                      height: 50,
+                      borderColor: theme.colors.outline,
+                      borderWidth: 1,
+                      borderRadius: 12,
+                      paddingHorizontal: 12,
+                      backgroundColor: "transparent",
+                      marginTop: 4,
+                    }}
+                    placeholderStyle={{
+                      fontSize: 14,
+                      color: theme.colors.onSurfaceVariant,
+                    }}
+                    selectedTextStyle={{
+                      fontSize: 14,
+                      color: theme.colors.onSurface,
+                    }}
+                    containerStyle={{
+                      backgroundColor:
+                        theme.colors.elevation.level3 || theme.colors.surface,
+                      borderRadius: 8,
+                      borderColor:
+                        theme.colors.outlineVariant ||
+                        theme.colors.outline ||
+                        "rgba(0,0,0,0.1)",
+                      borderWidth: 1,
+                    }}
+                    activeColor={
+                      isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"
+                    }
+                    itemTextStyle={{
+                      color: theme.colors.onSurface,
+                      fontSize: 14,
+                    }}
+                    iconColor={theme.colors.onSurfaceVariant}
+                    data={[
+                      ...(SUGGESTIONS[category]?.brands || []).map((b) => ({
+                        label: b,
+                        value: b,
+                      })),
+                      { label: "Other / Write Custom Brand", value: "custom" },
+                    ]}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Select Brand / Manufacturer"
+                    value={isCustomBrandSelected ? "custom" : brand}
+                    onChange={(item) => {
+                      if (item.value === "custom") {
+                        setIsCustomBrandSelected(true);
+                        setBrand("");
+                      } else {
+                        setIsCustomBrandSelected(false);
+                        setBrand(item.value);
+                      }
+                      setFormError("");
+                    }}
+                  />
+                  {isCustomBrandSelected && (
+                    <TextInput
+                      label="Enter Custom Brand *"
+                      value={brand}
+                      onChangeText={(t) => {
+                        setBrand(t);
+                        setFormError("");
+                      }}
+                      mode="outlined"
+                      style={[styles.input, { marginTop: 8 }]}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
+                  )}
+                </View>
+
+                {/* Price and Unit Row */}
+                <View style={[styles.rowInputs, { zIndex: 1 }]}>
+                  <View style={styles.halfInput}>
+                    <Text
+                      style={[
+                        styles.fieldLabel,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      Price (₹) *
+                    </Text>
+                    <TextInput
                       value={price}
                       onChangeText={(t) => {
                         setPrice(t);
@@ -551,31 +877,105 @@ export default function ManageMaterialsScreen() {
                       }}
                       mode="outlined"
                       keyboardType="numeric"
-                      style={styles.input}
+                      style={[styles.input, { marginTop: 4 }]}
                       outlineColor={theme.colors.outline}
                       activeOutlineColor={theme.colors.primary}
+                      placeholder="e.g. 450"
                     />
                   </View>
 
                   <View style={styles.halfInput}>
-                    <TextInput
-                      label="Unit (e.g. bag, MT) *"
-                      value={unit}
-                      onChangeText={(t) => {
-                        setUnit(t);
+                    <Text
+                      style={[
+                        styles.fieldLabel,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      Unit *
+                    </Text>
+                    <Dropdown
+                      style={{
+                        height: 50,
+                        borderColor: theme.colors.outline,
+                        borderWidth: 1,
+                        borderRadius: 12,
+                        paddingHorizontal: 12,
+                        backgroundColor: "transparent",
+                        marginTop: 4,
+                      }}
+                      placeholderStyle={{
+                        fontSize: 14,
+                        color: theme.colors.onSurfaceVariant,
+                      }}
+                      selectedTextStyle={{
+                        fontSize: 14,
+                        color: theme.colors.onSurface,
+                      }}
+                      containerStyle={{
+                        backgroundColor:
+                          theme.colors.elevation.level3 || theme.colors.surface,
+                        borderRadius: 8,
+                        borderColor:
+                          theme.colors.outlineVariant ||
+                          theme.colors.outline ||
+                          "rgba(0,0,0,0.1)",
+                        borderWidth: 1,
+                      }}
+                      activeColor={
+                        isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"
+                      }
+                      itemTextStyle={{
+                        color: theme.colors.onSurface,
+                        fontSize: 14,
+                      }}
+                      iconColor={theme.colors.onSurfaceVariant}
+                      data={[
+                        ...(SUGGESTIONS[category]?.units || []).map((u) => ({
+                          label: u,
+                          value: u,
+                        })),
+                        { label: "Other / Custom", value: "custom" },
+                      ]}
+                      labelField="label"
+                      valueField="value"
+                      placeholder="Select Unit"
+                      value={isCustomUnitSelected ? "custom" : unit}
+                      onChange={(item) => {
+                        if (item.value === "custom") {
+                          setIsCustomUnitSelected(true);
+                          setUnit("");
+                        } else {
+                          setIsCustomUnitSelected(false);
+                          setUnit(item.value);
+                        }
                         setFormError("");
                       }}
-                      placeholder="bag, MT, brass"
-                      mode="outlined"
-                      style={styles.input}
-                      outlineColor={theme.colors.outline}
-                      activeOutlineColor={theme.colors.primary}
                     />
+                    {isCustomUnitSelected && (
+                      <TextInput
+                        label="Enter Custom Unit *"
+                        value={unit}
+                        onChangeText={(t) => {
+                          setUnit(t);
+                          setFormError("");
+                        }}
+                        placeholder="bag, MT, brass"
+                        mode="outlined"
+                        style={[styles.input, { marginTop: 8 }]}
+                        outlineColor={theme.colors.outline}
+                        activeOutlineColor={theme.colors.primary}
+                      />
+                    )}
                   </View>
                 </View>
 
                 <View>
-                  <Text style={[styles.fieldLabel, { color: theme.colors.onSurfaceVariant }]}>
+                  <Text
+                    style={[
+                      styles.fieldLabel,
+                      { color: theme.colors.onSurfaceVariant },
+                    ]}
+                  >
                     Availability Status *
                   </Text>
                   <SegmentedButtons
@@ -584,7 +984,11 @@ export default function ManageMaterialsScreen() {
                     style={styles.segmented}
                     buttons={[
                       { value: "available", label: "Available", icon: "check" },
-                      { value: "out_of_stock", label: "Out of Stock", icon: "cancel" },
+                      {
+                        value: "out_of_stock",
+                        label: "Out of Stock",
+                        icon: "cancel",
+                      },
                     ]}
                   />
                 </View>
@@ -609,7 +1013,10 @@ export default function ManageMaterialsScreen() {
                 onPress={() => setModalVisible(false)}
                 style={styles.formBtn}
                 contentStyle={styles.formBtnContent}
-                labelStyle={[styles.formBtnLabel, { color: theme.colors.onSurfaceVariant }]}
+                labelStyle={[
+                  styles.formBtnLabel,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
                 disabled={loading}
               >
                 Cancel

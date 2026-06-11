@@ -192,7 +192,11 @@ export default function SupplierDetailScreen() {
         >
           Supplier Not Found
         </Text>
-        <Button mode="contained" onPress={() => router.back()} style={{ marginTop: 16 }}>
+        <Button
+          mode="contained"
+          onPress={() => router.back()}
+          style={{ marginTop: 16 }}
+        >
           Go Back
         </Button>
       </View>
@@ -264,14 +268,21 @@ export default function SupplierDetailScreen() {
           </View>
 
           <View style={styles.avatarOverview}>
-            <View style={[styles.largeAvatarCircle, { backgroundColor: avatarBg }]}>
+            <View
+              style={[styles.largeAvatarCircle, { backgroundColor: avatarBg }]}
+            >
               <Text style={[styles.largeAvatarLetter, { color: avatarText }]}>
                 {initial}
               </Text>
             </View>
 
             <View style={styles.businessTitleRow}>
-              <Text style={[styles.businessNameText, { color: theme.colors.onSurface }]}>
+              <Text
+                style={[
+                  styles.businessNameText,
+                  { color: theme.colors.onSurface },
+                ]}
+              >
                 {supplier.businessName}
               </Text>
               {supplier.verified && (
@@ -284,13 +295,18 @@ export default function SupplierDetailScreen() {
             </View>
 
             <Text
-              style={[styles.usernameText, { color: theme.colors.onSurfaceVariant }]}
+              style={[
+                styles.usernameText,
+                { color: theme.colors.onSurfaceVariant },
+              ]}
             >
               @{supplier.username}
             </Text>
 
             <View style={styles.statusChipsContainer}>
-              <View style={[styles.statusBadge, { backgroundColor: stBadge.bg }]}>
+              <View
+                style={[styles.statusBadge, { backgroundColor: stBadge.bg }]}
+              >
                 <MaterialCommunityIcons
                   name={stBadge.icon as any}
                   size={12}
@@ -301,13 +317,20 @@ export default function SupplierDetailScreen() {
                 </Text>
               </View>
               {supplier.verified && (
-                <View style={[styles.statusBadge, { backgroundColor: "rgba(26,86,219,0.08)" }]}>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    { backgroundColor: "rgba(26,86,219,0.08)" },
+                  ]}
+                >
                   <MaterialCommunityIcons
                     name="shield-check-outline"
                     size={12}
                     color={COLORS.primary}
                   />
-                  <Text style={[styles.statusBadgeText, { color: COLORS.primary }]}>
+                  <Text
+                    style={[styles.statusBadgeText, { color: COLORS.primary }]}
+                  >
                     VERIFIED SUPPLIER
                   </Text>
                 </View>
@@ -330,19 +353,27 @@ export default function SupplierDetailScreen() {
             </Button>
           )}
 
+          {/* to do: remove this MATERIALS SUPPLIED PART */}
           <Surface
-            style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
+            style={[
+              styles.contentCard,
+              { backgroundColor: theme.colors.surface },
+            ]}
             elevation={1}
           >
             <Text
-              style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant }]}
+              style={[
+                styles.cardTitle,
+                { color: theme.colors.onSurfaceVariant },
+              ]}
             >
               Materials Supplied
             </Text>
             <View style={styles.categoriesBadgeGrid}>
               {supplier.categories.map((cat) => {
                 const matched = CATEGORY_DETAILS[cat];
-                const catColor = matched?.color ?? theme.colors.onSurfaceVariant;
+                const catColor =
+                  matched?.color ?? theme.colors.onSurfaceVariant;
                 const catIcon = matched?.icon ?? "circle-outline";
                 return (
                   <View
@@ -361,7 +392,12 @@ export default function SupplierDetailScreen() {
                       size={14}
                       color={catColor}
                     />
-                    <Text style={[styles.categoryBadgeText, { color: theme.colors.onSurface }]}>
+                    <Text
+                      style={[
+                        styles.categoryBadgeText,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
                       {cat}
                     </Text>
                   </View>
@@ -372,37 +408,69 @@ export default function SupplierDetailScreen() {
 
           {materials === undefined ? (
             <Surface
-              style={[styles.contentCard, { backgroundColor: theme.colors.surface, padding: 24, alignItems: "center" }]}
+              style={[
+                styles.contentCard,
+                {
+                  backgroundColor: theme.colors.surface,
+                  padding: 24,
+                  alignItems: "center",
+                },
+              ]}
               elevation={1}
             >
               <ActivityIndicator size="small" color={theme.colors.primary} />
             </Surface>
           ) : materials.length > 0 ? (
             <Surface
-              style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
+              style={[
+                styles.contentCard,
+                { backgroundColor: theme.colors.surface },
+              ]}
               elevation={1}
             >
-              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 12,
+                }}
+              >
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+                >
                   <MaterialCommunityIcons
                     name="tag-multiple-outline"
                     size={18}
                     color={theme.colors.primary}
                   />
-                  <Text style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant, marginBottom: 0 }]}>
+                  <Text
+                    style={[
+                      styles.cardTitle,
+                      { color: theme.colors.onSurfaceVariant, marginBottom: 0 },
+                    ]}
+                  >
                     Material Catalog
                   </Text>
                 </View>
                 <Surface
                   style={{
-                    backgroundColor: isDark ? "rgba(79,142,247,0.12)" : "rgba(26,86,219,0.08)",
+                    backgroundColor: isDark
+                      ? "rgba(79,142,247,0.12)"
+                      : "rgba(26,86,219,0.08)",
                     paddingHorizontal: 8,
                     paddingVertical: 3,
                     borderRadius: 8,
                   }}
                   elevation={0}
                 >
-                  <Text style={{ fontSize: 11, fontWeight: "700", color: theme.colors.primary }}>
+                  <Text
+                    style={{
+                      fontSize: 11,
+                      fontWeight: "700",
+                      color: theme.colors.primary,
+                    }}
+                  >
                     {materials.length} Item{materials.length > 1 ? "s" : ""}
                   </Text>
                 </Surface>
@@ -413,7 +481,11 @@ export default function SupplierDetailScreen() {
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={{ gap: 6, marginBottom: 12, paddingBottom: 4 }}
+                  contentContainerStyle={{
+                    gap: 6,
+                    marginBottom: 12,
+                    paddingBottom: 4,
+                  }}
                 >
                   {materialCategories.map((cat) => {
                     const isSelected = selectedMatCat === cat;
@@ -498,7 +570,14 @@ export default function SupplierDetailScreen() {
                           >
                             {mat.name}
                           </Text>
-                          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 2 }}>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              gap: 6,
+                              marginTop: 2,
+                            }}
+                          >
                             <Text
                               style={{
                                 fontSize: 11,
@@ -514,7 +593,8 @@ export default function SupplierDetailScreen() {
                                     width: 3,
                                     height: 3,
                                     borderRadius: 1.5,
-                                    backgroundColor: theme.colors.onSurfaceVariant,
+                                    backgroundColor:
+                                      theme.colors.onSurfaceVariant,
                                     opacity: 0.5,
                                   }}
                                 />
@@ -549,7 +629,8 @@ export default function SupplierDetailScreen() {
                                 color: theme.colors.onSurfaceVariant,
                               }}
                             >
-                              {" "}/ {mat.unit}
+                              {" "}
+                              / {mat.unit}
                             </Text>
                           </Text>
                           <Text
@@ -572,11 +653,17 @@ export default function SupplierDetailScreen() {
           ) : null}
 
           <Surface
-            style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
+            style={[
+              styles.contentCard,
+              { backgroundColor: theme.colors.surface },
+            ]}
             elevation={1}
           >
             <Text
-              style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant }]}
+              style={[
+                styles.cardTitle,
+                { color: theme.colors.onSurfaceVariant },
+              ]}
             >
               Business Details
             </Text>
@@ -588,10 +675,20 @@ export default function SupplierDetailScreen() {
                 color={theme.colors.onSurfaceVariant}
               />
               <View style={styles.contactItemContent}>
-                <Text style={[styles.contactItemLabel, { color: theme.colors.onSurfaceVariant }]}>
+                <Text
+                  style={[
+                    styles.contactItemLabel,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
                   Phone Number
                 </Text>
-                <Text style={[styles.contactItemValue, { color: theme.colors.onSurface }]}>
+                <Text
+                  style={[
+                    styles.contactItemValue,
+                    { color: theme.colors.onSurface },
+                  ]}
+                >
                   {supplier.phone}
                 </Text>
               </View>
@@ -616,10 +713,20 @@ export default function SupplierDetailScreen() {
                 color={theme.colors.onSurfaceVariant}
               />
               <View style={styles.contactItemContent}>
-                <Text style={[styles.contactItemLabel, { color: theme.colors.onSurfaceVariant }]}>
+                <Text
+                  style={[
+                    styles.contactItemLabel,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
                   Email Address
                 </Text>
-                <Text style={[styles.contactItemValue, { color: theme.colors.onSurface }]}>
+                <Text
+                  style={[
+                    styles.contactItemValue,
+                    { color: theme.colors.onSurface },
+                  ]}
+                >
                   {supplier.email}
                 </Text>
               </View>
@@ -645,15 +752,27 @@ export default function SupplierDetailScreen() {
                     color={theme.colors.onSurfaceVariant}
                   />
                   <View style={styles.contactItemContent}>
-                    <Text style={[styles.contactItemLabel, { color: theme.colors.onSurfaceVariant }]}>
+                    <Text
+                      style={[
+                        styles.contactItemLabel,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
                       GST Registration
                     </Text>
-                    <Text style={[styles.contactItemValue, { color: theme.colors.onSurface }]}>
+                    <Text
+                      style={[
+                        styles.contactItemValue,
+                        { color: theme.colors.onSurface },
+                      ]}
+                    >
                       {supplier.gstNumber}
                     </Text>
                   </View>
                   <TouchableOpacity
-                    onPress={() => copyToClipboard(supplier.gstNumber!, "GST Number")}
+                    onPress={() =>
+                      copyToClipboard(supplier.gstNumber!, "GST Number")
+                    }
                     style={styles.copyButton}
                   >
                     <MaterialCommunityIcons
@@ -675,10 +794,20 @@ export default function SupplierDetailScreen() {
                 color={theme.colors.onSurfaceVariant}
               />
               <View style={styles.contactItemContent}>
-                <Text style={[styles.contactItemLabel, { color: theme.colors.onSurfaceVariant }]}>
+                <Text
+                  style={[
+                    styles.contactItemLabel,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
                   Member Since
                 </Text>
-                <Text style={[styles.contactItemValue, { color: theme.colors.onSurface }]}>
+                <Text
+                  style={[
+                    styles.contactItemValue,
+                    { color: theme.colors.onSurface },
+                  ]}
+                >
                   {dateFormatted}
                 </Text>
               </View>
@@ -686,11 +815,17 @@ export default function SupplierDetailScreen() {
           </Surface>
 
           <Surface
-            style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
+            style={[
+              styles.contentCard,
+              { backgroundColor: theme.colors.surface },
+            ]}
             elevation={1}
           >
             <Text
-              style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant }]}
+              style={[
+                styles.cardTitle,
+                { color: theme.colors.onSurfaceVariant },
+              ]}
             >
               Warehouse Location
             </Text>
@@ -704,14 +839,29 @@ export default function SupplierDetailScreen() {
                   style={{ marginTop: 2 }}
                 />
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.locationLabelText, { color: theme.colors.onSurfaceVariant }]}>
+                  <Text
+                    style={[
+                      styles.locationLabelText,
+                      { color: theme.colors.onSurfaceVariant },
+                    ]}
+                  >
                     Location Coverage
                   </Text>
-                  <Text style={[styles.cityLabelText, { color: theme.colors.onSurface }]}>
+                  <Text
+                    style={[
+                      styles.cityLabelText,
+                      { color: theme.colors.onSurface },
+                    ]}
+                  >
                     {supplier.city}
                   </Text>
                   {supplier.address && (
-                    <Text style={[styles.addressLabelText, { color: theme.colors.onSurfaceVariant }]}>
+                    <Text
+                      style={[
+                        styles.addressLabelText,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
                       {supplier.address}
                     </Text>
                   )}
@@ -742,11 +892,17 @@ export default function SupplierDetailScreen() {
 
           {supplier.notes && (
             <Surface
-              style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
+              style={[
+                styles.contentCard,
+                { backgroundColor: theme.colors.surface },
+              ]}
               elevation={1}
             >
               <Text
-                style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant }]}
+                style={[
+                  styles.cardTitle,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
               >
                 Supplier Description
               </Text>
@@ -757,7 +913,12 @@ export default function SupplierDetailScreen() {
                   color={theme.colors.primary}
                   style={{ marginTop: 2 }}
                 />
-                <Text style={[styles.notesTextVal, { color: theme.colors.onSurface }]}>
+                <Text
+                  style={[
+                    styles.notesTextVal,
+                    { color: theme.colors.onSurface },
+                  ]}
+                >
                   {supplier.notes}
                 </Text>
               </View>
@@ -818,7 +979,9 @@ export default function SupplierDetailScreen() {
 
           <TouchableOpacity
             style={[styles.footerCircleBtn, { backgroundColor: "#25D3661B" }]}
-            onPress={() => handleWhatsApp(supplier.phone, supplier.businessName)}
+            onPress={() =>
+              handleWhatsApp(supplier.phone, supplier.businessName)
+            }
             activeOpacity={0.75}
           >
             <MaterialCommunityIcons name="whatsapp" size={22} color="#25D366" />
@@ -848,7 +1011,9 @@ export default function SupplierDetailScreen() {
             activeOpacity={0.75}
           >
             <MaterialCommunityIcons
-              name={isInCompare(supplier._id) ? "check-circle" : "scale-balance"}
+              name={
+                isInCompare(supplier._id) ? "check-circle" : "scale-balance"
+              }
               size={18}
               color="#FFF"
             />
@@ -870,5 +1035,3 @@ export default function SupplierDetailScreen() {
     </View>
   );
 }
-
-
