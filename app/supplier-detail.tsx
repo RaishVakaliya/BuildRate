@@ -25,6 +25,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { api } from "../convex/_generated/api";
 import { useAppTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
+import { useCompare } from "../context/CompareContext";
 import { COLORS } from "../constants/theme";
 
 const CATEGORY_DETAILS: Record<string, { color: string; icon: string }> = {
@@ -67,6 +68,7 @@ export default function SupplierDetailScreen() {
   const { id } = useLocalSearchParams();
   const { resolvedScheme } = useAppTheme();
   const { user } = useAuth();
+  const { addToCompare, removeFromCompare, isInCompare } = useCompare();
   const isDark = resolvedScheme === "dark";
 
   const supplier = useQuery(
@@ -204,7 +206,6 @@ export default function SupplierDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: insets.bottom + 90 }}
       >
-        {/* Profile Header Block */}
         <LinearGradient
           colors={gradientColors}
           style={[styles.headerBlock, { paddingTop: insets.top + 12 }]}
@@ -249,7 +250,6 @@ export default function SupplierDetailScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Profile Overview Card */}
           <View style={styles.avatarOverview}>
             <View style={[styles.largeAvatarCircle, { backgroundColor: avatarBg }]}>
               <Text style={[styles.largeAvatarLetter, { color: avatarText }]}>
@@ -317,7 +317,6 @@ export default function SupplierDetailScreen() {
             </Button>
           )}
 
-          {/* Categories Offered */}
           <Surface
             style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
             elevation={1}
@@ -358,7 +357,6 @@ export default function SupplierDetailScreen() {
             </View>
           </Surface>
 
-          {/* Contact Details Card */}
           <Surface
             style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
             elevation={1}
@@ -473,7 +471,6 @@ export default function SupplierDetailScreen() {
             </View>
           </Surface>
 
-          {/* Warehouse Location Card */}
           <Surface
             style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
             elevation={1}
@@ -529,7 +526,6 @@ export default function SupplierDetailScreen() {
             </View>
           </Surface>
 
-          {/* Notes Card */}
           {supplier.notes && (
             <Surface
               style={[styles.contentCard, { backgroundColor: theme.colors.surface }]}
@@ -556,7 +552,6 @@ export default function SupplierDetailScreen() {
         </View>
       </ScrollView>
 
-      {/* Floating Bottom Communication Bar */}
       <Surface
         style={[
           styles.floatingFooter,
@@ -616,12 +611,36 @@ export default function SupplierDetailScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.footerPrimaryBtn, { backgroundColor: theme.colors.primary }]}
-            onPress={() => showToast("Comparison feature coming soon!")}
+            style={[
+              styles.footerPrimaryBtn,
+              {
+                backgroundColor: isInCompare(supplier._id)
+                  ? "#16A34A"
+                  : theme.colors.primary,
+              },
+            ]}
+            onPress={() => {
+              if (isInCompare(supplier._id)) {
+                removeFromCompare(supplier._id);
+                showToast("Removed from comparison.");
+              } else {
+                const result = addToCompare(supplier._id);
+                showToast(result.message);
+                if (result.success) {
+                  router.push("/(tabs)/compare");
+                }
+              }
+            }}
             activeOpacity={0.75}
           >
-            <MaterialCommunityIcons name="scale-balance" size={18} color="#FFF" />
-            <Text style={styles.footerPrimaryLabel}>Compare</Text>
+            <MaterialCommunityIcons
+              name={isInCompare(supplier._id) ? "check-circle" : "scale-balance"}
+              size={18}
+              color="#FFF"
+            />
+            <Text style={styles.footerPrimaryLabel}>
+              {isInCompare(supplier._id) ? "In Compare" : "Compare"}
+            </Text>
           </TouchableOpacity>
         </View>
       </Surface>

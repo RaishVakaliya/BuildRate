@@ -25,6 +25,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "expo-router";
 import { styles } from "../../components/styles/suppliersStyles";
 import { COLORS } from "../../constants/theme";
+import { useCompare } from "../../context/CompareContext";
 
 const CATEGORIES = [
   { label: "All", icon: "apps", color: "#1A56DB" },
@@ -84,6 +85,8 @@ export default function SuppliersScreen() {
   >("all");
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const { addToCompare, removeFromCompare, isInCompare, compareIds } = useCompare();
 
   const showToast = (msg: string) => {
     setSnackbarMessage(msg);
@@ -255,7 +258,6 @@ export default function SuppliersScreen() {
         />
       </LinearGradient>
 
-      {/* Horizontal Category Scroll */}
       <View style={{ backgroundColor: theme.colors.background }}>
         <ScrollView
           horizontal
@@ -313,7 +315,6 @@ export default function SuppliersScreen() {
         </ScrollView>
       </View>
 
-      {/* Admin-only Status Filters */}
       {user?.role === "admin" && (
         <View style={styles.adminFiltersWrap}>
           <ScrollView
@@ -356,7 +357,6 @@ export default function SuppliersScreen() {
         </View>
       )}
 
-      {/* Supplier List */}
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
@@ -474,7 +474,6 @@ export default function SuppliersScreen() {
                       </View>
                     </View>
 
-                    {/* Top-Right Badge Indicators */}
                     <View style={{ alignItems: "flex-end", gap: 6 }}>
                       {isMyBusiness && (
                         <Surface style={styles.myBusinessBadge} elevation={0}>
@@ -508,7 +507,6 @@ export default function SuppliersScreen() {
                     </View>
                   </View>
 
-                  {/* Categories Badge List */}
                   <View style={[styles.categoryWrap, { marginTop: 12 }]}>
                     {supplier.categories.map((cat) => {
                       const matchedCat = CATEGORIES.find((c) => c.label === cat);
@@ -547,25 +545,47 @@ export default function SuppliersScreen() {
                   </View>
                 </TouchableOpacity>
 
-                {/* Compare & contact action buttons */}
                 <View style={styles.cardFooterActions}>
                   <TouchableOpacity
-                    style={styles.compareBtn}
-                    onPress={() => showToast("Comparison feature coming soon!")}
+                    style={[
+                      styles.compareBtn,
+                      {
+                        backgroundColor: isInCompare(supplier._id)
+                          ? theme.colors.primary
+                          : "transparent",
+                        borderColor: isInCompare(supplier._id)
+                          ? theme.colors.primary
+                          : isDark
+                            ? "rgba(255,255,255,0.15)"
+                            : "rgba(0,0,0,0.12)",
+                      },
+                    ]}
+                    onPress={() => {
+                      if (isInCompare(supplier._id)) {
+                        removeFromCompare(supplier._id);
+                        showToast("Removed from comparison.");
+                      } else {
+                        const result = addToCompare(supplier._id);
+                        showToast(result.message);
+                        if (result.success && compareIds.length + 1 >= 2) {
+                          router.push("/(tabs)/compare");
+                        }
+                      }
+                    }}
                     activeOpacity={0.7}
                   >
                     <MaterialCommunityIcons
-                      name="scale-balance"
+                      name={isInCompare(supplier._id) ? "check-circle" : "scale-balance"}
                       size={16}
-                      color={theme.colors.primary}
+                      color={isInCompare(supplier._id) ? "#FFFFFF" : theme.colors.primary}
                     />
                     <Text
                       style={[
                         styles.compareBtnText,
-                        { color: theme.colors.primary },
+                        { color: isInCompare(supplier._id) ? "#FFFFFF" : theme.colors.primary },
                       ]}
                     >
-                      Compare
+                      {isInCompare(supplier._id) ? "In Compare" : "Compare"}
                     </Text>
                   </TouchableOpacity>
 

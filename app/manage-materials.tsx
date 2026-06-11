@@ -290,7 +290,6 @@ export default function ManageMaterialsScreen() {
                 style={[styles.card, { backgroundColor: theme.colors.surface }]}
                 elevation={1}
               >
-                {/* Card Header: Category & Price */}
                 <View style={styles.cardHeader}>
                   <View
                     style={[
@@ -321,7 +320,6 @@ export default function ManageMaterialsScreen() {
                   </View>
                 </View>
 
-                {/* Card Body: Name & Brand */}
                 <View style={styles.cardBody}>
                   <Text style={[styles.materialName, { color: theme.colors.onSurface }]}>
                     {item.name}
@@ -331,7 +329,6 @@ export default function ManageMaterialsScreen() {
                   </Text>
                 </View>
 
-                {/* Optional Notes */}
                 {item.notes ? (
                   <View
                     style={[
@@ -362,7 +359,6 @@ export default function ManageMaterialsScreen() {
                   ]}
                 />
 
-                {/* Card Footer: Status & Action Actions */}
                 <View style={styles.cardFooter}>
                   <View
                     style={[
@@ -424,7 +420,6 @@ export default function ManageMaterialsScreen() {
         )}
       </ScrollView>
 
-      {/* Form Dialog Modal */}
       <Modal
         visible={modalVisible}
         transparent
@@ -470,7 +465,6 @@ export default function ManageMaterialsScreen() {
               keyboardShouldPersistTaps="handled"
             >
               <View style={styles.modalForm}>
-                {/* Category Selection Grid */}
                 <View>
                   <Text style={[styles.fieldLabel, { color: theme.colors.onSurfaceVariant }]}>
                     Category *
@@ -520,7 +514,6 @@ export default function ManageMaterialsScreen() {
                   </View>
                 </View>
 
-                {/* Material Name */}
                 <TextInput
                   label="Material Name *"
                   value={name}
@@ -534,7 +527,6 @@ export default function ManageMaterialsScreen() {
                   activeOutlineColor={theme.colors.primary}
                 />
 
-                {/* Brand */}
                 <TextInput
                   label="Brand / Manufacturer *"
                   value={brand}
@@ -549,7 +541,6 @@ export default function ManageMaterialsScreen() {
                 />
 
                 <View style={styles.rowInputs}>
-                  {/* Price */}
                   <View style={styles.halfInput}>
                     <TextInput
                       label="Price (₹) *"
@@ -566,7 +557,6 @@ export default function ManageMaterialsScreen() {
                     />
                   </View>
 
-                  {/* Unit */}
                   <View style={styles.halfInput}>
                     <TextInput
                       label="Unit (e.g. bag, MT) *"
@@ -584,7 +574,6 @@ export default function ManageMaterialsScreen() {
                   </View>
                 </View>
 
-                {/* Stock Status */}
                 <View>
                   <Text style={[styles.fieldLabel, { color: theme.colors.onSurfaceVariant }]}>
                     Availability Status *
@@ -600,7 +589,6 @@ export default function ManageMaterialsScreen() {
                   />
                 </View>
 
-                {/* Notes */}
                 <TextInput
                   label="Optional Notes"
                   value={notes}
@@ -615,7 +603,6 @@ export default function ManageMaterialsScreen() {
               </View>
             </ScrollView>
 
-            {/* Dialog Footer Actions */}
             <View style={styles.formActions}>
               <Button
                 mode="outlined"

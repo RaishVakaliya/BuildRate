@@ -1,15 +1,11 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
+import { View, Text, TouchableOpacity, Platform } from "react-native";
 import { styles } from "../../components/styles/layoutStyles";
 import { useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useCompare } from "../../context/CompareContext";
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -85,6 +81,7 @@ export default function TabLayout() {
 function CustomTabBar({ state, descriptors, navigation }: any) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { compareIds } = useCompare();
 
   const bottomPadding = Math.max(insets.bottom, 12);
   const tabBarHeight =
@@ -150,9 +147,31 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
                 ]}
               />
             )}
-            <View style={{ marginTop: 8 }}>
+            <View style={{ marginTop: 8, position: "relative" }}>
               {options.tabBarIcon &&
                 options.tabBarIcon({ focused: isFocused, color, size: 24 })}
+              {route.name === "compare" && compareIds.length > 0 && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -2,
+                    right: -6,
+                    backgroundColor: "#DC2626",
+                    borderRadius: 8,
+                    minWidth: 16,
+                    height: 16,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 3,
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 9, color: "#FFF", fontWeight: "800" }}
+                  >
+                    {Math.min(compareIds.length, 3)}
+                  </Text>
+                </View>
+              )}
             </View>
             <Text style={[styles.tabLabel, { color }]}>{label}</Text>
           </TouchableOpacity>
@@ -161,5 +180,3 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
     </View>
   );
 }
-
-
