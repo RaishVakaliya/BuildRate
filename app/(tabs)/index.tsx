@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { View, ScrollView, TouchableOpacity } from "react-native";
 import { styles } from "../../components/styles/homeStyles";
-import { Text, Searchbar, useTheme, Surface } from "react-native-paper";
+import {
+  Text,
+  Searchbar,
+  useTheme,
+  Surface,
+  ActivityIndicator,
+} from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { COLORS } from "../../constants/theme";
 import { useAppTheme } from "../../context/ThemeContext";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { useRouter } from "expo-router";
 
 const CATEGORIES = [
   { id: "1", label: "Cement", icon: "circle-outline", color: "#6B7280" },
@@ -15,76 +24,6 @@ const CATEGORIES = [
   { id: "4", label: "Sand", icon: "wave", color: "#D97706" },
   { id: "5", label: "Aggregate", icon: "terrain", color: "#92400E" },
   { id: "6", label: "Bricks", icon: "wall", color: "#B91C1C" },
-];
-
-const TRENDING_PRICES = [
-  {
-    id: "1",
-    material: "OPC 53 Cement",
-    brand: "UltraTech",
-    price: 380,
-    unit: "bag",
-    change: -2.5,
-    suppliers: 12,
-    city: "Ahmedabad",
-  },
-  {
-    id: "2",
-    material: "TMT Steel Bar",
-    brand: "TATA Tiscon",
-    price: 58500,
-    unit: "MT",
-    change: +1.8,
-    suppliers: 8,
-    city: "Ahmedabad",
-  },
-  {
-    id: "3",
-    material: "River Sand",
-    brand: "Local",
-    price: 1800,
-    unit: "brass",
-    change: 0,
-    suppliers: 15,
-    city: "Ahmedabad",
-  },
-  {
-    id: "4",
-    material: "Red Clay Brick",
-    brand: "Standard",
-    price: 7200,
-    unit: "1000 pcs",
-    change: -1.2,
-    suppliers: 20,
-    city: "Ahmedabad",
-  },
-];
-
-const TOP_SUPPLIERS = [
-  {
-    id: "1",
-    name: "Ravi Building Materials",
-    rating: 4.8,
-    materials: 24,
-    city: "Ahmedabad",
-    verified: true,
-  },
-  {
-    id: "2",
-    name: "Gujarat Cement Hub",
-    rating: 4.6,
-    materials: 15,
-    city: "Ahmedabad",
-    verified: true,
-  },
-  {
-    id: "3",
-    name: "Modi Steel Centre",
-    rating: 4.5,
-    materials: 8,
-    city: "Ahmedabad",
-    verified: false,
-  },
 ];
 
 function StatCard({
@@ -98,62 +37,88 @@ function StatCard({
   icon: string;
   color: string;
 }) {
+  const theme = useTheme();
   return (
     <Surface
       style={[styles.statCard, { borderLeftColor: color }]}
       elevation={1}
     >
       <MaterialCommunityIcons name={icon as any} size={22} color={color} />
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
+      <Text style={[styles.statValue, { color: theme.colors.onSurface }]}>{value}</Text>
+      <Text style={[styles.statLabel, { color: theme.colors.onSurfaceVariant }]}>{label}</Text>
     </Surface>
-  );
-}
-
-function PriceChangeTag({ change }: { change: number }) {
-  if (change === 0)
-    return (
-      <View style={[styles.changeTag, { backgroundColor: "#F3F4F6" }]}>
-        <Text style={[styles.changeText, { color: "#6B7280" }]}>Stable</Text>
-      </View>
-    );
-
-  const up = change > 0;
-  return (
-    <View
-      style={[
-        styles.changeTag,
-        { backgroundColor: up ? COLORS.errorLight : COLORS.successLight },
-      ]}
-    >
-      <MaterialCommunityIcons
-        name={up ? "trending-up" : "trending-down"}
-        size={12}
-        color={up ? COLORS.error : COLORS.success}
-      />
-      <Text
-        style={[
-          styles.changeText,
-          { color: up ? COLORS.error : COLORS.success },
-        ]}
-      >
-        {Math.abs(change)}%
-      </Text>
-    </View>
   );
 }
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCity, setSelectedCity] = useState("Ahmedabad");
+  const [selectedCity] = useState("Ahmedabad");
   const theme = useTheme();
   const { resolvedScheme } = useAppTheme();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const isDark = resolvedScheme === "dark";
   const gradientColors = isDark
     ? (["#1E293B", "#111827"] as const)
     : (["#E6F2FF", "#F5F7FA"] as const);
+
+  const allMaterials = useQuery(api.materials.listAllMaterials);
+  const allSuppliers = useQuery(api.suppliers.listSuppliers);
+
+  // Group and find the lowest price material in each category
+  const categoryLowestPrices = useMemo(() => {
+    if (!allMaterials) return [];
+
+    const lowestByCategory: Record<string, any> = {};
+
+    for (const m of allMaterials) {
+      const cat = m.category;
+      if (!lowestByCategory[cat] || m.price < lowestByCategory[cat].price) {
+        lowestByCategory[cat] = m;
+      }
+    }
+
+    return Object.values(lowestByCategory).sort((a: any, b: any) =>
+      a.category.localeCompare(b.category),
+    );
+  }, [allMaterials]);
+
+  // Find supplier count offering the exact material name, brand, and unit
+  const getSupplierCount = (item: any) => {
+    if (!allMaterials) return 0;
+    const normName = item.name.toLowerCase().trim();
+    const normBrand = item.brand.toLowerCase().trim();
+    const normUnit = item.unit.toLowerCase().trim();
+    return allMaterials.filter(
+      (m) =>
+        m.category === item.category &&
+        m.name.toLowerCase().trim() === normName &&
+        m.brand.toLowerCase().trim() === normBrand &&
+        m.unit.toLowerCase().trim() === normUnit,
+    ).length;
+  };
+
+  // Top suppliers having the highest number of materials added
+  const topSuppliers = useMemo(() => {
+    if (!allSuppliers || !allMaterials) return [];
+
+    const materialCounts: Record<string, number> = {};
+    for (const m of allMaterials) {
+      materialCounts[m.supplierId] = (materialCounts[m.supplierId] || 0) + 1;
+    }
+
+    const suppliersWithCounts = allSuppliers.map((s) => ({
+      ...s,
+      materialCount: materialCounts[s._id] || 0,
+    }));
+
+    return suppliersWithCounts
+      .sort((a, b) => b.materialCount - a.materialCount)
+      .slice(0, 3);
+  }, [allSuppliers, allMaterials]);
+
+  const isLoading = allMaterials === undefined || allSuppliers === undefined;
 
   return (
     <View
@@ -191,7 +156,7 @@ export default function HomeScreen() {
               Construction Price Platform
             </Text>
           </View>
-          <TouchableOpacity
+          <View
             style={[
               styles.locationBadge,
               {
@@ -218,33 +183,33 @@ export default function HomeScreen() {
             >
               {selectedCity}
             </Text>
-            <MaterialCommunityIcons
-              name="chevron-down"
-              size={14}
-              color={isDark ? "#FFF" : "#1E3A8A"}
-            />
-          </TouchableOpacity>
+          </View>
         </View>
 
         <Searchbar
           placeholder="Search cement, steel, sand..."
           onChangeText={setSearchQuery}
           value={searchQuery}
+          onSubmitEditing={() => {
+            if (searchQuery.trim()) {
+              router.push({
+                pathname: "/(tabs)/materials",
+                params: { search: searchQuery },
+              });
+            }
+          }}
           style={[
             styles.searchBar,
             {
-              backgroundColor: isDark ? "#334155" : "#FFFFFF",
-              borderWidth: isDark ? 0 : 1,
-              borderColor: "#E2E8F0",
+              backgroundColor: theme.colors.surface,
+              elevation: isDark ? 0 : 2,
+              borderWidth: isDark ? 1 : 0,
+              borderColor: theme.colors.outline,
             },
           ]}
-          inputStyle={[
-            styles.searchInput,
-            { color: isDark ? "#F8FAFC" : "#0F172A" },
-          ]}
-          iconColor={isDark ? "#94A3B8" : "#1E3A8A"}
-          placeholderTextColor={isDark ? "#94A3B8" : "#94A3B8"}
-          elevation={isDark ? 0 : 1}
+          inputStyle={[{ color: theme.colors.onSurface }]}
+          iconColor={theme.colors.onSurfaceVariant}
+          placeholderTextColor={theme.colors.onSurfaceVariant}
         />
       </LinearGradient>
 
@@ -263,13 +228,13 @@ export default function HomeScreen() {
 
           <View style={styles.statsRow}>
             <StatCard
-              value="180+"
+              value={allSuppliers ? `${allSuppliers.length}` : "—"}
               label="Suppliers"
               icon="store"
               color={COLORS.primary}
             />
             <StatCard
-              value="9"
+              value={`${CATEGORIES.length}`}
               label="Categories"
               icon="package-variant"
               color={COLORS.secondary}
@@ -292,7 +257,9 @@ export default function HomeScreen() {
               >
                 Browse by Category
               </Text>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push("/(tabs)/materials")}
+              >
                 <Text style={[styles.seeAll, { color: theme.colors.primary }]}>
                   See All
                 </Text>
@@ -312,6 +279,12 @@ export default function HomeScreen() {
                     { backgroundColor: theme.colors.surface },
                   ]}
                   activeOpacity={0.7}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(tabs)/materials",
+                      params: { category: cat.label },
+                    })
+                  }
                 >
                   <View
                     style={[
@@ -346,7 +319,7 @@ export default function HomeScreen() {
                   { color: theme.colors.onBackground },
                 ]}
               >
-                Today's Prices
+                Today's Lowest Prices
               </Text>
               <View style={styles.updatedBadge}>
                 <View style={styles.liveDot} />
@@ -354,70 +327,120 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            {TRENDING_PRICES.map((item) => (
-              <TouchableOpacity key={item.id} activeOpacity={0.8}>
-                <Surface
-                  style={[
-                    styles.priceCard,
-                    { backgroundColor: theme.colors.surface },
-                  ]}
-                  elevation={1}
-                >
-                  <View style={styles.priceCardLeft}>
-                    <Text
+            {isLoading ? (
+              <ActivityIndicator
+                size="small"
+                color={theme.colors.primary}
+                style={{ marginVertical: 20 }}
+              />
+            ) : categoryLowestPrices.length === 0 ? (
+              <Text
+                style={{
+                  color: theme.colors.onSurfaceVariant,
+                  textAlign: "center",
+                  marginVertical: 16,
+                  fontSize: 13,
+                }}
+              >
+                No material prices listed yet.
+              </Text>
+            ) : (
+              categoryLowestPrices.map((item) => {
+                const sCount = getSupplierCount(item);
+                return (
+                  <TouchableOpacity
+                    key={item._id}
+                    activeOpacity={0.8}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/(tabs)/materials",
+                        params: { category: item.category, search: item.name },
+                      })
+                    }
+                  >
+                    <Surface
                       style={[
-                        styles.materialName,
-                        { color: theme.colors.onSurface },
+                        styles.priceCard,
+                        { backgroundColor: theme.colors.surface },
                       ]}
+                      elevation={1}
                     >
-                      {item.material}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.brandName,
-                        { color: theme.colors.onSurfaceVariant },
-                      ]}
-                    >
-                      {item.brand}
-                    </Text>
-                    <View style={styles.supplierCount}>
-                      <MaterialCommunityIcons
-                        name="store-outline"
-                        size={12}
-                        color={theme.colors.onSurfaceVariant}
-                      />
-                      <Text
-                        style={[
-                          styles.supplierText,
-                          { color: theme.colors.onSurfaceVariant },
-                        ]}
-                      >
-                        {item.suppliers} suppliers
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={styles.priceCardRight}>
-                    <PriceChangeTag change={item.change} />
-                    <Text
-                      style={[
-                        styles.priceValue,
-                        { color: theme.colors.primary },
-                      ]}
-                    >
-                      ₹{item.price.toLocaleString("en-IN")}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.priceUnit,
-                        { color: theme.colors.onSurfaceVariant },
-                      ]}
-                    >
-                      /{item.unit}
-                    </Text>
-                  </View>
-                </Surface>
-              </TouchableOpacity>
-            ))}
+                      <View style={styles.priceCardLeft}>
+                        <Text
+                          style={[
+                            styles.materialName,
+                            { color: theme.colors.onSurface },
+                          ]}
+                        >
+                          {item.name}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.brandName,
+                            { color: theme.colors.onSurfaceVariant },
+                          ]}
+                        >
+                          {item.brand}
+                        </Text>
+                        <View style={styles.supplierCount}>
+                          <MaterialCommunityIcons
+                            name="store-outline"
+                            size={12}
+                            color={theme.colors.onSurfaceVariant}
+                          />
+                          <Text
+                            style={[
+                              styles.supplierText,
+                              { color: theme.colors.onSurfaceVariant },
+                            ]}
+                          >
+                            {sCount} supplier{sCount !== 1 ? "s" : ""} offer
+                            this
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.priceCardRight}>
+                        <View
+                          style={[
+                            styles.changeTag,
+                            {
+                              backgroundColor: isDark
+                                ? "rgba(22,163,74,0.15)"
+                                : COLORS.successLight,
+                            },
+                          ]}
+                        >
+                          <Text
+                            style={[
+                              styles.changeText,
+                              { color: isDark ? "#4ADE80" : COLORS.success },
+                            ]}
+                          >
+                            Lowest
+                          </Text>
+                        </View>
+                        <Text
+                          style={[
+                            styles.priceValue,
+                            { color: theme.colors.primary },
+                          ]}
+                        >
+                          ₹{item.price.toLocaleString("en-IN")}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.priceUnit,
+                            { color: theme.colors.onSurfaceVariant },
+                          ]}
+                        >
+                          /{item.unit}
+                        </Text>
+                      </View>
+                    </Surface>
+                  </TouchableOpacity>
+                );
+              })
+            )}
           </View>
 
           <View style={[styles.section, styles.lastSection]}>
@@ -430,80 +453,111 @@ export default function HomeScreen() {
               >
                 Top Suppliers
               </Text>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push("/(tabs)/suppliers")}
+              >
                 <Text style={[styles.seeAll, { color: theme.colors.primary }]}>
                   See All
                 </Text>
               </TouchableOpacity>
             </View>
 
-            {TOP_SUPPLIERS.map((supplier) => (
-              <TouchableOpacity key={supplier.id} activeOpacity={0.8}>
-                <Surface
-                  style={[
-                    styles.supplierCard,
-                    { backgroundColor: theme.colors.surface },
-                  ]}
-                  elevation={1}
+            {isLoading ? (
+              <ActivityIndicator
+                size="small"
+                color={theme.colors.primary}
+                style={{ marginVertical: 20 }}
+              />
+            ) : topSuppliers.length === 0 ? (
+              <Text
+                style={{
+                  color: theme.colors.onSurfaceVariant,
+                  textAlign: "center",
+                  marginVertical: 16,
+                  fontSize: 13,
+                }}
+              >
+                No suppliers registered yet.
+              </Text>
+            ) : (
+              topSuppliers.map((supplier) => (
+                <TouchableOpacity
+                  key={supplier._id}
+                  activeOpacity={0.8}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/supplier-detail",
+                      params: { id: supplier._id },
+                    })
+                  }
                 >
-                  <View
+                  <Surface
                     style={[
-                      styles.supplierAvatar,
-                      { backgroundColor: COLORS.primaryLight },
+                      styles.supplierCard,
+                      { backgroundColor: theme.colors.surface },
                     ]}
+                    elevation={1}
                   >
-                    <Text
+                    <View
                       style={[
-                        styles.supplierInitial,
-                        { color: COLORS.primary },
+                        styles.supplierAvatar,
+                        {
+                          backgroundColor: isDark
+                            ? "rgba(255,255,255,0.06)"
+                            : COLORS.primaryLight,
+                        },
                       ]}
                     >
-                      {supplier.name.charAt(0)}
-                    </Text>
-                  </View>
-                  <View style={styles.supplierInfo}>
-                    <View style={styles.supplierNameRow}>
                       <Text
                         style={[
-                          styles.supplierName,
-                          { color: theme.colors.onSurface },
+                          styles.supplierInitial,
+                          { color: isDark ? "#4F8EF7" : COLORS.primary },
                         ]}
                       >
-                        {supplier.name}
-                      </Text>
-                      {supplier.verified && (
-                        <MaterialCommunityIcons
-                          name="check-decagram"
-                          size={16}
-                          color={COLORS.primary}
-                        />
-                      )}
-                    </View>
-                    <View style={styles.supplierMeta}>
-                      <MaterialCommunityIcons
-                        name="star"
-                        size={12}
-                        color="#F59E0B"
-                      />
-                      <Text
-                        style={[
-                          styles.supplierMetaText,
-                          { color: theme.colors.onSurfaceVariant },
-                        ]}
-                      >
-                        {supplier.rating} · {supplier.materials} materials ·{" "}
-                        {supplier.city}
+                        {supplier.businessName.charAt(0).toUpperCase()}
                       </Text>
                     </View>
-                  </View>
-                  <MaterialCommunityIcons
-                    name="chevron-right"
-                    size={20}
-                    color={theme.colors.onSurfaceVariant}
-                  />
-                </Surface>
-              </TouchableOpacity>
-            ))}
+                    <View style={styles.supplierInfo}>
+                      <View style={styles.supplierNameRow}>
+                        <Text
+                          style={[
+                            styles.supplierName,
+                            { color: theme.colors.onSurface },
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {supplier.businessName}
+                        </Text>
+                        {supplier.verified && (
+                          <MaterialCommunityIcons
+                            name="check-decagram"
+                            size={16}
+                            color={COLORS.primary}
+                          />
+                        )}
+                      </View>
+                      <View style={styles.supplierMeta}>
+                        <Text
+                          style={[
+                            styles.supplierMetaText,
+                            { color: theme.colors.onSurfaceVariant },
+                          ]}
+                        >
+                          {supplier.materialCount} material
+                          {supplier.materialCount !== 1 ? "s" : ""} ·{" "}
+                          {supplier.city}
+                        </Text>
+                      </View>
+                    </View>
+                    <MaterialCommunityIcons
+                      name="chevron-right"
+                      size={20}
+                      color={theme.colors.onSurfaceVariant}
+                    />
+                  </Surface>
+                </TouchableOpacity>
+              ))
+            )}
           </View>
         </View>
       </ScrollView>

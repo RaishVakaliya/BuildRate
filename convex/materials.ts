@@ -56,3 +56,10 @@ export const deleteMaterial = mutation({
     await ctx.db.delete(id);
   },
 });
+
+export const listAllMaterials = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("materials").order("desc").collect();
+  },
+});
