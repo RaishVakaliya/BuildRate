@@ -128,6 +128,19 @@ export const styles = StyleSheet.create({
     maxHeight: "85%",
   },
   modalTitle: { fontSize: 18, fontWeight: "800", letterSpacing: -0.3 },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  modalCloseBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   modalScroll: { marginVertical: 4 },
   modalForm: { gap: 14 },
   fieldLabel: {

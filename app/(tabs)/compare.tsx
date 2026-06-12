@@ -328,25 +328,6 @@ export default function CompareScreen() {
                   elevation={2}
                 >
                   <TouchableOpacity
-                    onPress={() => removeFromCompare(supplier._id)}
-                    style={[
-                      styles.removeBtn,
-                      {
-                        backgroundColor: isDark
-                          ? "rgba(239,68,68,0.18)"
-                          : "rgba(220,38,38,0.1)",
-                      },
-                    ]}
-                    activeOpacity={0.8}
-                  >
-                    <MaterialCommunityIcons
-                      name="close"
-                      size={14}
-                      color="#DC2626"
-                    />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
                     onPress={() =>
                       router.push({
                         pathname: "/supplier-detail",
@@ -404,6 +385,26 @@ export default function CompareScreen() {
                         {supplier.city}
                       </Text>
                     </View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => removeFromCompare(supplier._id)}
+                    style={[
+                      styles.removeBtn,
+                      {
+                        backgroundColor: isDark
+                          ? "rgba(239,68,68,0.18)"
+                          : "rgba(220,38,38,0.1)",
+                      },
+                    ]}
+                    activeOpacity={0.8}
+                    hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+                  >
+                    <MaterialCommunityIcons
+                      name="close"
+                      size={14}
+                      color="#DC2626"
+                    />
                   </TouchableOpacity>
 
                   <View style={styles.quickContactRow}>

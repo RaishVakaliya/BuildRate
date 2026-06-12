@@ -193,8 +193,8 @@ export default function ManageMaterialsScreen() {
   const openAddModal = () => {
     setEditingId(null);
     const defaultCat =
-      user?.categories && user.categories.length > 0
-        ? user.categories[0]
+      filteredCategories.length > 0
+        ? filteredCategories[0].label
         : "Cement";
     setCategory(defaultCat);
     setName("");
@@ -592,11 +592,31 @@ export default function ManageMaterialsScreen() {
             ]}
             elevation={4}
           >
-            <Text
-              style={[styles.modalTitle, { color: theme.colors.onSurface }]}
-            >
-              {editingId ? "Edit Material" : "Add Material"}
-            </Text>
+            <View style={styles.modalHeader}>
+              <Text
+                style={[styles.modalTitle, { color: theme.colors.onSurface }]}
+              >
+                {editingId ? "Edit Material" : "Add Material"}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                activeOpacity={0.7}
+                style={[
+                  styles.modalCloseBtn,
+                  {
+                    backgroundColor: isDark
+                      ? "rgba(255,255,255,0.06)"
+                      : "rgba(0,0,0,0.04)",
+                  },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="close"
+                  size={18}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              </TouchableOpacity>
+            </View>
 
             {formError ? (
               <View

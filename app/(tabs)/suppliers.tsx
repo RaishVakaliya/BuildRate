@@ -91,7 +91,8 @@ export default function SuppliersScreen() {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
-  const { addToCompare, removeFromCompare, isInCompare, compareIds } = useCompare();
+  const { addToCompare, removeFromCompare, isInCompare, compareIds } =
+    useCompare();
 
   const showToast = (msg: string) => {
     setSnackbarMessage(msg);
@@ -192,7 +193,10 @@ export default function SuppliersScreen() {
               onPress={() => router.push("/admin")}
               style={[
                 styles.adminGoBtn,
-                { backgroundColor: isDark ? "#4F8EF7" : "#1A56DB", alignSelf: "center" },
+                {
+                  backgroundColor: isDark ? "#4F8EF7" : "#1A56DB",
+                  alignSelf: "center",
+                },
               ]}
               activeOpacity={0.8}
             >
@@ -203,33 +207,6 @@ export default function SuppliersScreen() {
               />
               <Text style={styles.adminGoText}>Admin Panel</Text>
             </TouchableOpacity>
-          )}
-          {user?.role === "supplier" && (
-            <Surface
-              style={[
-                styles.roleBadge,
-                {
-                  backgroundColor: isDark
-                    ? "rgba(34,197,94,0.15)"
-                    : "rgba(22,163,74,0.08)",
-                },
-              ]}
-              elevation={0}
-            >
-              <MaterialCommunityIcons
-                name="store"
-                size={14}
-                color={isDark ? "#4ADE80" : "#16A34A"}
-              />
-              <Text
-                style={[
-                  styles.roleBadgeText,
-                  { color: isDark ? "#4ADE80" : "#16A34A" },
-                ]}
-              >
-                Supplier View
-              </Text>
-            </Surface>
           )}
         </View>
 
@@ -427,9 +404,14 @@ export default function SuppliersScreen() {
                 >
                   <View style={styles.cardHeader}>
                     <View
-                      style={[styles.avatarCircle, { backgroundColor: avatarBg }]}
+                      style={[
+                        styles.avatarCircle,
+                        { backgroundColor: avatarBg },
+                      ]}
                     >
-                      <Text style={[styles.avatarLetter, { color: avatarText }]}>
+                      <Text
+                        style={[styles.avatarLetter, { color: avatarText }]}
+                      >
                         {initial}
                       </Text>
                     </View>
@@ -503,7 +485,9 @@ export default function SuppliersScreen() {
 
                   <View style={[styles.categoryWrap, { marginTop: 12 }]}>
                     {supplier.categories.map((cat) => {
-                      const matchedCat = CATEGORIES.find((c) => c.label === cat);
+                      const matchedCat = CATEGORIES.find(
+                        (c) => c.label === cat,
+                      );
                       const catColor =
                         matchedCat?.color ?? theme.colors.onSurfaceVariant;
                       const catIcon = matchedCat?.icon ?? "circle-outline";
@@ -569,14 +553,26 @@ export default function SuppliersScreen() {
                     activeOpacity={0.7}
                   >
                     <MaterialCommunityIcons
-                      name={isInCompare(supplier._id) ? "check-circle" : "scale-balance"}
+                      name={
+                        isInCompare(supplier._id)
+                          ? "check-circle"
+                          : "scale-balance"
+                      }
                       size={16}
-                      color={isInCompare(supplier._id) ? "#FFFFFF" : theme.colors.primary}
+                      color={
+                        isInCompare(supplier._id)
+                          ? "#FFFFFF"
+                          : theme.colors.primary
+                      }
                     />
                     <Text
                       style={[
                         styles.compareBtnText,
-                        { color: isInCompare(supplier._id) ? "#FFFFFF" : theme.colors.primary },
+                        {
+                          color: isInCompare(supplier._id)
+                            ? "#FFFFFF"
+                            : theme.colors.primary,
+                        },
                       ]}
                     >
                       {isInCompare(supplier._id) ? "In Compare" : "Compare"}
@@ -637,7 +633,6 @@ export default function SuppliersScreen() {
                       />
                       <Text style={styles.contactCallText}>Call</Text>
                     </TouchableOpacity>
-
                   </View>
                 </View>
               </Surface>
@@ -657,5 +652,3 @@ export default function SuppliersScreen() {
     </View>
   );
 }
-
-

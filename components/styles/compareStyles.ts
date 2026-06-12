@@ -118,10 +118,11 @@ export const styles = StyleSheet.create({
   },
   removeBtn: {
     position: "absolute",
-    top: 8,
-    right: 8,
-    borderRadius: 12,
-    padding: 5,
+    top: 6,
+    right: 6,
+    borderRadius: 14,
+    padding: 8,
+    zIndex: 10,
   },
   avatarCircle: {
     width: 52,
