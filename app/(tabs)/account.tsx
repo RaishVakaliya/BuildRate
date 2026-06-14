@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { styles } from "../../components/styles/accountStyles";
 import {
@@ -22,6 +23,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { useAppTheme } from "../../context/ThemeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
 
 export default function AccountScreen() {
   const theme = useTheme();
@@ -256,6 +259,41 @@ function ProfileScreen({
   const router = useRouter();
   const { user, logout } = useAuth();
 
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.email) {
+      AsyncStorage.getItem(`profile_pic_${user.email}`).then((uri) => {
+        if (uri) setProfileImage(uri);
+      });
+    }
+  }, [user?.email]);
+
+  const handlePickImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access photo library is required!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets && result.assets[0].uri) {
+      const pickedUri = result.assets[0].uri;
+      setProfileImage(pickedUri);
+      if (user?.email) {
+        await AsyncStorage.setItem(`profile_pic_${user.email}`, pickedUri);
+      }
+    }
+  };
+
   const gradientColors = isDark
     ? (["#2E1B2C", "#0F172A"] as const)
     : (["#D2E9FC", "#F5F7FA"] as const);
@@ -280,13 +318,28 @@ function ProfileScreen({
         colors={gradientColors}
         style={[styles.profileHeader, { paddingTop: insets.top + 20 }]}
       >
-        <View
-          style={[
-            styles.avatar,
-            { backgroundColor: isDark ? "#1A56DB" : "#1A56DB" },
-          ]}
-        >
-          <Text style={styles.avatarText}>{initial}</Text>
+        <View style={{ position: "relative", marginBottom: 12 }}>
+          <TouchableOpacity
+            onPress={handlePickImage}
+            activeOpacity={0.85}
+            style={[
+              styles.avatar,
+              {
+                backgroundColor: isDark ? "#1A56DB" : "#1A56DB",
+                overflow: "hidden",
+                marginBottom: 0,
+              },
+            ]}
+          >
+            {profileImage ? (
+              <Image
+                source={{ uri: profileImage }}
+                style={{ width: "100%", height: "100%" }}
+              />
+            ) : (
+              <Text style={styles.avatarText}>{initial}</Text>
+            )}
+          </TouchableOpacity>
         </View>
         <Text
           style={[
