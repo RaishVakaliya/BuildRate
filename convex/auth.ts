@@ -42,8 +42,8 @@ export const login = action({
         success: true,
         token,
         user: {
-          username: "RateGuru Admin",
-          email: "adminrateguru@gmail.com",
+          username: "BuildRate Admin",
+          email: "adminbuildrate@gmail.com",
           role: "admin" as const,
           memberSince: "2026-06-09",
           phone: adminPhone,

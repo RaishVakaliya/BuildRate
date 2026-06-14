@@ -1,13 +1,13 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAction } from 'convex/react';
-import { api } from '../convex/_generated/api';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAction } from "convex/react";
+import { api } from "../convex/_generated/api";
 
 export interface AuthUser {
   id?: string;
   username: string;
   email: string;
-  role: 'admin' | 'supplier';
+  role: "admin" | "supplier";
   memberSince: string;
   phone?: string;
   businessName?: string;
@@ -33,8 +33,8 @@ const AuthContext = createContext<AuthContextValue>({
   logout: async () => {},
 });
 
-const TOKEN_KEY = '@rateguru_token';
-const USER_KEY = '@rateguru_user';
+const TOKEN_KEY = "@buildrate_token";
+const USER_KEY = "@buildrate_user";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);

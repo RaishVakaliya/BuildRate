@@ -44,8 +44,14 @@ function StatCard({
       elevation={1}
     >
       <MaterialCommunityIcons name={icon as any} size={22} color={color} />
-      <Text style={[styles.statValue, { color: theme.colors.onSurface }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: theme.colors.onSurfaceVariant }]}>{label}</Text>
+      <Text style={[styles.statValue, { color: theme.colors.onSurface }]}>
+        {value}
+      </Text>
+      <Text
+        style={[styles.statLabel, { color: theme.colors.onSurfaceVariant }]}
+      >
+        {label}
+      </Text>
     </Surface>
   );
 }
@@ -141,7 +147,7 @@ export default function HomeScreen() {
                 { color: isDark ? "#FFFFFF" : "#1E3A8A" },
               ]}
             >
-              RateGuru
+              BuildRate
             </Text>
             <Text
               style={[

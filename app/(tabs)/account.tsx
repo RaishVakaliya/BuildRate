@@ -131,7 +131,7 @@ function LoginScreen({
             { color: isDark ? "rgba(255,255,255,0.6)" : "rgba(71,85,105,0.8)" },
           ]}
         >
-          Welcome to RateGuru
+          Welcome to BuildRate
         </Text>
       </LinearGradient>
 
@@ -337,7 +337,10 @@ function ProfileScreen({
       >
         {user?.role === "supplier" && (
           <TouchableOpacity
-            style={[styles.adminPanelBtn, { backgroundColor: "#F97316", marginBottom: 2 }]}
+            style={[
+              styles.adminPanelBtn,
+              { backgroundColor: "#F97316", marginBottom: 2 },
+            ]}
             onPress={() => router.push("/manage-materials")}
             activeOpacity={0.85}
           >
@@ -735,5 +738,3 @@ function ProfileScreen({
     </View>
   );
 }
-
-

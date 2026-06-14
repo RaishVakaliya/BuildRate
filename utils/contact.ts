@@ -12,7 +12,7 @@ export const handleEmail = (
   onError?: (msg: string) => void,
 ) => {
   Linking.openURL(
-    `mailto:${email}?subject=Inquiry from RateGuru to ${businessName}`,
+    `mailto:${email}?subject=Inquiry from BuildRate to ${businessName}`,
   ).catch(() => {
     if (onError) onError("Could not open email client.");
   });
@@ -25,14 +25,12 @@ export const handleWhatsApp = (
 ) => {
   const cleanPhone = phone.replace(/[^\d+]/g, "");
   const message = encodeURIComponent(
-    `Hello ${businessName}, I found your business on RateGuru and would like to inquire about material pricing.`,
+    `Hello ${businessName}, I found your business on BuildRate and would like to inquire about material pricing.`,
   );
   const url = `whatsapp://send?phone=${cleanPhone}&text=${message}`;
   Linking.openURL(url).catch(() => {
-    Linking.openURL(`https://wa.me/${cleanPhone}?text=${message}`).catch(
-      () => {
-        if (onError) onError("WhatsApp is not available.");
-      },
-    );
+    Linking.openURL(`https://wa.me/${cleanPhone}?text=${message}`).catch(() => {
+      if (onError) onError("WhatsApp is not available.");
+    });
   });
 };
