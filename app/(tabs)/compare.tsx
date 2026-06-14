@@ -16,6 +16,7 @@ import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
 import { useCompare } from "../../context/CompareContext";
 import { COLORS } from "../../constants/theme";
+import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import { styles, SCREEN_WIDTH } from "../../components/styles/compareStyles";
 import {
   handleCall as contactCall,
@@ -448,6 +449,8 @@ export default function CompareScreen() {
                 icon="package-variant"
                 isDark={isDark}
                 theme={theme}
+                collapsible={true}
+                defaultCollapsed={true}
               >
                 <View style={styles.materialsGridRow}>
                   {selectedSuppliers.map((supplier) => (
@@ -539,16 +542,32 @@ function CompareSection({
   isDark,
   theme,
   children,
+  collapsible = false,
+  defaultCollapsed = false,
 }: {
   title: string;
   icon: string;
   isDark: boolean;
   theme: any;
   children: React.ReactNode;
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
 }) {
-  return (
-    <View style={styles.sectionWrap}>
-      <View style={styles.sectionHeader}>
+  const [isCollapsed, setIsCollapsed] = useState(collapsible && defaultCollapsed);
+
+  const HeaderContent = (
+    <View
+      style={[
+        styles.sectionHeader,
+        {
+          justifyContent: "space-between",
+          alignItems: "center",
+          width: "100%",
+          marginBottom: isCollapsed ? 0 : 10,
+        },
+      ]}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
         <MaterialCommunityIcons
           name={icon as any}
           size={16}
@@ -563,16 +582,47 @@ function CompareSection({
           {title}
         </Text>
       </View>
-      <Surface
-        style={[
-          styles.sectionSurface,
-          { backgroundColor: theme.colors.surface },
-        ]}
-        elevation={1}
-      >
-        {children}
-      </Surface>
+      {collapsible && (
+        <MaterialCommunityIcons
+          name={isCollapsed ? "chevron-down" : "chevron-up"}
+          size={18}
+          color={theme.colors.onSurfaceVariant}
+        />
+      )}
     </View>
+  );
+
+  return (
+    <Animated.View layout={LinearTransition} style={styles.sectionWrap}>
+      {collapsible ? (
+        <TouchableOpacity
+          onPress={() => setIsCollapsed(!isCollapsed)}
+          activeOpacity={0.7}
+          style={{ width: "100%" }}
+        >
+          {HeaderContent}
+        </TouchableOpacity>
+      ) : (
+        HeaderContent
+      )}
+      {!isCollapsed && (
+        <Animated.View
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(150)}
+          layout={LinearTransition}
+        >
+          <Surface
+            style={[
+              styles.sectionSurface,
+              { backgroundColor: theme.colors.surface },
+            ]}
+            elevation={1}
+          >
+            {children}
+          </Surface>
+        </Animated.View>
+      )}
+    </Animated.View>
   );
 }
 
@@ -691,7 +741,6 @@ function PriceCompareTable({
       category: string;
       name: string;
       brand: string;
-      unit: string;
       key: string;
     }[] = [];
     for (const mats of supplierMaterials) {
@@ -700,15 +749,13 @@ function PriceCompareTable({
         const normCategory = m.category.toLowerCase().trim();
         const normName = m.name.toLowerCase().trim();
         const normBrand = m.brand.toLowerCase().trim();
-        const normUnit = m.unit.toLowerCase().trim();
-        const matchKey = `${normCategory}__${normName}__${normBrand}__${normUnit}`;
+        const matchKey = `${normCategory}__${normName}__${normBrand}`;
         if (!seen.has(matchKey)) {
           seen.add(matchKey);
           items.push({
             category: m.category,
             name: m.name,
             brand: m.brand,
-            unit: m.unit,
             key: matchKey,
           });
         }
@@ -724,7 +771,6 @@ function PriceCompareTable({
         category: string;
         name: string;
         brand: string;
-        unit: string;
         key: string;
       }[]
     > = {};
@@ -788,26 +834,36 @@ function PriceCompareTable({
           </View>
 
           {items.map((item, itemIdx) => {
-            const prices: (number | null)[] = suppliers.map((_, idx) => {
+            const matchingMats = suppliers.map((_, idx) => {
               const mats = supplierMaterials[idx];
-              if (!mats) return null;
-              const found = mats.find(
+              if (!mats) return [];
+              return mats.filter(
                 (m: any) =>
                   m.category.toLowerCase().trim() ===
                     item.category.toLowerCase().trim() &&
                   m.name.toLowerCase().trim() ===
                     item.name.toLowerCase().trim() &&
                   m.brand.toLowerCase().trim() ===
-                    item.brand.toLowerCase().trim() &&
-                  m.unit.toLowerCase().trim() ===
-                    item.unit.toLowerCase().trim(),
+                    item.brand.toLowerCase().trim(),
               );
-              return found ? found.price : null;
             });
 
-            const validPrices = prices.filter((p): p is number => p !== null);
-            const minPrice =
-              validPrices.length > 0 ? Math.min(...validPrices) : null;
+            const minPricesByUnit: Record<string, number> = {};
+            const unitCounts: Record<string, number> = {};
+
+            for (const mats of matchingMats) {
+              for (const m of mats) {
+                const u = m.unit.toLowerCase().trim();
+                const p = m.price;
+                if (
+                  minPricesByUnit[u] === undefined ||
+                  p < minPricesByUnit[u]
+                ) {
+                  minPricesByUnit[u] = p;
+                }
+                unitCounts[u] = (unitCounts[u] || 0) + 1;
+              }
+            }
 
             return (
               <View
@@ -822,7 +878,7 @@ function PriceCompareTable({
                   },
                 ]}
               >
-                <View style={{ marginBottom: 4 }}>
+                <View style={{ marginBottom: 6 }}>
                   <Text
                     style={[
                       styles.priceRowName,
@@ -830,16 +886,13 @@ function PriceCompareTable({
                     ]}
                   >
                     {item.name}
-                    {item.unit ? (
-                      <Text style={styles.priceRowUnit}> / {item.unit}</Text>
-                    ) : null}
                   </Text>
                   {item.brand ? (
                     <Text
                       style={{
-                        fontSize: 10,
-                        color: theme.colors.onSurfaceVariant,
-                        fontWeight: "500",
+                        fontSize: 12,
+                        color: isDark ? "#FB923C" : "#D97706",
+                        fontWeight: "600",
                       }}
                     >
                       Brand: {item.brand}
@@ -848,12 +901,14 @@ function PriceCompareTable({
                 </View>
 
                 <View style={styles.priceRowValues}>
-                  {prices.map((price, i) => {
-                    const isBest =
-                      price !== null &&
-                      price === minPrice &&
-                      validPrices.length > 1;
-                    const isAvailable = price !== null;
+                  {matchingMats.map((matsForSupplier, i) => {
+                    const hasAnyBest = matsForSupplier.some((m: any) => {
+                      const u = m.unit.toLowerCase().trim();
+                      return (
+                        unitCounts[u] > 1 && m.price === minPricesByUnit[u]
+                      );
+                    });
+                    const isAvailable = matsForSupplier.length > 0;
 
                     return (
                       <View
@@ -862,7 +917,7 @@ function PriceCompareTable({
                           styles.priceCell,
                           {
                             width: colWidth,
-                            backgroundColor: isBest
+                            backgroundColor: hasAnyBest
                               ? isDark
                                 ? "rgba(22,163,74,0.18)"
                                 : "rgba(22,163,74,0.1)"
@@ -875,37 +930,80 @@ function PriceCompareTable({
                         ]}
                       >
                         {isAvailable ? (
-                          <View>
-                            <Text
-                              style={[
-                                styles.priceValue,
-                                {
-                                  color: isBest
-                                    ? "#16A34A"
-                                    : theme.colors.onSurface,
-                                },
-                              ]}
-                            >
-                              ₹{price.toLocaleString("en-IN")}
-                            </Text>
-                            {isBest && (
-                              <View style={styles.bestPriceRow}>
-                                <MaterialCommunityIcons
-                                  name="trophy-outline"
-                                  size={10}
-                                  color="#16A34A"
-                                />
-                                <Text style={styles.bestPriceText}>
-                                  BEST PRICE
-                                </Text>
-                              </View>
-                            )}
+                          <View
+                            style={{
+                              gap: 4,
+                              width: "100%",
+                              alignItems: "center",
+                            }}
+                          >
+                            {matsForSupplier.map((m: any, mIdx: number) => {
+                              const u = m.unit.toLowerCase().trim();
+                              const isBest =
+                                unitCounts[u] > 1 &&
+                                m.price === minPricesByUnit[u];
+                              return (
+                                <View
+                                  key={mIdx}
+                                  style={{
+                                    alignItems: "center",
+                                    width: "100%",
+                                  }}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.priceValue,
+                                      {
+                                        fontSize: 12,
+                                        color: isBest
+                                          ? "#16A34A"
+                                          : theme.colors.onSurface,
+                                      },
+                                    ]}
+                                  >
+                                    ₹{m.price.toLocaleString("en-IN")}{" "}
+                                    <Text
+                                      style={{
+                                        fontSize: 10,
+                                        fontWeight: "400",
+                                        color: isBest
+                                          ? "#16A34A"
+                                          : theme.colors.onSurfaceVariant,
+                                      }}
+                                    >
+                                      / {m.unit}
+                                    </Text>
+                                  </Text>
+                                  {isBest && (
+                                    <View style={styles.bestPriceRow}>
+                                      <MaterialCommunityIcons
+                                        name="trophy-outline"
+                                        size={9}
+                                        color="#16A34A"
+                                      />
+                                      <Text
+                                        style={[
+                                          styles.bestPriceText,
+                                          { fontSize: 8 },
+                                        ]}
+                                      >
+                                        BEST PRICE
+                                      </Text>
+                                    </View>
+                                  )}
+                                </View>
+                              );
+                            })}
                           </View>
                         ) : (
                           <Text
                             style={[
                               styles.noPrice,
-                              { color: theme.colors.onSurfaceVariant },
+                              {
+                                color: theme.colors.onSurfaceVariant,
+                                textAlign: "center",
+                                width: "100%",
+                              },
                             ]}
                           >
                             —

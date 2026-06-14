@@ -150,7 +150,7 @@ export default function SupplierDetailScreen() {
   const handleShare = async () => {
     if (!supplier) return;
     try {
-      const shareMessage = `RateGuru Supplier Profile:
+      const shareMessage = `BuildRate Supplier Profile:
 🏢 Business Name: ${supplier.businessName}
 📍 City: ${supplier.city}
 📦 Materials Offered: ${supplier.categories.join(", ")}
@@ -353,59 +353,6 @@ export default function SupplierDetailScreen() {
             </Button>
           )}
 
-          {/* to do: remove this MATERIALS SUPPLIED PART */}
-          <Surface
-            style={[
-              styles.contentCard,
-              { backgroundColor: theme.colors.surface },
-            ]}
-            elevation={1}
-          >
-            <Text
-              style={[
-                styles.cardTitle,
-                { color: theme.colors.onSurfaceVariant },
-              ]}
-            >
-              Materials Supplied
-            </Text>
-            <View style={styles.categoriesBadgeGrid}>
-              {supplier.categories.map((cat) => {
-                const matched = CATEGORY_DETAILS[cat];
-                const catColor =
-                  matched?.color ?? theme.colors.onSurfaceVariant;
-                const catIcon = matched?.icon ?? "circle-outline";
-                return (
-                  <View
-                    key={cat}
-                    style={[
-                      styles.categoryBadgeChip,
-                      {
-                        backgroundColor: isDark
-                          ? "rgba(255,255,255,0.06)"
-                          : "rgba(0,0,0,0.04)",
-                      },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name={catIcon as any}
-                      size={14}
-                      color={catColor}
-                    />
-                    <Text
-                      style={[
-                        styles.categoryBadgeText,
-                        { color: theme.colors.onSurface },
-                      ]}
-                    >
-                      {cat}
-                    </Text>
-                  </View>
-                );
-              })}
-            </View>
-          </Surface>
-
           {materials === undefined ? (
             <Surface
               style={[
@@ -580,8 +527,9 @@ export default function SupplierDetailScreen() {
                           >
                             <Text
                               style={{
-                                fontSize: 11,
-                                color: theme.colors.onSurfaceVariant,
+                                fontSize: 12,
+                                color: isDark ? "#FB923C" : "#D97706",
+                                fontWeight: "600",
                               }}
                             >
                               Brand: {mat.brand}
