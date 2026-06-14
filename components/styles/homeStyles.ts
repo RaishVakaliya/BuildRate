@@ -182,4 +182,24 @@ export const styles = StyleSheet.create({
   supplierName: { fontSize: 14, fontWeight: "700" },
   supplierMeta: { flexDirection: "row", alignItems: "center", gap: 4 },
   supplierMetaText: { fontSize: 12 },
+  popularRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 12,
+    gap: 8,
+  },
+  popularTitle: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  popularTag: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  popularTagText: {
+    fontSize: 11,
+    fontWeight: "600",
+  },
 });

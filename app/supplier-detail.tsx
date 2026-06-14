@@ -976,7 +976,7 @@ export default function SupplierDetailScreen() {
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
         duration={2500}
-        style={{ marginBottom: Platform.OS === "ios" ? 96 : 80 }}
+        style={{ marginBottom: Platform.OS === "ios" ? -4 : -20 }}
       >
         {snackbarMessage}
       </Snackbar>
