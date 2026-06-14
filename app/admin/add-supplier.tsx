@@ -58,8 +58,8 @@ export default function AddSupplierScreen() {
   const [loading, setLoading] = useState(false);
 
   const gradientColors = isDark
-    ? (["#1A2540", "#0F172A"] as const)
-    : (["#E6F2FF", "#F5F7FA"] as const);
+    ? (["#1b2e2eff", "#0F172A"] as const)
+    : (["#D2E9FC", "#F5F7FA"] as const);
 
   const toggleCategory = (label: string) => {
     setSelectedCategories((prev) =>

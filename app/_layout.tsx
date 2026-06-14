@@ -88,7 +88,7 @@ function AppContent() {
             style={{ position: "absolute", top: 280, left: 20, opacity: 0.06 }}
           />
           <MaterialCommunityIcons
-            name={"truck-concrete" as any}
+            name={"truck-delivery" as any}
             size={58}
             color={isDark ? "#94A3B8" : "#6B7280"}
             style={{ position: "absolute", top: 340, right: 20, opacity: 0.06 }}

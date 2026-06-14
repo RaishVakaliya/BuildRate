@@ -100,8 +100,8 @@ export default function SuppliersScreen() {
   };
 
   const gradientColors = isDark
-    ? (["#1A2540", "#0F172A"] as const)
-    : (["#E6F2FF", "#F5F7FA"] as const);
+    ? (["#2E1B2C", "#0F172A"] as const)
+    : (["#D2E9FC", "#F5F7FA"] as const);
 
   const handleCall = (phone: string) => {
     contactCall(phone, showToast);

@@ -183,7 +183,6 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   sectionSurface: {
-    borderRadius: 16,
     overflow: "hidden",
     paddingVertical: 12,
     gap: 2,

@@ -80,8 +80,8 @@ function LoginScreen({
   const [loading, setLoading] = useState(false);
 
   const gradientColors = isDark
-    ? (["#1E293B", "#111827"] as const)
-    : (["#E6F2FF", "#F5F7FA"] as const);
+    ? (["#2E1B2C", "#0F172A"] as const)
+    : (["#D2E9FC", "#F5F7FA"] as const);
 
   const handleLogin = async () => {
     if (!phone.trim() || !password.trim()) {
@@ -257,8 +257,8 @@ function ProfileScreen({
   const { user, logout } = useAuth();
 
   const gradientColors = isDark
-    ? (["#1E293B", "#111827"] as const)
-    : (["#E6F2FF", "#F5F7FA"] as const);
+    ? (["#2E1B2C", "#0F172A"] as const)
+    : (["#D2E9FC", "#F5F7FA"] as const);
 
   const initial = user?.username?.charAt(0)?.toUpperCase() ?? "A";
 
@@ -734,6 +734,30 @@ function ProfileScreen({
         >
           Sign Out
         </Button>
+
+        <View style={{ alignItems: "center", marginTop: 20, marginBottom: 0 }}>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: "600",
+              color: isDark ? "#ccccccff" : "#000000ff",
+              letterSpacing: 0.5,
+            }}
+          >
+            © 2026 BuildRate. All rights reserved.
+          </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: "500",
+              color: isDark ? "#ccccccff" : "#000000ff",
+              opacity: 0.7,
+              marginTop: 4,
+            }}
+          >
+            v1.0.0
+          </Text>
+        </View>
       </ScrollView>
     </View>
   );

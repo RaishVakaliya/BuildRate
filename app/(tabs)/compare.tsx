@@ -16,7 +16,11 @@ import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
 import { useCompare } from "../../context/CompareContext";
 import { COLORS } from "../../constants/theme";
-import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+} from "react-native-reanimated";
 import { styles, SCREEN_WIDTH } from "../../components/styles/compareStyles";
 import {
   handleCall as contactCall,
@@ -181,8 +185,8 @@ export default function CompareScreen() {
   const supplierMaterials = [allMaterials0, allMaterials1, allMaterials2];
 
   const gradientColors = isDark
-    ? (["#1A2540", "#0F172A"] as const)
-    : (["#E6F2FF", "#F5F7FA"] as const);
+    ? (["#2E1B2C", "#0F172A"] as const)
+    : (["#D2E9FC", "#F5F7FA"] as const);
 
   const colWidth = useMemo(() => {
     const count = Math.max(selectedSuppliers.length, 1);
@@ -500,7 +504,9 @@ export default function CompareScreen() {
                 isDark={isDark}
                 theme={theme}
               >
-                {supplierMaterials.some((m) => m === undefined) ? (
+                {supplierMaterials
+                  .slice(0, selectedSuppliers.length)
+                  .some((m) => m === undefined) ? (
                   <ActivityIndicator
                     color={theme.colors.primary}
                     style={{ padding: 16 }}
@@ -553,7 +559,9 @@ function CompareSection({
   collapsible?: boolean;
   defaultCollapsed?: boolean;
 }) {
-  const [isCollapsed, setIsCollapsed] = useState(collapsible && defaultCollapsed);
+  const [isCollapsed, setIsCollapsed] = useState(
+    collapsible && defaultCollapsed,
+  );
 
   const HeaderContent = (
     <View
@@ -609,17 +617,22 @@ function CompareSection({
         <Animated.View
           entering={FadeIn.duration(200)}
           exiting={FadeOut.duration(150)}
-          layout={LinearTransition}
         >
-          <Surface
+          <View
             style={[
               styles.sectionSurface,
-              { backgroundColor: theme.colors.surface },
+              {
+                backgroundColor: theme.colors.surface,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.08,
+                shadowRadius: 2,
+                elevation: 1,
+              },
             ]}
-            elevation={1}
           >
             {children}
-          </Surface>
+          </View>
         </Animated.View>
       )}
     </Animated.View>

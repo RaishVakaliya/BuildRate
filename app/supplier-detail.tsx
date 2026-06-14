@@ -110,7 +110,7 @@ export default function SupplierDetailScreen() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const gradientColors = isDark
-    ? (["#1E293B", "#0F172A"] as const)
+    ? (["#2E1B2C", "#0F172A"] as const)
     : (["#E6F2FF", "#F5F7FA"] as const);
 
   const showToast = (msg: string) => {

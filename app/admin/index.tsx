@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, ScrollView, TouchableOpacity, Alert } from "react-native";
 import { styles } from "../../components/styles/adminStyles";
 import { Text, Surface, useTheme, ActivityIndicator } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -54,8 +49,8 @@ export default function AdminPanelScreen() {
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const gradientColors = isDark
-    ? (["#1A2540", "#0F172A"] as const)
-    : (["#E6F2FF", "#F5F7FA"] as const);
+    ? (["#1b2e2eff", "#0F172A"] as const)
+    : (["#D2E9FC", "#F5F7FA"] as const);
 
   const total = suppliers?.length ?? 0;
   const active = suppliers?.filter((s) => s.status === "active").length ?? 0;
@@ -473,5 +468,3 @@ function StatChip({
     </View>
   );
 }
-
-

@@ -95,7 +95,7 @@ export default function MaterialsScreen() {
 
   const gradientColors = isDark
     ? (["#2E1B2C", "#0F172A"] as const)
-    : (["#FFE6FF", "#F5F7FA"] as const);
+    : (["#D2E9FC", "#F5F7FA"] as const);
 
   // Group materials by name, brand, category, and unit case-insensitively
   const groupedMaterials = useMemo(() => {
@@ -200,7 +200,7 @@ export default function MaterialsScreen() {
             <Text
               style={[
                 styles.headerTitle,
-                { color: isDark ? "#FFFFFF" : "#4A1248" },
+                { color: isDark ? "#FFFFFF" : "#1E3A8A" },
               ]}
             >
               Material Catalog

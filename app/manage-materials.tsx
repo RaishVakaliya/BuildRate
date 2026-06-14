@@ -187,15 +187,13 @@ export default function ManageMaterialsScreen() {
   );
 
   const gradientColors = isDark
-    ? (["#2D1C10", "#0F172A"] as const)
+    ? (["#3e291aff", "#0F172A"] as const)
     : (["#FFE8D6", "#F5F7FA"] as const);
 
   const openAddModal = () => {
     setEditingId(null);
     const defaultCat =
-      filteredCategories.length > 0
-        ? filteredCategories[0].label
-        : "Cement";
+      filteredCategories.length > 0 ? filteredCategories[0].label : "Cement";
     setCategory(defaultCat);
     setName("");
     setBrand("");
