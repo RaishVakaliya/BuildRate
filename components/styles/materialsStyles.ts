@@ -6,7 +6,7 @@ export const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingBottom: 16,
+    paddingBottom: 12,
   },
   headerRow: {
     flexDirection: "row",
@@ -28,7 +28,8 @@ export const styles = StyleSheet.create({
   },
   catScroll: {
     paddingHorizontal: 20,
-    marginVertical: 10,
+    marginTop: 4,
+    marginBottom: 8,
   },
   catChip: {
     flexDirection: "row",

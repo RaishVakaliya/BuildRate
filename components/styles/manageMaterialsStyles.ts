@@ -38,7 +38,6 @@ export const styles = StyleSheet.create({
   addBtn: {
     borderRadius: 14,
     marginHorizontal: 16,
-    // marginTop: 0,
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

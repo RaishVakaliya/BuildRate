@@ -423,7 +423,6 @@ export default function SupplierDetailScreen() {
                 </Surface>
               </View>
 
-              {/* Horizontal category selector */}
               {materialCategories.length > 0 && (
                 <ScrollView
                   horizontal
@@ -483,7 +482,6 @@ export default function SupplierDetailScreen() {
                 </ScrollView>
               )}
 
-              {/* Material List */}
               <View style={{ gap: 8 }}>
                 {displayedMaterials.map((mat, idx) => {
                   const isAvailable = mat.status === "available";

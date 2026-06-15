@@ -20,7 +20,8 @@ export const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     letterSpacing: -0.5,
-    marginVertical: 2,
+    marginTop: 0,
+    marginBottom: -2,
   },
   headerSubtitle: { fontSize: 12, fontWeight: "500" },
   locationBadge: {

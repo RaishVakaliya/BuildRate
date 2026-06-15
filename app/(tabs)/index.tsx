@@ -24,6 +24,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useRouter } from "expo-router";
 import { useLocation } from "../../utils/useLocation";
+import { useAuth } from "../../context/AuthContext";
 
 const CATEGORIES = [
   { id: "1", label: "Cement", icon: "circle-outline", color: "#6B7280" },
@@ -100,6 +101,7 @@ export default function HomeScreen() {
   const { resolvedScheme } = useAppTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { user } = useAuth();
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -146,7 +148,6 @@ export default function HomeScreen() {
     );
   }, [allMaterials]);
 
-  // Find supplier count offering the exact material name, brand, and unit
   const getSupplierCount = (item: any) => {
     if (!allMaterials) return 0;
     const normName = item.name.toLowerCase().trim();
@@ -763,6 +764,8 @@ export default function HomeScreen() {
                 ) : (
                   categoryLowestPrices.map((item) => {
                     const sCount = getSupplierCount(item);
+                    const isMyMaterial =
+                      user?.role === "supplier" && user?.id === item.supplierId;
                     return (
                       <TouchableOpacity
                         key={item._id}
@@ -780,7 +783,15 @@ export default function HomeScreen() {
                         <View
                           style={[
                             styles.priceCard,
-                            { backgroundColor: theme.colors.surface },
+                            {
+                              backgroundColor: theme.colors.surface,
+                              borderColor: isMyMaterial
+                                ? theme.colors.primary
+                                : isDark
+                                  ? "rgba(255,255,255,0.05)"
+                                  : "rgba(0,0,0,0.03)",
+                              borderWidth: isMyMaterial ? 2 : 1,
+                            },
                           ]}
                         >
                           <View style={styles.priceCardLeft}>
@@ -902,82 +913,94 @@ export default function HomeScreen() {
                     No suppliers registered yet.
                   </Text>
                 ) : (
-                  topSuppliers.map((supplier) => (
-                    <TouchableOpacity
-                      key={supplier._id}
-                      activeOpacity={0.8}
-                      onPress={() =>
-                        router.push({
-                          pathname: "/supplier-detail",
-                          params: { id: supplier._id },
-                        })
-                      }
-                    >
-                      <View
-                        style={[
-                          styles.supplierCard,
-                          { backgroundColor: theme.colors.surface },
-                        ]}
+                  topSuppliers.map((supplier) => {
+                    const isMySupplier =
+                      user?.role === "supplier" && user?.id === supplier._id;
+                    return (
+                      <TouchableOpacity
+                        key={supplier._id}
+                        activeOpacity={0.8}
+                        onPress={() =>
+                          router.push({
+                            pathname: "/supplier-detail",
+                            params: { id: supplier._id },
+                          })
+                        }
                       >
                         <View
                           style={[
-                            styles.supplierAvatar,
+                            styles.supplierCard,
                             {
-                              backgroundColor: isDark
-                                ? "rgba(255,255,255,0.06)"
-                                : COLORS.primaryLight,
+                              backgroundColor: theme.colors.surface,
+                              borderColor: isMySupplier
+                                ? theme.colors.primary
+                                : isDark
+                                  ? "rgba(255,255,255,0.05)"
+                                  : "rgba(0,0,0,0.03)",
+                              borderWidth: isMySupplier ? 2 : 1,
                             },
                           ]}
                         >
-                          <Text
+                          <View
                             style={[
-                              styles.supplierInitial,
-                              { color: isDark ? "#4F8EF7" : COLORS.primary },
+                              styles.supplierAvatar,
+                              {
+                                backgroundColor: isDark
+                                  ? "rgba(255,255,255,0.06)"
+                                  : COLORS.primaryLight,
+                              },
                             ]}
                           >
-                            {supplier.businessName.charAt(0).toUpperCase()}
-                          </Text>
-                        </View>
-                        <View style={styles.supplierInfo}>
-                          <View style={styles.supplierNameRow}>
                             <Text
                               style={[
-                                styles.supplierName,
-                                { color: theme.colors.onSurface },
-                              ]}
-                              numberOfLines={1}
-                            >
-                              {supplier.businessName}
-                            </Text>
-                            {supplier.verified && (
-                              <MaterialCommunityIcons
-                                name="check-decagram"
-                                size={16}
-                                color={COLORS.primary}
-                              />
-                            )}
-                          </View>
-                          <View style={styles.supplierMeta}>
-                            <Text
-                              style={[
-                                styles.supplierMetaText,
-                                { color: theme.colors.onSurfaceVariant },
+                                styles.supplierInitial,
+                                { color: isDark ? "#4F8EF7" : COLORS.primary },
                               ]}
                             >
-                              {supplier.materialCount} material
-                              {supplier.materialCount !== 1 ? "s" : ""} ·{" "}
-                              {supplier.area}
+                              {supplier.businessName.charAt(0).toUpperCase()}
                             </Text>
                           </View>
+                          <View style={styles.supplierInfo}>
+                            <View style={styles.supplierNameRow}>
+                              <Text
+                                style={[
+                                  styles.supplierName,
+                                  { color: theme.colors.onSurface },
+                                ]}
+                                numberOfLines={1}
+                              >
+                                {supplier.businessName}
+                              </Text>
+                              {supplier.verified && (
+                                <MaterialCommunityIcons
+                                  name="check-decagram"
+                                  size={16}
+                                  color={COLORS.primary}
+                                />
+                              )}
+                            </View>
+                            <View style={styles.supplierMeta}>
+                              <Text
+                                style={[
+                                  styles.supplierMetaText,
+                                  { color: theme.colors.onSurfaceVariant },
+                                ]}
+                              >
+                                {supplier.materialCount} material
+                                {supplier.materialCount !== 1 ? "s" : ""} ·{" "}
+                                {supplier.area}
+                              </Text>
+                            </View>
+                          </View>
+                          <MaterialCommunityIcons
+                            name="chevron-right"
+                            size={20}
+                            color={theme.colors.onSurfaceVariant}
+                          />
                         </View>
-                        <MaterialCommunityIcons
-                          name="chevron-right"
-                          size={20}
-                          color={theme.colors.onSurfaceVariant}
-                        />
-                      </View>
-                    </TouchableOpacity>
-                  ))
+                      </TouchableOpacity>
+                    );
+                  })
                 )}
               </View>
             </>

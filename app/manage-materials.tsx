@@ -708,7 +708,6 @@ export default function ManageMaterialsScreen() {
                   </View>
                 </View>
 
-                {/* Material Name Dropdown */}
                 <View style={{ zIndex: 3 }}>
                   <Text
                     style={[
@@ -792,7 +791,6 @@ export default function ManageMaterialsScreen() {
                   )}
                 </View>
 
-                {/* Brand / Manufacturer Dropdown */}
                 <View style={{ zIndex: 2 }}>
                   <Text
                     style={[
@@ -876,7 +874,6 @@ export default function ManageMaterialsScreen() {
                   )}
                 </View>
 
-                {/* Price and Unit Row */}
                 <View style={[styles.rowInputs, { zIndex: 1 }]}>
                   <View style={styles.halfInput}>
                     <Text

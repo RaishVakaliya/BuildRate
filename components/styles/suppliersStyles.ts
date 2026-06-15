@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
   root: { flex: 1 },
   header: {
     paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingBottom: 8,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     zIndex: 10,
@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
     fontWeight: "800",
   },
   categoryScroll: {
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   categoryScrollContent: {
     paddingHorizontal: 16,

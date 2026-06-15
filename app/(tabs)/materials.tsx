@@ -102,7 +102,6 @@ export default function MaterialsScreen() {
     ? (["#2E1B2C", "#0F172A"] as const)
     : (["#D2E9FC", "#F5F7FA"] as const);
 
-  // Group materials by name, brand, category, and unit case-insensitively
   const groupedMaterials = useMemo(() => {
     if (!allMaterials) return [];
 
@@ -165,7 +164,6 @@ export default function MaterialsScreen() {
     return Object.values(groups);
   }, [allMaterials]);
 
-  // Apply filters
   const filteredMaterials = useMemo(() => {
     let result = groupedMaterials;
 
@@ -244,7 +242,6 @@ export default function MaterialsScreen() {
         />
       </LinearGradient>
 
-      {/* Category Filter Chips */}
       <View>
         <ScrollView
           horizontal

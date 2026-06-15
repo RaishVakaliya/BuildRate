@@ -114,48 +114,48 @@ function AppContent() {
 
           <View
             style={{
+              position: "absolute",
               alignItems: "center",
               justifyContent: "center",
-              paddingBottom: 40,
+              width: 180,
+              height: 180,
             }}
           >
-            <View
+            <LinearGradient
+              colors={
+                isDark
+                  ? ["rgba(59, 130, 246, 0.15)", "rgba(100, 116, 139, 0.02)"]
+                  : ["rgba(59, 130, 246, 0.12)", "rgba(243, 244, 246, 0.05)"]
+              }
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
               style={{
-                alignItems: "center",
-                justifyContent: "center",
+                position: "absolute",
                 width: 180,
                 height: 180,
-                marginBottom: 16,
+                borderRadius: 90,
               }}
-            >
-              <LinearGradient
-                colors={
-                  isDark
-                    ? ["rgba(59, 130, 246, 0.15)", "rgba(100, 116, 139, 0.02)"]
-                    : ["rgba(59, 130, 246, 0.12)", "rgba(243, 244, 246, 0.05)"]
-                }
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{
-                  position: "absolute",
-                  width: 180,
-                  height: 180,
-                  borderRadius: 90,
-                }}
-              />
-              <Image
-                source={require("../assets/CustomSplashScreenImage.png")}
-                style={{ width: 160, height: 160, resizeMode: "contain" }}
-                alt="BuildRate Splash Logo"
-              />
-            </View>
+            />
+            <Image
+              source={require("../assets/CustomSplashScreenImage.png")}
+              style={{ width: 160, height: 160, resizeMode: "contain" }}
+              alt="BuildRate Splash Logo"
+            />
+          </View>
 
+          <View
+            style={{
+              position: "absolute",
+              bottom: 110,
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
             <Text
               style={{
                 fontSize: 32,
                 fontWeight: "800",
                 color: isDark ? "#F8FAFC" : "#111827",
-                marginTop: 12,
                 letterSpacing: -0.5,
               }}
             >
@@ -166,7 +166,7 @@ function AppContent() {
                 fontSize: 18,
                 fontWeight: "500",
                 color: isDark ? "#94A3B8" : "#6B7280",
-                marginTop: 12,
+                marginTop: 8,
               }}
             >
               Find the Best Materials Rates
@@ -176,7 +176,7 @@ function AppContent() {
                 fontSize: 13,
                 fontWeight: "500",
                 color: isDark ? "#64748B" : "#9CA3AF",
-                marginTop: 16,
+                marginTop: 10,
               }}
             >
               v1.0.0
@@ -188,7 +188,7 @@ function AppContent() {
                 height: 6,
                 backgroundColor: isDark ? "#334155" : "#E5E7EB",
                 borderRadius: 3,
-                marginTop: 40,
+                marginTop: 24,
                 overflow: "hidden",
               }}
             >

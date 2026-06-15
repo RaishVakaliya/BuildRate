@@ -18,7 +18,6 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    // marginBottom: 0,
   },
   iconCircleButton: {
     width: 38,
@@ -81,7 +80,6 @@ export const styles = StyleSheet.create({
   infoSheetContainer: {
     padding: 16,
     gap: 12,
-    // marginTop: 4,
   },
   contentCard: {
     borderRadius: 20,

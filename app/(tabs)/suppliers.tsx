@@ -316,7 +316,7 @@ export default function SuppliersScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={[styles.categoryScroll, { paddingTop: 0, paddingBottom: 12 }]}
+          style={[styles.categoryScroll, { paddingTop: 0, paddingBottom: 8 }]}
           contentContainerStyle={styles.categoryScrollContent}
         >
           {AREAS.map((areaItem) => {
