@@ -335,6 +335,7 @@ function ProfileScreen({
               <Image
                 source={{ uri: profileImage }}
                 style={{ width: "100%", height: "100%" }}
+                alt="User Profile Picture"
               />
             ) : (
               <Text style={styles.avatarText}>{initial}</Text>

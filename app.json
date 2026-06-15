@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "buildrate",
+    "name": "BuildRate",
     "slug": "buildrate",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,10 +13,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/images/icon.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -31,9 +29,6 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splashscreenImage.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
             "backgroundColor": "#000000"
@@ -63,8 +58,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "3c1f0327-b8a2-4c4e-a9a6-f398d89e31d2"
+        "projectId": "e01e5f73-eed7-4c43-86e1-86799deed02a"
       }
-    }
+    },
+    "owner": "raish_vakaliya"
   }
 }

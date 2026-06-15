@@ -150,6 +150,7 @@ function AppContent() {
               <Image
                 source={require("../assets/splashscreenImage.png")}
                 style={{ width: 160, height: 160, resizeMode: "contain" }}
+                alt="BuildRate Splash Logo"
               />
             </View>
 

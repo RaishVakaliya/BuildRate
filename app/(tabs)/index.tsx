@@ -224,6 +224,7 @@ export default function HomeScreen() {
             <Image
               source={require("../../assets/splashscreenImage.png")}
               style={{ width: 44, height: 48 }}
+              alt="BuildRate logo"
             />
             <View>
               <Text
