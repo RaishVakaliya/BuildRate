@@ -33,20 +33,16 @@ function AppContent() {
       useNativeDriver: true,
     }).start();
 
-    const timer = setTimeout(async () => {
-      try {
-        await SplashScreen.hideAsync();
-      } catch (e) {
-        console.warn(e);
-      }
-    }, 500);
+    // Hide native splash screen immediately so the custom animation shows without delay
+    SplashScreen.hideAsync().catch((e) => {
+      console.warn(e);
+    });
 
     const splashTimer = setTimeout(() => {
       setShowCustomSplash(false);
     }, 2500);
 
     return () => {
-      clearTimeout(timer);
       clearTimeout(splashTimer);
     };
   }, []);
@@ -148,7 +144,7 @@ function AppContent() {
                 }}
               />
               <Image
-                source={require("../assets/splashscreenImage.png")}
+                source={require("../assets/CustomSplashScreenImage.png")}
                 style={{ width: 160, height: 160, resizeMode: "contain" }}
                 alt="BuildRate Splash Logo"
               />

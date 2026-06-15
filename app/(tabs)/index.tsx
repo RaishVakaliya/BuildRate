@@ -222,7 +222,7 @@ export default function HomeScreen() {
         <View style={styles.headerTop}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
             <Image
-              source={require("../../assets/splashscreenImage.png")}
+              source={require("../../assets/CustomSplashScreenImage.png")}
               style={{ width: 44, height: 48 }}
               alt="BuildRate logo"
             />
@@ -623,12 +623,14 @@ export default function HomeScreen() {
                   label="Suppliers"
                   icon="store"
                   color={COLORS.primary}
+                  onPress={() => router.push("/(tabs)/suppliers")}
                 />
                 <StatCard
                   value={`${CATEGORIES.length}`}
                   label="Categories"
                   icon="package-variant"
                   color={COLORS.secondary}
+                  onPress={() => router.push("/(tabs)/materials")}
                 />
                 <StatCard
                   value="Daily"
