@@ -75,6 +75,7 @@ function LoginScreen({
   const theme = useTheme();
   const { login } = useAuth();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -85,6 +86,9 @@ function LoginScreen({
   const gradientColors = isDark
     ? (["#2E1B2C", "#0F172A"] as const)
     : (["#D2E9FC", "#F5F7FA"] as const);
+
+  const aboutCardBg = isDark ? "rgba(79, 142, 247, 0.08)" : "rgba(26, 86, 219, 0.05)";
+  const aboutCardBorderColor = isDark ? "rgba(79, 142, 247, 0.2)" : "rgba(26, 86, 219, 0.15)";
 
   const handleLogin = async () => {
     if (!phone.trim() || !password.trim()) {
@@ -239,6 +243,50 @@ function LoginScreen({
             ]}
           />
         </Surface>
+
+        <View
+          style={[
+            styles.infoCard,
+            {
+              backgroundColor: aboutCardBg,
+              borderColor: aboutCardBorderColor,
+              borderWidth: 1,
+              marginTop: 14,
+            },
+          ]}
+        >
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingVertical: 4,
+            }}
+            onPress={() => router.push("/about" as any)}
+            activeOpacity={0.85}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
+              <MaterialCommunityIcons
+                name="information-outline"
+                size={22}
+                color={isDark ? "#4F8EF7" : "#1A56DB"}
+              />
+              <View>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: theme.colors.onSurface }}>
+                  About BuildRate
+                </Text>
+                <Text style={{ fontSize: 11, color: theme.colors.onSurfaceVariant, marginTop: 2 }}>
+                  About Us, Privacy Notice, Terms
+                </Text>
+              </View>
+            </View>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={20}
+              color={theme.colors.onSurfaceVariant}
+            />
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -258,6 +306,9 @@ function ProfileScreen({
   const theme = useTheme();
   const router = useRouter();
   const { user, logout } = useAuth();
+
+  const aboutCardBg = isDark ? "rgba(79, 142, 247, 0.08)" : "rgba(26, 86, 219, 0.05)";
+  const aboutCardBorderColor = isDark ? "rgba(79, 142, 247, 0.2)" : "rgba(26, 86, 219, 0.15)";
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
@@ -788,6 +839,50 @@ function ProfileScreen({
         >
           Sign Out
         </Button>
+
+        <View
+          style={[
+            styles.infoCard,
+            {
+              backgroundColor: aboutCardBg,
+              borderColor: aboutCardBorderColor,
+              borderWidth: 1,
+              marginTop: 14,
+            },
+          ]}
+        >
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              paddingVertical: 4,
+            }}
+            onPress={() => router.push("/about" as any)}
+            activeOpacity={0.85}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
+              <MaterialCommunityIcons
+                name="information-outline"
+                size={22}
+                color={isDark ? "#4F8EF7" : "#1A56DB"}
+              />
+              <View>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: theme.colors.onSurface }}>
+                  About BuildRate
+                </Text>
+                <Text style={{ fontSize: 11, color: theme.colors.onSurfaceVariant, marginTop: 2 }}>
+                  About Us, Privacy Notice, Terms
+                </Text>
+              </View>
+            </View>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={20}
+              color={theme.colors.onSurfaceVariant}
+            />
+          </TouchableOpacity>
+        </View>
 
         <View style={{ alignItems: "center", marginTop: 20, marginBottom: 0 }}>
           <Text
