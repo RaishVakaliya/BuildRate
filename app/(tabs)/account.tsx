@@ -580,7 +580,7 @@ function ProfileScreen({
               </>
             )}
 
-            {user?.city && (
+            {user?.area && (
               <>
                 <View style={styles.infoRow}>
                   <MaterialCommunityIcons
@@ -595,7 +595,7 @@ function ProfileScreen({
                         { color: theme.colors.onSurfaceVariant },
                       ]}
                     >
-                      City / Location
+                      Area / Location
                     </Text>
                     <Text
                       style={[
@@ -603,7 +603,7 @@ function ProfileScreen({
                         { color: theme.colors.onSurface },
                       ]}
                     >
-                      {user.city}
+                      {user.area}
                     </Text>
                   </View>
                 </View>
@@ -635,37 +635,6 @@ function ProfileScreen({
                       ]}
                     >
                       {user.address}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.divider} />
-              </>
-            )}
-
-            {user?.gstNumber && (
-              <>
-                <View style={styles.infoRow}>
-                  <MaterialCommunityIcons
-                    name="file-certificate-outline"
-                    size={18}
-                    color={theme.colors.onSurfaceVariant}
-                  />
-                  <View style={styles.infoTextWrap}>
-                    <Text
-                      style={[
-                        styles.infoLabel,
-                        { color: theme.colors.onSurfaceVariant },
-                      ]}
-                    >
-                      GST Number
-                    </Text>
-                    <Text
-                      style={[
-                        styles.infoValue,
-                        { color: theme.colors.onSurface },
-                      ]}
-                    >
-                      {user.gstNumber}
                     </Text>
                   </View>
                 </View>

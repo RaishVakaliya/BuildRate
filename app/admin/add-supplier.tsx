@@ -48,9 +48,8 @@ export default function AddSupplierScreen() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [city, setCity] = useState("");
+  const [area, setArea] = useState("");
   const [address, setAddress] = useState("");
-  const [gstNumber, setGstNumber] = useState("");
   const [mapUrl, setMapUrl] = useState("");
   const [notes, setNotes] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -73,7 +72,7 @@ export default function AddSupplierScreen() {
     if (!email.trim()) return setError("Email is required.");
     if (!phone.trim()) return setError("Phone number is required.");
     if (!password.trim()) return setError("Password is required.");
-    if (!city.trim()) return setError("City is required.");
+    if (!area.trim()) return setError("Area is required.");
     if (selectedCategories.length === 0)
       return setError("Select at least one category.");
 
@@ -86,10 +85,9 @@ export default function AddSupplierScreen() {
         email: email.trim(),
         phone: phone.trim(),
         password,
-        city: city.trim(),
+        area: area.trim(),
         address: address.trim() || undefined,
         categories: selectedCategories,
-        gstNumber: gstNumber.trim() || undefined,
         notes: notes.trim() || undefined,
         mapUrl: mapUrl.trim() || undefined,
       });
@@ -200,10 +198,11 @@ export default function AddSupplierScreen() {
             activeOutlineColor={theme.colors.primary}
           />
           <TextInput
-            label="City *"
-            value={city}
+            label="Area *"
+            placeholder="e.g. Sarkhej, Thaltej, Bopal, Paldi"
+            value={area}
             onChangeText={(t) => {
-              setCity(t);
+              setArea(t);
               setError("");
             }}
             mode="outlined"
@@ -218,17 +217,6 @@ export default function AddSupplierScreen() {
             onChangeText={setAddress}
             mode="outlined"
             left={<TextInput.Icon icon="home" />}
-            style={styles.input}
-            outlineColor={theme.colors.outline}
-            activeOutlineColor={theme.colors.primary}
-          />
-          <TextInput
-            label="GST Number"
-            value={gstNumber}
-            onChangeText={setGstNumber}
-            mode="outlined"
-            autoCapitalize="characters"
-            left={<TextInput.Icon icon="file-certificate" />}
             style={styles.input}
             outlineColor={theme.colors.outline}
             activeOutlineColor={theme.colors.primary}

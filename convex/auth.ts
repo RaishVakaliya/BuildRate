@@ -21,10 +21,9 @@ export const login = action({
       memberSince: string;
       phone?: string;
       businessName?: string;
-      city?: string;
+      area?: string;
       address?: string;
       categories?: string[];
-      gstNumber?: string;
     };
   }> => {
     const adminPhone = process.env.ADMIN_PHONE;
@@ -71,10 +70,9 @@ export const login = action({
           email: supplier.email,
           phone: supplier.phone,
           businessName: supplier.businessName,
-          city: supplier.city,
+          area: supplier.area,
           address: supplier.address,
           categories: supplier.categories,
-          gstNumber: supplier.gstNumber,
           role: "supplier" as const,
           memberSince: new Date(supplier.createdAt).toISOString(),
         },

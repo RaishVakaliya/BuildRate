@@ -13,7 +13,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useQuery } from "convex/react";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import Animated, { FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
+import Animated, {
+  FadeIn,
+  FadeOut,
+  LinearTransition,
+} from "react-native-reanimated";
 import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
 import { useCompare } from "../../context/CompareContext";
@@ -49,7 +53,8 @@ export default function MaterialsScreen() {
   const allMaterials = useQuery(api.materials.listAllMaterials);
   const allSuppliers = useQuery(api.suppliers.listSuppliers);
 
-  const { category: paramCategory, search: paramSearch } = useLocalSearchParams<{ category?: string; search?: string }>();
+  const { category: paramCategory, search: paramSearch } =
+    useLocalSearchParams<{ category?: string; search?: string }>();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -528,12 +533,11 @@ export default function MaterialsScreen() {
                                     { color: theme.colors.onSurfaceVariant },
                                   ]}
                                 >
-                                  {supplier.city}
+                                  {supplier.area}
                                 </Text>
                               </View>
                             </TouchableOpacity>
 
-                            {/* Contact & Comparison Actions */}
                             <View style={styles.offerActions}>
                               <TouchableOpacity
                                 onPress={() => handleCall(supplier.phone)}

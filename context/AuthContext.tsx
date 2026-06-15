@@ -11,10 +11,9 @@ export interface AuthUser {
   memberSince: string;
   phone?: string;
   businessName?: string;
-  city?: string;
+  area?: string;
   address?: string;
   categories?: string[];
-  gstNumber?: string;
 }
 
 interface AuthContextValue {

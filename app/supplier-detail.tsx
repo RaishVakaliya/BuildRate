@@ -130,8 +130,8 @@ export default function SupplierDetailScreen() {
     contactWhatsApp(phone, businessName, showToast);
   };
 
-  const openMaps = (address: string, city: string) => {
-    const query = encodeURIComponent(`${address}, ${city}`);
+  const openMaps = (address: string, area: string) => {
+    const query = encodeURIComponent(`${address}, ${area}`);
     const url = Platform.select({
       ios: `maps:0,0?q=${query}`,
       android: `geo:0,0?q=${query}`,
@@ -152,7 +152,7 @@ export default function SupplierDetailScreen() {
     try {
       const shareMessage = `BuildRate Supplier Profile:
 🏢 Business Name: ${supplier.businessName}
-📍 City: ${supplier.city}
+📍 Area: ${supplier.area}
 📦 Materials Offered: ${supplier.categories.join(", ")}
 📞 Phone: ${supplier.phone}
 ✉️ Email: ${supplier.email}
@@ -690,49 +690,6 @@ export default function SupplierDetailScreen() {
               </TouchableOpacity>
             </View>
 
-            {supplier.gstNumber && (
-              <>
-                <View style={styles.cardDivider} />
-                <View style={styles.contactItemRow}>
-                  <MaterialCommunityIcons
-                    name="file-certificate-outline"
-                    size={20}
-                    color={theme.colors.onSurfaceVariant}
-                  />
-                  <View style={styles.contactItemContent}>
-                    <Text
-                      style={[
-                        styles.contactItemLabel,
-                        { color: theme.colors.onSurfaceVariant },
-                      ]}
-                    >
-                      GST Registration
-                    </Text>
-                    <Text
-                      style={[
-                        styles.contactItemValue,
-                        { color: theme.colors.onSurface },
-                      ]}
-                    >
-                      {supplier.gstNumber}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() =>
-                      copyToClipboard(supplier.gstNumber!, "GST Number")
-                    }
-                    style={styles.copyButton}
-                  >
-                    <MaterialCommunityIcons
-                      name="content-copy"
-                      size={16}
-                      color={theme.colors.primary}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
-
             <View style={styles.cardDivider} />
 
             <View style={styles.contactItemRow}>
@@ -801,7 +758,7 @@ export default function SupplierDetailScreen() {
                       { color: theme.colors.onSurface },
                     ]}
                   >
-                    {supplier.city}
+                    {supplier.area}
                   </Text>
                   {supplier.address && (
                     <Text
@@ -826,7 +783,7 @@ export default function SupplierDetailScreen() {
                         showToast("Could not open maps link.");
                       });
                     } else {
-                      openMaps(supplier.address || "", supplier.city);
+                      openMaps(supplier.address || "", supplier.area);
                     }
                   }}
                   style={styles.mapsActionButton}

@@ -267,7 +267,7 @@ export default function AdminPanelScreen() {
                         { color: theme.colors.onSurfaceVariant },
                       ]}
                     >
-                      @{supplier.username} · {supplier.city}
+                      @{supplier.username} · {supplier.area}
                     </Text>
                   </View>
                   <View

@@ -387,7 +387,7 @@ export default function CompareScreen() {
                         ]}
                         numberOfLines={1}
                       >
-                        {supplier.city}
+                        {supplier.area}
                       </Text>
                     </View>
                   </TouchableOpacity>

@@ -83,8 +83,24 @@ export default function SuppliersScreen() {
 
   const suppliers = useQuery(api.suppliers.listSuppliers);
 
+  const AREAS = useMemo(() => {
+    if (!suppliers) return ["All"];
+    const areaSet = new Set<string>();
+    suppliers.forEach((s) => {
+      if (s.area) {
+        const trimmed = s.area.trim();
+        if (trimmed) {
+          const formatted = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+          areaSet.add(formatted);
+        }
+      }
+    });
+    return ["All", ...Array.from(areaSet).sort()];
+  }, [suppliers]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedArea, setSelectedArea] = useState("All");
   const [adminStatusFilter, setAdminStatusFilter] = useState<
     "all" | "active" | "suspended" | "pending"
   >("all");
@@ -134,18 +150,30 @@ export default function SuppliersScreen() {
         const matchName = supplier.businessName
           .toLowerCase()
           .includes(queryLower);
-        const matchCity = supplier.city.toLowerCase().includes(queryLower);
+        const matchArea = supplier.area.toLowerCase().includes(queryLower);
         const matchPhone = supplier.phone.includes(queryLower);
-        if (!matchName && !matchCity && !matchPhone) return false;
+        if (!matchName && !matchArea && !matchPhone) return false;
       }
 
       if (selectedCategory !== "All") {
         if (!supplier.categories.includes(selectedCategory)) return false;
       }
 
+      if (selectedArea !== "All") {
+        if (supplier.area.toLowerCase() !== selectedArea.toLowerCase())
+          return false;
+      }
+
       return true;
     });
-  }, [suppliers, user, searchQuery, selectedCategory, adminStatusFilter]);
+  }, [
+    suppliers,
+    user,
+    searchQuery,
+    selectedCategory,
+    selectedArea,
+    adminStatusFilter,
+  ]);
 
   const sortedSuppliers = useMemo(() => {
     if (user?.role === "supplier" && user?.id) {
@@ -279,6 +307,67 @@ export default function SuppliersScreen() {
                   style={[styles.categoryChipText, { color: chipTextColor }]}
                 >
                   {cat.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={[styles.categoryScroll, { paddingTop: 0, paddingBottom: 12 }]}
+          contentContainerStyle={styles.categoryScrollContent}
+        >
+          {AREAS.map((areaItem) => {
+            const isSelected = selectedArea === areaItem;
+            const chipBg = isSelected
+              ? isDark
+                ? "rgba(79,142,247,0.15)"
+                : "rgba(26,86,219,0.08)"
+              : theme.colors.surface;
+            const chipBorder = isSelected
+              ? isDark
+                ? "#4F8EF7"
+                : "#1A56DB"
+              : theme.colors.outline;
+            const chipTextColor = isSelected
+              ? isDark
+                ? "#4F8EF7"
+                : "#1A56DB"
+              : theme.colors.onSurfaceVariant;
+
+            return (
+              <TouchableOpacity
+                key={areaItem}
+                onPress={() => setSelectedArea(areaItem)}
+                style={[
+                  styles.categoryChip,
+                  {
+                    backgroundColor: chipBg,
+                    borderColor: chipBorder,
+                    borderWidth: 1.5,
+                  },
+                ]}
+                activeOpacity={0.8}
+              >
+                <MaterialCommunityIcons
+                  name="map-marker"
+                  size={14}
+                  color={
+                    isSelected
+                      ? isDark
+                        ? "#4F8EF7"
+                        : "#1A56DB"
+                      : isDark
+                        ? "#94A3B8"
+                        : "#64748B"
+                  }
+                />
+                <Text
+                  style={[styles.categoryChipText, { color: chipTextColor }]}
+                >
+                  {areaItem}
                 </Text>
               </TouchableOpacity>
             );
@@ -445,7 +534,7 @@ export default function SuppliersScreen() {
                             { color: theme.colors.onSurfaceVariant },
                           ]}
                         >
-                          {supplier.city}
+                          {supplier.area}
                         </Text>
                       </View>
                     </View>
