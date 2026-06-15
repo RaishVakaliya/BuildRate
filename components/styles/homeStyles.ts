@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
   headerGreeting: { fontSize: 13, fontWeight: "600" },
   headerTitle: {
     fontSize: 28,
-    fontWeight: "800",
+    fontWeight: "bold",
     letterSpacing: -0.5,
     marginVertical: 2,
   },

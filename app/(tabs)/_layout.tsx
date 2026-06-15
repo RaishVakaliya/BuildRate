@@ -8,8 +8,6 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useCompare } from "../../context/CompareContext";
 
 export default function TabLayout() {
-  const theme = useTheme();
-
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}

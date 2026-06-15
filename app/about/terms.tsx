@@ -1,57 +1,21 @@
 import React from "react";
-import { View, ScrollView, TouchableOpacity } from "react-native";
-import { Text, Surface, useTheme } from "react-native-paper";
+import { View, ScrollView } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
-import { useAppTheme } from "../../context/ThemeContext";
+import { useThemeColors } from "../../context/ThemeContext";
+import ScreenHeader from "../../components/ScreenHeader";
 import { styles } from "../../components/styles/aboutStyles";
 
 export default function TermsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { resolvedScheme } = useAppTheme();
-  const isDark = resolvedScheme === "dark";
-
-  const gradientColors = isDark
-    ? (["#2E1B2C", "#0F172A"] as const)
-    : (["#D2E9FC", "#F5F7FA"] as const);
+  const { primaryBlue } = useThemeColors();
 
   return (
     <View style={[styles.flex, { backgroundColor: theme.colors.background }]}>
-      <LinearGradient
-        colors={gradientColors}
-        style={[styles.header, { paddingTop: insets.top + 16 }]}
-      >
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={[
-            styles.backButton,
-            {
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.08)"
-                : "rgba(0, 0, 0, 0.05)",
-            },
-          ]}
-          activeOpacity={0.8}
-        >
-          <MaterialCommunityIcons
-            name="arrow-left"
-            size={22}
-            color={theme.colors.onSurface}
-          />
-        </TouchableOpacity>
-        <Text
-          style={[
-            styles.headerTitle,
-            { color: isDark ? "#FFFFFF" : "#1E3A8A" },
-          ]}
-        >
-          Terms of Service
-        </Text>
-      </LinearGradient>
+      <ScreenHeader title="Terms of Service" onBack={() => router.back()} />
 
       <ScrollView
         style={styles.detailScrollView}
@@ -61,14 +25,23 @@ export default function TermsScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <Surface
-          style={[styles.detailCard, { backgroundColor: theme.colors.surface }]}
-          elevation={1}
+        <View
+          style={[
+            styles.detailCard,
+            {
+              backgroundColor: theme.colors.surface,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.06,
+              shadowRadius: 4,
+              elevation: 1,
+            },
+          ]}
         >
           <Text
             style={[
               styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB", marginTop: 0 },
+              { color: primaryBlue, marginTop: 0 },
             ]}
           >
             Terms of Service
@@ -82,12 +55,7 @@ export default function TermsScreen() {
             by these Terms of Service. Please read them carefully.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             1. General Terms
           </Text>
           <Text
@@ -99,12 +67,7 @@ export default function TermsScreen() {
             enter into these terms.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             2. Supplier Registration Process
           </Text>
           <Text
@@ -117,12 +80,7 @@ export default function TermsScreen() {
             successful verification, you will be registered as a verified supplier in the app.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             3. Supplier Acceptance
           </Text>
           <Text
@@ -135,12 +93,7 @@ export default function TermsScreen() {
             {"\n"}- Act professionally and handle inquiries from builders and buyers honestly.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             4. Prohibited Use
           </Text>
           <Text
@@ -154,12 +107,7 @@ export default function TermsScreen() {
             {"\n"}- Using the platform to distribute spam, promotions, or any unauthorized marketing content.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             5. Rate Accuracy Disclaimer
           </Text>
           <Text
@@ -174,12 +122,7 @@ export default function TermsScreen() {
             prior to purchasing or booking orders.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             6. Limitation of Liability
           </Text>
           <Text
@@ -191,12 +134,7 @@ export default function TermsScreen() {
             and suppliers.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             7. Termination
           </Text>
           <Text
@@ -205,7 +143,7 @@ export default function TermsScreen() {
             We reserve the right to suspend or terminate accounts that violate
             these terms, engage in spam, publish fraudulent data, or pose a security risk.
           </Text>
-        </Surface>
+        </View>
       </ScrollView>
     </View>
   );

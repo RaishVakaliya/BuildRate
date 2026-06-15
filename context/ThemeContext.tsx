@@ -50,3 +50,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 export function useAppTheme() {
   return useContext(ThemeContext);
 }
+
+export function useThemeColors() {
+  const { resolvedScheme } = useAppTheme();
+  const isDark = resolvedScheme === "dark";
+
+  return {
+    isDark,
+    gradientColors: isDark
+      ? (["#2E1B2C", "#0F172A"] as const)
+      : (["#D2E9FC", "#F5F7FA"] as const),
+    primaryBlue: isDark ? "#4F8EF7" : "#1A56DB",
+    headerTitleColor: isDark ? "#FFFFFF" : "#1E3A8A",
+    backButtonBg: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)",
+    aboutCardBg: isDark ? "rgba(79, 142, 247, 0.08)" : "rgba(26, 86, 219, 0.05)",
+    aboutCardBorder: isDark ? "rgba(79, 142, 247, 0.2)" : "rgba(26, 86, 219, 0.15)",
+  };
+}

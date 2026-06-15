@@ -1,57 +1,21 @@
 import React from "react";
-import { View, ScrollView, TouchableOpacity } from "react-native";
-import { Text, Surface, useTheme } from "react-native-paper";
+import { View, ScrollView } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
-import { useAppTheme } from "../../context/ThemeContext";
+import { useThemeColors } from "../../context/ThemeContext";
+import ScreenHeader from "../../components/ScreenHeader";
 import { styles } from "../../components/styles/aboutStyles";
 
 export default function PrivacyNoticeScreen() {
   const theme = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { resolvedScheme } = useAppTheme();
-  const isDark = resolvedScheme === "dark";
-
-  const gradientColors = isDark
-    ? (["#2E1B2C", "#0F172A"] as const)
-    : (["#D2E9FC", "#F5F7FA"] as const);
+  const { primaryBlue } = useThemeColors();
 
   return (
     <View style={[styles.flex, { backgroundColor: theme.colors.background }]}>
-      <LinearGradient
-        colors={gradientColors}
-        style={[styles.header, { paddingTop: insets.top + 16 }]}
-      >
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={[
-            styles.backButton,
-            {
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.08)"
-                : "rgba(0, 0, 0, 0.05)",
-            },
-          ]}
-          activeOpacity={0.8}
-        >
-          <MaterialCommunityIcons
-            name="arrow-left"
-            size={22}
-            color={theme.colors.onSurface}
-          />
-        </TouchableOpacity>
-        <Text
-          style={[
-            styles.headerTitle,
-            { color: isDark ? "#FFFFFF" : "#1E3A8A" },
-          ]}
-        >
-          Privacy Notice
-        </Text>
-      </LinearGradient>
+      <ScreenHeader title="Privacy Notice" onBack={() => router.back()} />
 
       <ScrollView
         style={styles.detailScrollView}
@@ -61,14 +25,23 @@ export default function PrivacyNoticeScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <Surface
-          style={[styles.detailCard, { backgroundColor: theme.colors.surface }]}
-          elevation={1}
+        <View
+          style={[
+            styles.detailCard,
+            {
+              backgroundColor: theme.colors.surface,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.06,
+              shadowRadius: 4,
+              elevation: 1,
+            },
+          ]}
         >
           <Text
             style={[
               styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB", marginTop: 0 },
+              { color: primaryBlue, marginTop: 0 },
             ]}
           >
             Privacy Policy
@@ -83,12 +56,7 @@ export default function PrivacyNoticeScreen() {
             mobile application.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             1. Information We Collect
           </Text>
           <Text
@@ -98,47 +66,32 @@ export default function PrivacyNoticeScreen() {
           </Text>
 
           <View style={styles.bulletRow}>
-            <Text style={[styles.bullet, { color: theme.colors.primary }]}>
-              •
-            </Text>
+            <Text style={[styles.bullet, { color: theme.colors.primary }]}>•</Text>
             <Text
-              style={[
-                styles.bulletText,
-                { color: theme.colors.onSurfaceVariant },
-              ]}
+              style={[styles.bulletText, { color: theme.colors.onSurfaceVariant }]}
             >
               <Text style={{ fontWeight: "bold", color: theme.colors.onSurface }}>
-                Account Information:
-              </Text>{" "}
+                Account Information:{" "}
+              </Text>
               When you create or update an account, we collect your username, email address,
               phone number, password, and profile image preference.
             </Text>
           </View>
 
           <View style={styles.bulletRow}>
-            <Text style={[styles.bullet, { color: theme.colors.primary }]}>
-              •
-            </Text>
+            <Text style={[styles.bullet, { color: theme.colors.primary }]}>•</Text>
             <Text
-              style={[
-                styles.bulletText,
-                { color: theme.colors.onSurfaceVariant },
-              ]}
+              style={[styles.bulletText, { color: theme.colors.onSurfaceVariant }]}
             >
               <Text style={{ fontWeight: "bold", color: theme.colors.onSurface }}>
-                Supplier Information:
-              </Text>{" "}
+                Supplier Information:{" "}
+              </Text>
               If you register as a supplier, we collect your business name, warehouse/office
               addresses, Google Map URLs, city, dealing categories, and GST registration numbers.
             </Text>
           </View>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             2. How We Use Information
           </Text>
           <Text
@@ -148,28 +101,18 @@ export default function PrivacyNoticeScreen() {
           </Text>
 
           <View style={styles.bulletRow}>
-            <Text style={[styles.bullet, { color: theme.colors.primary }]}>
-              •
-            </Text>
+            <Text style={[styles.bullet, { color: theme.colors.primary }]}>•</Text>
             <Text
-              style={[
-                styles.bulletText,
-                { color: theme.colors.onSurfaceVariant },
-              ]}
+              style={[styles.bulletText, { color: theme.colors.onSurfaceVariant }]}
             >
               To provide, support, and keep the comparison directory up-to-date.
             </Text>
           </View>
 
           <View style={styles.bulletRow}>
-            <Text style={[styles.bullet, { color: theme.colors.primary }]}>
-              •
-            </Text>
+            <Text style={[styles.bullet, { color: theme.colors.primary }]}>•</Text>
             <Text
-              style={[
-                styles.bulletText,
-                { color: theme.colors.onSurfaceVariant },
-              ]}
+              style={[styles.bulletText, { color: theme.colors.onSurfaceVariant }]}
             >
               To permit communication between builders and suppliers via direct call, email,
               or WhatsApp.
@@ -177,25 +120,15 @@ export default function PrivacyNoticeScreen() {
           </View>
 
           <View style={styles.bulletRow}>
-            <Text style={[styles.bullet, { color: theme.colors.primary }]}>
-              •
-            </Text>
+            <Text style={[styles.bullet, { color: theme.colors.primary }]}>•</Text>
             <Text
-              style={[
-                styles.bulletText,
-                { color: theme.colors.onSurfaceVariant },
-              ]}
+              style={[styles.bulletText, { color: theme.colors.onSurfaceVariant }]}
             >
               To improve app performance, customize user experience, and secure accounts.
             </Text>
           </View>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             3. Information Sharing
           </Text>
           <Text
@@ -208,12 +141,7 @@ export default function PrivacyNoticeScreen() {
             obligations.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             4. Data Security & Storage
           </Text>
           <Text
@@ -224,12 +152,7 @@ export default function PrivacyNoticeScreen() {
             alteration, or loss. However, no internet transmission is 100% secure.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: primaryBlue }]}>
             5. Contact Us
           </Text>
           <Text
@@ -238,7 +161,7 @@ export default function PrivacyNoticeScreen() {
             If you have questions about this Privacy Notice, please contact our privacy
             compliance desk at support@buildrate.com.
           </Text>
-        </Surface>
+        </View>
       </ScrollView>
     </View>
   );

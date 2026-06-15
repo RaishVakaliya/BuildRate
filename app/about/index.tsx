@@ -1,23 +1,18 @@
 import React from "react";
 import { View, ScrollView, TouchableOpacity, Image } from "react-native";
-import { Text, Surface, useTheme } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
-import { useAppTheme } from "../../context/ThemeContext";
+import { useThemeColors } from "../../context/ThemeContext";
+import ScreenHeader from "../../components/ScreenHeader";
 import { styles } from "../../components/styles/aboutStyles";
 
 export default function AboutScreen() {
   const theme = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { resolvedScheme } = useAppTheme();
-  const isDark = resolvedScheme === "dark";
-
-  const gradientColors = isDark
-    ? (["#2E1B2C", "#0F172A"] as const)
-    : (["#D2E9FC", "#F5F7FA"] as const);
+  const { primaryBlue } = useThemeColors();
 
   const menuItems = [
     {
@@ -37,39 +32,17 @@ export default function AboutScreen() {
     },
   ];
 
+  const cardShadow = {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 1,
+  };
+
   return (
     <View style={[styles.flex, { backgroundColor: theme.colors.background }]}>
-      <LinearGradient
-        colors={gradientColors}
-        style={[styles.header, { paddingTop: insets.top + 16 }]}
-      >
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={[
-            styles.backButton,
-            {
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.08)"
-                : "rgba(0, 0, 0, 0.05)",
-            },
-          ]}
-          activeOpacity={0.8}
-        >
-          <MaterialCommunityIcons
-            name="arrow-left"
-            size={22}
-            color={theme.colors.onSurface}
-          />
-        </TouchableOpacity>
-        <Text
-          style={[
-            styles.headerTitle,
-            { color: isDark ? "#FFFFFF" : "#1E3A8A" },
-          ]}
-        >
-          About BuildRate
-        </Text>
-      </LinearGradient>
+      <ScreenHeader title="About BuildRate" onBack={() => router.back()} />
 
       <ScrollView
         style={styles.scrollView}
@@ -79,18 +52,19 @@ export default function AboutScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <Surface
-          style={[styles.logoCard, { backgroundColor: theme.colors.surface }]}
-          elevation={1}
+        <View
+          style={[
+            styles.logoCard,
+            { backgroundColor: theme.colors.surface },
+            cardShadow,
+          ]}
         >
           <Image
             source={require("../../assets/CustomSplashScreenImage.png")}
             style={styles.logoImage}
             alt="BuildRate Logo"
           />
-          <Text
-            style={[styles.appName, { color: isDark ? "#FFFFFF" : "#1E3A8A" }]}
-          >
+          <Text style={[styles.appName, { color: primaryBlue }]}>
             BuildRate
           </Text>
           <Text
@@ -101,11 +75,14 @@ export default function AboutScreen() {
           >
             App Version 1.0.0
           </Text>
-        </Surface>
+        </View>
 
-        <Surface
-          style={[styles.menuCard, { backgroundColor: theme.colors.surface }]}
-          elevation={1}
+        <View
+          style={[
+            styles.menuCard,
+            { backgroundColor: theme.colors.surface },
+            cardShadow,
+          ]}
         >
           {menuItems.map((item, index) => (
             <React.Fragment key={item.title}>
@@ -126,7 +103,7 @@ export default function AboutScreen() {
                   <MaterialCommunityIcons
                     name={item.icon as any}
                     size={22}
-                    color={isDark ? "#4F8EF7" : "#1A56DB"}
+                    color={primaryBlue}
                   />
                   <Text
                     style={[
@@ -145,7 +122,7 @@ export default function AboutScreen() {
               </TouchableOpacity>
             </React.Fragment>
           ))}
-        </Surface>
+        </View>
 
         <View style={styles.footer}>
           <Text

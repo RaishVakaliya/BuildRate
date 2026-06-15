@@ -1,57 +1,21 @@
 import React from "react";
-import { View, ScrollView, TouchableOpacity } from "react-native";
-import { Text, Surface, useTheme } from "react-native-paper";
+import { View, ScrollView } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
-import { useAppTheme } from "../../context/ThemeContext";
+import { useThemeColors } from "../../context/ThemeContext";
+import ScreenHeader from "../../components/ScreenHeader";
 import { styles } from "../../components/styles/aboutStyles";
 
 export default function AboutUsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { resolvedScheme } = useAppTheme();
-  const isDark = resolvedScheme === "dark";
-
-  const gradientColors = isDark
-    ? (["#2E1B2C", "#0F172A"] as const)
-    : (["#D2E9FC", "#F5F7FA"] as const);
+  const { primaryBlue } = useThemeColors();
 
   return (
     <View style={[styles.flex, { backgroundColor: theme.colors.background }]}>
-      <LinearGradient
-        colors={gradientColors}
-        style={[styles.header, { paddingTop: insets.top + 16 }]}
-      >
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={[
-            styles.backButton,
-            {
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.08)"
-                : "rgba(0, 0, 0, 0.05)",
-            },
-          ]}
-          activeOpacity={0.8}
-        >
-          <MaterialCommunityIcons
-            name="arrow-left"
-            size={22}
-            color={theme.colors.onSurface}
-          />
-        </TouchableOpacity>
-        <Text
-          style={[
-            styles.headerTitle,
-            { color: isDark ? "#FFFFFF" : "#1E3A8A" },
-          ]}
-        >
-          About Us
-        </Text>
-      </LinearGradient>
+      <ScreenHeader title="About Us" onBack={() => router.back()} />
 
       <ScrollView
         style={styles.detailScrollView}
@@ -61,14 +25,23 @@ export default function AboutUsScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <Surface
-          style={[styles.detailCard, { backgroundColor: theme.colors.surface }]}
-          elevation={1}
+        <View
+          style={[
+            styles.detailCard,
+            {
+              backgroundColor: theme.colors.surface,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.06,
+              shadowRadius: 4,
+              elevation: 1,
+            },
+          ]}
         >
           <Text
             style={[
               styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB", marginTop: 0 },
+              { color: primaryBlue, marginTop: 0 },
             ]}
           >
             Welcome to BuildRate
@@ -83,10 +56,7 @@ export default function AboutUsScreen() {
           </Text>
 
           <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
+            style={[styles.sectionTitle, { color: primaryBlue }]}
           >
             Our Mission
           </Text>
@@ -100,10 +70,7 @@ export default function AboutUsScreen() {
           </Text>
 
           <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
+            style={[styles.sectionTitle, { color: primaryBlue }]}
           >
             Key Features
           </Text>
@@ -121,8 +88,8 @@ export default function AboutUsScreen() {
               <Text
                 style={{ fontWeight: "bold", color: theme.colors.onSurface }}
               >
-                Real-time Rate Comparison:
-              </Text>{" "}
+                Real-time Rate Comparison:{" "}
+              </Text>
               Compare prices across multiple categories (Cement, Steel, RMC,
               Sand, Aggregate, Bricks) dynamically.
             </Text>
@@ -141,8 +108,8 @@ export default function AboutUsScreen() {
               <Text
                 style={{ fontWeight: "bold", color: theme.colors.onSurface }}
               >
-                Verified Suppliers:
-              </Text>{" "}
+                Verified Suppliers:{" "}
+              </Text>
               Connect only with trust-validated local suppliers who keep their
               lists accurate and detailed.
             </Text>
@@ -161,18 +128,15 @@ export default function AboutUsScreen() {
               <Text
                 style={{ fontWeight: "bold", color: theme.colors.onSurface }}
               >
-                Seamless Communication:
-              </Text>{" "}
+                Seamless Communication:{" "}
+              </Text>
               Get direct phone, email, and WhatsApp access to suppliers
               alongside direct Google Maps warehouse locations.
             </Text>
           </View>
 
           <Text
-            style={[
-              styles.sectionTitle,
-              { color: isDark ? "#4F8EF7" : "#1A56DB" },
-            ]}
+            style={[styles.sectionTitle, { color: primaryBlue }]}
           >
             Why Choose Us?
           </Text>
@@ -184,7 +148,7 @@ export default function AboutUsScreen() {
             respects your privacy. Whether you are running a large-scale project
             or just getting started, BuildRate is here to support you.
           </Text>
-        </Surface>
+        </View>
       </ScrollView>
     </View>
   );
