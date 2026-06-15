@@ -23,6 +23,7 @@ import { useAppTheme } from "../../context/ThemeContext";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useRouter } from "expo-router";
+import { useLocation } from "../../utils/useLocation";
 
 const CATEGORIES = [
   { id: "1", label: "Cement", icon: "circle-outline", color: "#6B7280" },
@@ -94,7 +95,7 @@ function StatCard({
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCity] = useState("Ahmedabad");
+  const location = useLocation();
   const theme = useTheme();
   const { resolvedScheme } = useAppTheme();
   const insets = useSafeAreaInsets();
@@ -118,6 +119,12 @@ export default function HomeScreen() {
   const gradientColors = isDark
     ? (["#2E1B2C", "#0F172A"] as const)
     : (["#D2E9FC", "#F5F7FA"] as const);
+
+  const locationLabel = location.loading
+    ? null
+    : location.permissionDenied
+      ? "Location off"
+      : (location.area ?? location.city ?? "Location");
 
   const allMaterials = useQuery(api.materials.listAllMaterials);
   const allSuppliers = useQuery(api.suppliers.listSuppliers);
@@ -196,7 +203,7 @@ export default function HomeScreen() {
       .filter(
         (s) =>
           s.businessName.toLowerCase().includes(q) ||
-          s.city.toLowerCase().includes(q),
+          s.area.toLowerCase().includes(q),
       )
       .map((s) => ({
         ...s,
@@ -263,19 +270,31 @@ export default function HomeScreen() {
               },
             ]}
           >
-            <MaterialCommunityIcons
-              name="map-marker"
-              size={14}
-              color={isDark ? "#FFF" : "#1E3A8A"}
-            />
-            <Text
-              style={[
-                styles.locationText,
-                { color: isDark ? "#FFF" : "#1E3A8A" },
-              ]}
-            >
-              {selectedCity}
-            </Text>
+            {location.loading ? (
+              <ActivityIndicator
+                size={12}
+                color={isDark ? "#FFF" : "#1E3A8A"}
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name={
+                  location.permissionDenied ? "map-marker-off" : "map-marker"
+                }
+                size={14}
+                color={isDark ? "#FFF" : "#1E3A8A"}
+              />
+            )}
+            {!location.loading && (
+              <Text
+                style={[
+                  styles.locationText,
+                  { color: isDark ? "#FFF" : "#1E3A8A" },
+                ]}
+                numberOfLines={1}
+              >
+                {locationLabel}
+              </Text>
+            )}
           </View>
         </View>
 
@@ -598,7 +617,7 @@ export default function HomeScreen() {
                                   {supplier.materialCount} material
                                   {supplier.materialCount !== 1
                                     ? "s"
-                                    : ""} · {supplier.city}
+                                    : ""} · {supplier.area}
                                 </Text>
                               </View>
                             </View>
@@ -947,7 +966,7 @@ export default function HomeScreen() {
                             >
                               {supplier.materialCount} material
                               {supplier.materialCount !== 1 ? "s" : ""} ·{" "}
-                              {supplier.city}
+                              {supplier.area}
                             </Text>
                           </View>
                         </View>

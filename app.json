@@ -54,6 +54,14 @@
             }
           }
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "BuildRate needs your location to show nearby suppliers and material prices in your area.",
+          "locationWhenInUsePermission": "BuildRate needs your location to show nearby suppliers and material prices in your area.",
+          "isAndroidBackgroundLocationEnabled": false
+        }
       ]
     ],
     "experiments": {
