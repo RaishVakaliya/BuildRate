@@ -6,6 +6,8 @@ import {
   Platform,
   Keyboard,
   Image,
+  Alert,
+  Linking,
 } from "react-native";
 import { styles } from "../../components/styles/homeStyles";
 import {
@@ -25,6 +27,7 @@ import { api } from "../../convex/_generated/api";
 import { useRouter } from "expo-router";
 import { useLocation } from "../../utils/useLocation";
 import { useAuth } from "../../context/AuthContext";
+import * as Location from "expo-location";
 
 const CATEGORIES = [
   { id: "1", label: "Cement", icon: "circle-outline", color: "#6B7280" },
@@ -115,6 +118,39 @@ export default function HomeScreen() {
       setSnackbarMessage("Prices and supplier listings are up to date!");
       setSnackbarVisible(true);
     }, 1000);
+  };
+
+  const handleLocationPress = async () => {
+    if (location.loading) return;
+
+    try {
+      const { status, canAskAgain } = await Location.getForegroundPermissionsAsync();
+
+      if (status === "granted") {
+        await location.requestLocation();
+      } else if (status === "denied" && !canAskAgain) {
+        Alert.alert(
+          "Location Permission Required",
+          "Location access is required to detect your area. Please enable Location Services in your app settings.",
+          [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Open Settings",
+              onPress: () => {
+                Linking.openSettings().catch(() => {
+                  setSnackbarMessage("Could not open settings. Please enable manually.");
+                  setSnackbarVisible(true);
+                });
+              },
+            },
+          ]
+        );
+      } else {
+        await location.requestLocation();
+      }
+    } catch {
+      await location.requestLocation();
+    }
   };
 
   const isDark = resolvedScheme === "dark";
@@ -257,7 +293,9 @@ export default function HomeScreen() {
               </Text>
             </View>
           </View>
-          <View
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={handleLocationPress}
             style={[
               styles.locationBadge,
               {
@@ -296,7 +334,7 @@ export default function HomeScreen() {
                 {locationLabel}
               </Text>
             )}
-          </View>
+          </TouchableOpacity>
         </View>
 
         <Searchbar
