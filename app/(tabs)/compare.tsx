@@ -14,6 +14,7 @@ import { useQuery } from "convex/react";
 import { useRouter } from "expo-router";
 import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
+import { useTranslation } from "../../context/LanguageContext";
 import { useCompare } from "../../context/CompareContext";
 import { COLORS } from "../../constants/theme";
 import Animated, {
@@ -68,6 +69,7 @@ function EmptyCompare({
   theme: any;
   router: any;
 }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.emptyWrap}>
       <View
@@ -90,17 +92,13 @@ function EmptyCompare({
         variant="headlineSmall"
         style={[styles.emptyTitle, { color: theme.colors.onBackground }]}
       >
-        No Suppliers Selected
+        {t("noSuppliersSelected")}
       </Text>
       <Text
         variant="bodyMedium"
         style={[styles.emptyBody, { color: theme.colors.onSurfaceVariant }]}
       >
-        Go to the Suppliers tab and tap{" "}
-        <Text style={{ color: theme.colors.primary, fontWeight: "600" }}>
-          Compare
-        </Text>{" "}
-        on 2 to 3 suppliers to compare them side by side.
+        {t("noSuppliersSelectedBody")}
       </Text>
       <TouchableOpacity
         onPress={() => router.push("/(tabs)/suppliers")}
@@ -108,7 +106,7 @@ function EmptyCompare({
         activeOpacity={0.8}
       >
         <MaterialCommunityIcons name="store-search" size={18} color="#FFF" />
-        <Text style={styles.browseBtnText}>Browse Suppliers</Text>
+        <Text style={styles.browseBtnText}>{t("browseSuppliers")}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -123,6 +121,7 @@ function NeedMoreSuppliers({
   isDark: boolean;
   theme: any;
 }) {
+  const { t } = useTranslation();
   return (
     <View
       style={[
@@ -145,8 +144,9 @@ function NeedMoreSuppliers({
       <Text
         style={[styles.needMoreText, { color: isDark ? "#FB923C" : "#C2410C" }]}
       >
-        You have {count} supplier selected. Add at least {2 - count} more to
-        start comparing.
+        {t("needMoreText")
+          .replace("{count}", count.toString())
+          .replace("{needed}", (2 - count).toString())}
       </Text>
     </View>
   );
@@ -159,6 +159,7 @@ export default function CompareScreen() {
   const { resolvedScheme } = useAppTheme();
   const { compareIds, removeFromCompare, clearCompare } = useCompare();
   const isDark = resolvedScheme === "dark";
+  const { t } = useTranslation();
 
   const allSuppliers = useQuery(api.suppliers.listSuppliers);
 
@@ -227,7 +228,7 @@ export default function CompareScreen() {
                 { color: isDark ? "#FFFFFF" : "#1E3A8A" },
               ]}
             >
-              Compare Suppliers
+              {t("compareSuppliers")}
             </Text>
             <Text
               style={[
@@ -240,8 +241,8 @@ export default function CompareScreen() {
               ]}
             >
               {compareIds.length > 0
-                ? `${compareIds.length} of 3 supplier${compareIds.length > 1 ? "s" : ""} selected`
-                : "Select 2–3 suppliers to compare"}
+                ? t("selectedOfNSuppliers").replace("{count}", compareIds.length.toString())
+                : t("selectSuppliersToCompare")}
             </Text>
           </View>
 
@@ -266,7 +267,7 @@ export default function CompareScreen() {
                 size={14}
                 color="#DC2626"
               />
-              <Text style={styles.clearBtnText}>Clear All</Text>
+              <Text style={styles.clearBtnText}>{t("clearAll")}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -449,7 +450,7 @@ export default function CompareScreen() {
           {hasEnough && (
             <>
               <CompareSection
-                title="Materials Supplied"
+                title={t("materialsSupplied")}
                 icon="package-variant"
                 isDark={isDark}
                 theme={theme}
@@ -499,7 +500,7 @@ export default function CompareScreen() {
               </CompareSection>
 
               <CompareSection
-                title="Price Catalog"
+                title={t("priceCatalog")}
                 icon="tag-multiple-outline"
                 isDark={isDark}
                 theme={theme}
@@ -748,6 +749,8 @@ function PriceCompareTable({
   theme: any;
   colWidth: number;
 }) {
+  const { t } = useTranslation();
+
   const allItems = useMemo(() => {
     const seen = new Set<string>();
     const items: {
@@ -808,7 +811,7 @@ function PriceCompareTable({
             { color: theme.colors.onSurfaceVariant },
           ]}
         >
-          No material prices listed for these suppliers yet.
+          {t("noPricesListed")}
         </Text>
       </View>
     );
@@ -1000,7 +1003,7 @@ function PriceCompareTable({
                                           { fontSize: 8 },
                                         ]}
                                       >
-                                        BEST PRICE
+                                        {t("bestPrice")}
                                       </Text>
                                     </View>
                                   )}

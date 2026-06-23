@@ -4,11 +4,13 @@ import { Text, useTheme } from "react-native-paper";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import { useThemeColors } from "../context/ThemeContext";
+import { useTranslation } from "../context/LanguageContext";
 
 export default function AboutBuildRateCard() {
   const theme = useTheme();
   const router = useRouter();
   const { primaryBlue, aboutCardBg, aboutCardBorder } = useThemeColors();
+  const { t } = useTranslation();
 
   return (
     <View
@@ -46,7 +48,7 @@ export default function AboutBuildRateCard() {
                 color: theme.colors.onSurface,
               }}
             >
-              About BuildRate
+              {t("aboutBuildRate")}
             </Text>
             <Text
               style={{
@@ -55,7 +57,7 @@ export default function AboutBuildRateCard() {
                 marginTop: 2,
               }}
             >
-              About Us, Privacy Notice, Terms
+              {t("aboutSubtitle")}
             </Text>
           </View>
         </View>

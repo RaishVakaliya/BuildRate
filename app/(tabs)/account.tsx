@@ -23,6 +23,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { useAppTheme, useThemeColors } from "../../context/ThemeContext";
+import { useTranslation } from "../../context/LanguageContext";
+import { type Language } from "../../i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import AboutBuildRateCard from "../../components/AboutBuildRateCard";
@@ -76,6 +78,7 @@ function LoginScreen({
   const theme = useTheme();
   const { login } = useAuth();
   const insets = useSafeAreaInsets();
+  const { t, language, setLanguage } = useTranslation();
 
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -87,7 +90,7 @@ function LoginScreen({
 
   const handleLogin = async () => {
     if (!phone.trim() || !password.trim()) {
-      setError("Please enter phone number and password.");
+      setError(t("pleaseEnterPhoneAndPassword"));
       return;
     }
     setError("");
@@ -95,7 +98,7 @@ function LoginScreen({
     try {
       await login(phone.trim(), password);
     } catch (e: any) {
-      const msg = e?.message ?? "Login failed. Please try again.";
+      const msg = e?.message ?? t("loginFailed");
       const match =
         msg.match(/Uncaught Error:\s*([^.]+)/) ||
         msg.match(/Server Error:\s*([^.]+)/);
@@ -125,7 +128,7 @@ function LoginScreen({
         <Text
           style={[styles.loginTitle, { color: isDark ? "#FFFFFF" : "#1E3A8A" }]}
         >
-          Sign In
+          {t("signIn")}
         </Text>
         <Text
           style={[
@@ -133,7 +136,7 @@ function LoginScreen({
             { color: isDark ? "rgba(255,255,255,0.6)" : "rgba(71,85,105,0.8)" },
           ]}
         >
-          Welcome to BuildRate
+          {t("welcomeToBuildRate")}
         </Text>
       </LinearGradient>
 
@@ -160,10 +163,10 @@ function LoginScreen({
           ) : null}
 
           <TextInput
-            label="Phone Number"
+            label={t("phoneNumber")}
             value={phone}
-            onChangeText={(t) => {
-              setPhone(t);
+            onChangeText={(text) => {
+              setPhone(text);
               setError("");
             }}
             mode="outlined"
@@ -177,10 +180,10 @@ function LoginScreen({
           />
 
           <TextInput
-            label="Password"
+            label={t("password")}
             value={password}
-            onChangeText={(t) => {
-              setPassword(t);
+            onChangeText={(text) => {
+              setPassword(text);
               setError("");
             }}
             mode="outlined"
@@ -207,7 +210,7 @@ function LoginScreen({
             style={styles.loginBtn}
             labelStyle={styles.loginBtnLabel}
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? t("signingIn") : t("signIn")}
           </Button>
         </Surface>
 
@@ -220,10 +223,10 @@ function LoginScreen({
           <Text
             style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant }]}
           >
-            Preferences
+            {t("preferences")}
           </Text>
           <Text style={[styles.prefLabel, { color: theme.colors.onSurface }]}>
-            App Theme
+            {t("appTheme")}
           </Text>
           <SegmentedButtons
             value={preference}
@@ -232,9 +235,27 @@ function LoginScreen({
             }
             style={styles.segmented}
             buttons={[
-              { value: "light", label: "Light", icon: "white-balance-sunny" },
-              { value: "system", label: "System", icon: "theme-light-dark" },
-              { value: "dark", label: "Dark", icon: "weather-night" },
+              { value: "light", label: t("themeLight"), icon: "white-balance-sunny" },
+              { value: "system", label: t("themeSystem"), icon: "theme-light-dark" },
+              { value: "dark", label: t("themeDark"), icon: "weather-night" },
+            ]}
+          />
+
+          <Text
+            style={[
+              styles.prefLabel,
+              { color: theme.colors.onSurface, marginTop: 16 },
+            ]}
+          >
+            {t("appLanguage")}
+          </Text>
+          <SegmentedButtons
+            value={language}
+            onValueChange={(v) => setLanguage(v as Language)}
+            style={styles.segmented}
+            buttons={[
+              { value: "en", label: "English", icon: "translate" },
+              { value: "gu", label: "ગુજરાતી", icon: "translate" },
             ]}
           />
         </Surface>
@@ -259,6 +280,7 @@ function ProfileScreen({
   const theme = useTheme();
   const router = useRouter();
   const { user, logout } = useAuth();
+  const { t, language, setLanguage } = useTranslation();
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
@@ -275,7 +297,7 @@ function ProfileScreen({
       await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
-      alert("Permission to access photo library is required!");
+      alert(t("permissionPhotoRequired"));
       return;
     }
 
@@ -375,7 +397,7 @@ function ProfileScreen({
           <Text
             style={[styles.roleText, { color: isDark ? "#4F8EF7" : "#1A56DB" }]}
           >
-            {user?.role === "admin" ? "Admin" : "Supplier"}
+            {user?.role === "admin" ? t("adminRole") : t("supplierRole")}
           </Text>
         </View>
       </LinearGradient>
@@ -406,9 +428,9 @@ function ProfileScreen({
                 />
               </View>
               <View>
-                <Text style={styles.adminPanelTitle}>Manage Materials</Text>
+                <Text style={styles.adminPanelTitle}>{t("manageMaterialsTitle")}</Text>
                 <Text style={styles.adminPanelSub}>
-                  Update your material prices & stock
+                  {t("manageMaterialsSub")}
                 </Text>
               </View>
             </View>
@@ -427,7 +449,7 @@ function ProfileScreen({
           <Text
             style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant }]}
           >
-            Account Info
+            {t("accountInfo")}
           </Text>
 
           <View style={styles.infoRow}>
@@ -443,7 +465,7 @@ function ProfileScreen({
                   { color: theme.colors.onSurfaceVariant },
                 ]}
               >
-                Username
+                {t("username")}
               </Text>
               <Text
                 style={[styles.infoValue, { color: theme.colors.onSurface }]}
@@ -468,7 +490,7 @@ function ProfileScreen({
                   { color: theme.colors.onSurfaceVariant },
                 ]}
               >
-                Email
+                {t("email")}
               </Text>
               <Text
                 style={[styles.infoValue, { color: theme.colors.onSurface }]}
@@ -493,7 +515,7 @@ function ProfileScreen({
                   { color: theme.colors.onSurfaceVariant },
                 ]}
               >
-                Member Since
+                {t("memberSince")}
               </Text>
               <Text
                 style={[styles.infoValue, { color: theme.colors.onSurface }]}
@@ -515,7 +537,7 @@ function ProfileScreen({
                 { color: theme.colors.onSurfaceVariant },
               ]}
             >
-              Business Details
+              {t("businessDetails")}
             </Text>
 
             {user?.businessName && (
@@ -533,7 +555,7 @@ function ProfileScreen({
                         { color: theme.colors.onSurfaceVariant },
                       ]}
                     >
-                      Business Name
+                      {t("businessName")}
                     </Text>
                     <Text
                       style={[
@@ -564,7 +586,7 @@ function ProfileScreen({
                         { color: theme.colors.onSurfaceVariant },
                       ]}
                     >
-                      Phone Number
+                      {t("phoneNumber")}
                     </Text>
                     <Text
                       style={[
@@ -595,7 +617,7 @@ function ProfileScreen({
                         { color: theme.colors.onSurfaceVariant },
                       ]}
                     >
-                      Area / Location
+                      {t("areaLocation")}
                     </Text>
                     <Text
                       style={[
@@ -626,7 +648,7 @@ function ProfileScreen({
                         { color: theme.colors.onSurfaceVariant },
                       ]}
                     >
-                      Full Address
+                      {t("fullAddress")}
                     </Text>
                     <Text
                       style={[
@@ -663,7 +685,7 @@ function ProfileScreen({
                       { color: theme.colors.onSurfaceVariant },
                     ]}
                   >
-                    Dealing Categories
+                    {t("dealingCategories")}
                   </Text>
                 </View>
                 <View style={styles.categoryWrap}>
@@ -706,9 +728,9 @@ function ProfileScreen({
                 />
               </View>
               <View>
-                <Text style={styles.adminPanelTitle}>Admin Panel</Text>
+                <Text style={styles.adminPanelTitle}>{t("adminPanelTitle")}</Text>
                 <Text style={styles.adminPanelSub}>
-                  Manage suppliers & categories
+                  {t("adminPanelSub")}
                 </Text>
               </View>
             </View>
@@ -727,10 +749,10 @@ function ProfileScreen({
           <Text
             style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant }]}
           >
-            Preferences
+            {t("preferences")}
           </Text>
           <Text style={[styles.prefLabel, { color: theme.colors.onSurface }]}>
-            App Theme
+            {t("appTheme")}
           </Text>
           <SegmentedButtons
             value={preference}
@@ -739,9 +761,32 @@ function ProfileScreen({
             }
             style={styles.segmented}
             buttons={[
-              { value: "light", label: "Light", icon: "white-balance-sunny" },
-              { value: "system", label: "System", icon: "theme-light-dark" },
-              { value: "dark", label: "Dark", icon: "weather-night" },
+              { value: "light", label: t("themeLight"), icon: "white-balance-sunny" },
+              { value: "system", label: t("themeSystem"), icon: "theme-light-dark" },
+              { value: "dark", label: t("themeDark"), icon: "weather-night" },
+            ]}
+          />
+        </Surface>
+
+        <Surface
+          style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+          elevation={1}
+        >
+          <Text
+            style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant }]}
+          >
+            {t("languagePreferences")}
+          </Text>
+          <Text style={[styles.prefLabel, { color: theme.colors.onSurface }]}>
+            {t("appLanguage")}
+          </Text>
+          <SegmentedButtons
+            value={language}
+            onValueChange={(v) => setLanguage(v as Language)}
+            style={styles.segmented}
+            buttons={[
+              { value: "en", label: "English", icon: "translate" },
+              { value: "gu", label: "ગુજરાતી", icon: "translate" },
             ]}
           />
         </Surface>
@@ -754,7 +799,7 @@ function ProfileScreen({
           style={[styles.logoutBtn, { borderColor: "#DC2626" }]}
           textColor="#DC2626"
         >
-          Sign Out
+          {t("signOut")}
         </Button>
 
         <AboutBuildRateCard />
@@ -768,7 +813,7 @@ function ProfileScreen({
               letterSpacing: 0.5,
             }}
           >
-            © 2026 BuildRate. All rights reserved.
+            {t("allRightsReserved")}
           </Text>
           <Text
             style={{

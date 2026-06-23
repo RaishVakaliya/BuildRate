@@ -6,8 +6,11 @@ import { useTheme } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useCompare } from "../../context/CompareContext";
+import { useTranslation } from "../../context/LanguageContext";
 
 export default function TabLayout() {
+  const { t } = useTranslation();
+
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
@@ -18,7 +21,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: t("tabHome"),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" size={size} color={color} />
           ),
@@ -27,7 +30,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="materials"
         options={{
-          title: "Materials",
+          title: t("tabMaterials"),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="package-variant"
@@ -40,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="compare"
         options={{
-          title: "Compare",
+          title: t("tabCompare"),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="scale-balance"
@@ -53,7 +56,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="suppliers"
         options={{
-          title: "Suppliers",
+          title: t("tabSuppliers"),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="store" size={size} color={color} />
           ),
@@ -62,7 +65,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="account"
         options={{
-          title: "Account",
+          title: t("tabAccount"),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="account-circle"

@@ -20,6 +20,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
+import { useTranslation } from "../../context/LanguageContext";
 import { useCompare } from "../../context/CompareContext";
 import { styles } from "../../components/styles/materialsStyles";
 import { COLORS } from "../../constants/theme";
@@ -47,6 +48,7 @@ export default function MaterialsScreen() {
   const router = useRouter();
   const { resolvedScheme } = useAppTheme();
   const isDark = resolvedScheme === "dark";
+  const { t } = useTranslation();
 
   const { compareIds, addToCompare, removeFromCompare } = useCompare();
 
@@ -206,7 +208,7 @@ export default function MaterialsScreen() {
                 { color: isDark ? "#FFFFFF" : "#1E3A8A" },
               ]}
             >
-              Material Catalog
+            {t("materialCatalog")}
             </Text>
             <Text
               style={[
@@ -218,13 +220,13 @@ export default function MaterialsScreen() {
                 },
               ]}
             >
-              Browse live pricing across multiple suppliers
+              {t("browseLivePricing")}
             </Text>
           </View>
         </View>
 
         <Searchbar
-          placeholder="Search materials or brands..."
+          placeholder={t("searchMaterialsBrands")}
           onChangeText={setSearchQuery}
           value={searchQuery}
           style={[
@@ -314,13 +316,12 @@ export default function MaterialsScreen() {
             color={theme.colors.onSurfaceVariant}
           />
           <Text style={[styles.emptyTitle, { color: theme.colors.onSurface }]}>
-            No Materials Found
+            {t("noMaterialsFound")}
           </Text>
           <Text
             style={[styles.emptyText, { color: theme.colors.onSurfaceVariant }]}
           >
-            We couldn't find any materials matching your category or search
-            query.
+            {t("noMaterialsFoundSubtitle")}
           </Text>
         </View>
       ) : (
@@ -399,7 +400,7 @@ export default function MaterialsScreen() {
                         { color: theme.colors.onSurfaceVariant },
                       ]}
                     >
-                      Brand: {item.brand}
+                      {t("brandPrefix")} {item.brand}
                     </Text>
                     <View style={styles.offersCount}>
                       <MaterialCommunityIcons
@@ -413,8 +414,7 @@ export default function MaterialsScreen() {
                           { color: theme.colors.primary, fontWeight: "600" },
                         ]}
                       >
-                        {item.offers.length} Supplier
-                        {item.offers.length > 1 ? "s" : ""}
+                        {item.offers.length} {item.offers.length > 1 ? t("suppliersPlural") : t("supplierSingular")}
                       </Text>
                     </View>
                   </View>
@@ -434,7 +434,7 @@ export default function MaterialsScreen() {
                         { color: theme.colors.onSurfaceVariant },
                       ]}
                     >
-                      per {item.unit}
+                      {t("per")} {item.unit}
                     </Text>
                   </View>
 
@@ -465,7 +465,7 @@ export default function MaterialsScreen() {
                         { color: theme.colors.onSurfaceVariant },
                       ]}
                     >
-                      Supplier Offers
+                      {t("supplierOffers")}
                     </Text>
 
                     {item.offers.map((offer, index) => {
@@ -614,7 +614,7 @@ export default function MaterialsScreen() {
                                     },
                                   ]}
                                 >
-                                  {isInCompare ? "In Compare" : "Compare"}
+                                  {isInCompare ? t("inCompare") : t("compare")}
                                 </Text>
                               </TouchableOpacity>
                             </View>
@@ -635,7 +635,7 @@ export default function MaterialsScreen() {
                                 { color: isAvailable ? "#16A34A" : "#DC2626" },
                               ]}
                             >
-                              {isAvailable ? "Available" : "Out of Stock"}
+                              {isAvailable ? t("available") : t("outOfStock")}
                             </Text>
                           </View>
                         </View>

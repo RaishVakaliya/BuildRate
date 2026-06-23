@@ -6,6 +6,7 @@ import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { PaperProvider, ActivityIndicator, Text } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider, useAppTheme } from "../context/ThemeContext";
+import { LanguageProvider } from "../context/LanguageContext";
 import { AuthProvider } from "../context/AuthContext";
 import { CompareProvider } from "../context/CompareContext";
 import { lightTheme, darkTheme } from "../constants/theme";
@@ -235,11 +236,13 @@ export default function RootLayout() {
     <ConvexProvider client={convex}>
       <SafeAreaProvider>
         <ThemeProvider>
-          <AuthProvider>
-            <CompareProvider>
-              <AppContent />
-            </CompareProvider>
-          </AuthProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <CompareProvider>
+                <AppContent />
+              </CompareProvider>
+            </AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     </ConvexProvider>

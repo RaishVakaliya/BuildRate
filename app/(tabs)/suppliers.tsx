@@ -21,6 +21,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
+import { useTranslation } from "../../context/LanguageContext";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "expo-router";
 import { styles } from "../../components/styles/suppliersStyles";
@@ -80,6 +81,7 @@ export default function SuppliersScreen() {
   const { resolvedScheme } = useAppTheme();
   const { user } = useAuth();
   const isDark = resolvedScheme === "dark";
+  const { t } = useTranslation();
 
   const suppliers = useQuery(api.suppliers.listSuppliers);
 
@@ -201,7 +203,7 @@ export default function SuppliersScreen() {
                 { color: isDark ? "#FFFFFF" : "#1E3A8A" },
               ]}
             >
-              Suppliers Directory
+              {t("suppliersDirectory")}
             </Text>
             <Text
               style={[
@@ -213,7 +215,7 @@ export default function SuppliersScreen() {
                 },
               ]}
             >
-              Find and contact verified providers
+              {t("findContactVerified")}
             </Text>
           </View>
           {user?.role === "admin" && (
@@ -233,13 +235,13 @@ export default function SuppliersScreen() {
                 size={14}
                 color="#FFF"
               />
-              <Text style={styles.adminGoText}>Admin Panel</Text>
+          <Text style={styles.adminGoText}>{t("adminPanel")}</Text>
             </TouchableOpacity>
           )}
         </View>
 
         <Searchbar
-          placeholder="Search by name, city, or phone..."
+          placeholder={t("searchByNameCityPhone")}
           onChangeText={setSearchQuery}
           value={searchQuery}
           style={[
@@ -442,7 +444,7 @@ export default function SuppliersScreen() {
             <Text
               style={[styles.emptyTitle, { color: theme.colors.onBackground }]}
             >
-              No Suppliers Found
+              {t("noSuppliersFound")}
             </Text>
             <Text
               style={[
@@ -450,7 +452,7 @@ export default function SuppliersScreen() {
                 { color: theme.colors.onSurfaceVariant },
               ]}
             >
-              Try adjustments to your search queries or selected categories.
+              {t("noSuppliersFoundSubtitle")}
             </Text>
           </View>
         ) : (
@@ -543,7 +545,7 @@ export default function SuppliersScreen() {
                       {isMyBusiness && (
                         <Surface style={styles.myBusinessBadge} elevation={0}>
                           <Text style={styles.myBusinessBadgeText}>
-                            My Business
+                          {t("myBusiness")}
                           </Text>
                         </Surface>
                       )}
@@ -664,7 +666,7 @@ export default function SuppliersScreen() {
                         },
                       ]}
                     >
-                      {isInCompare(supplier._id) ? "In Compare" : "Compare"}
+                      {isInCompare(supplier._id) ? t("inCompare") : t("compare")}
                     </Text>
                   </TouchableOpacity>
 
@@ -720,7 +722,7 @@ export default function SuppliersScreen() {
                         size={16}
                         color="#FFF"
                       />
-                      <Text style={styles.contactCallText}>Call</Text>
+                      <Text style={styles.contactCallText}>{t("call")}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>

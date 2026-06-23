@@ -27,6 +27,7 @@ import { api } from "../../convex/_generated/api";
 import { useRouter } from "expo-router";
 import { useLocation } from "../../utils/useLocation";
 import { useAuth } from "../../context/AuthContext";
+import { useTranslation } from "../../context/LanguageContext";
 import * as Location from "expo-location";
 
 const CATEGORIES = [
@@ -109,13 +110,14 @@ export default function HomeScreen() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const { t } = useTranslation();
 
   const handleDailyUpdatesPress = () => {
     if (isUpdating) return;
     setIsUpdating(true);
     setTimeout(() => {
       setIsUpdating(false);
-      setSnackbarMessage("Prices and supplier listings are up to date!");
+      setSnackbarMessage(t("pricesUpToDate"));
       setSnackbarVisible(true);
     }, 1000);
   };
@@ -130,15 +132,15 @@ export default function HomeScreen() {
         await location.requestLocation();
       } else if (status === "denied" && !canAskAgain) {
         Alert.alert(
-          "Location Permission Required",
-          "Location access is required to detect your area. Please enable Location Services in your app settings.",
+          t("locationPermissionRequired"),
+          t("locationPermissionMessage"),
           [
-            { text: "Cancel", style: "cancel" },
+            { text: t("cancel"), style: "cancel" },
             {
-              text: "Open Settings",
+              text: t("openSettings"),
               onPress: () => {
                 Linking.openSettings().catch(() => {
-                  setSnackbarMessage("Could not open settings. Please enable manually.");
+                  setSnackbarMessage(t("couldNotOpenSettings"));
                   setSnackbarVisible(true);
                 });
               },
@@ -161,8 +163,8 @@ export default function HomeScreen() {
   const locationLabel = location.loading
     ? null
     : location.permissionDenied
-      ? "Location off"
-      : (location.area ?? location.city ?? "Location");
+      ? t("locationOff")
+      : (location.area ?? location.city ?? t("locationOff"));
 
   const allMaterials = useQuery(api.materials.listAllMaterials);
   const allSuppliers = useQuery(api.suppliers.listSuppliers);
@@ -289,7 +291,7 @@ export default function HomeScreen() {
                   },
                 ]}
               >
-                Construction Price Platform
+              {t("constructionPricePlatform")}
               </Text>
             </View>
           </View>
@@ -338,7 +340,7 @@ export default function HomeScreen() {
         </View>
 
         <Searchbar
-          placeholder="Search cement, steel, sand..."
+          placeholder={t("searchPlaceholderHome")}
           onChangeText={setSearchQuery}
           value={searchQuery}
           onSubmitEditing={() => {
@@ -369,7 +371,7 @@ export default function HomeScreen() {
               },
             ]}
           >
-            Popular:
+            {t("popular")}
           </Text>
           <ScrollView
             horizontal
@@ -435,7 +437,7 @@ export default function HomeScreen() {
                   <Text
                     style={[styles.seeAll, { color: theme.colors.primary }]}
                   >
-                    Clear
+                    {t("clear")}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -463,7 +465,7 @@ export default function HomeScreen() {
                       marginBottom: 6,
                     }}
                   >
-                    No matches found
+                    {t("noMatchesFound")}
                   </Text>
                   <Text
                     style={{
@@ -474,8 +476,7 @@ export default function HomeScreen() {
                       lineHeight: 18,
                     }}
                   >
-                    We couldn't find any materials or suppliers matching "
-                    {searchQuery}".
+                    {t("noMatchesSubtitle").replace("{query}", searchQuery)}
                   </Text>
                 </View>
               ) : (
@@ -492,7 +493,7 @@ export default function HomeScreen() {
                           letterSpacing: 1,
                         }}
                       >
-                        Materials ({filteredMaterials.length})
+                        {t("tabMaterials")} ({filteredMaterials.length})
                       </Text>
                       {filteredMaterials.map((item) => {
                         const sCount = getSupplierCount(item);
@@ -545,8 +546,8 @@ export default function HomeScreen() {
                                       { color: theme.colors.onSurfaceVariant },
                                     ]}
                                   >
-                                    {sCount} supplier{sCount !== 1 ? "s" : ""}{" "}
-                                    offer this
+                                    {sCount} {sCount !== 1 ? t("suppliersPlural") : t("supplierSingular")}{" "}
+                                    {t("offerThis")}
                                   </Text>
                                 </View>
                               </View>
@@ -587,7 +588,7 @@ export default function HomeScreen() {
                           letterSpacing: 1,
                         }}
                       >
-                        Suppliers ({filteredSuppliers.length})
+                        {t("tabSuppliers")} ({filteredSuppliers.length})
                       </Text>
                       {filteredSuppliers.map((supplier) => (
                         <TouchableOpacity
@@ -653,10 +654,7 @@ export default function HomeScreen() {
                                     { color: theme.colors.onSurfaceVariant },
                                   ]}
                                 >
-                                  {supplier.materialCount} material
-                                  {supplier.materialCount !== 1
-                                    ? "s"
-                                    : ""} · {supplier.area}
+                                  {supplier.materialCount} {supplier.materialCount !== 1 ? t("materialsPlural") : t("materialSingular")} · {supplier.area}
                                 </Text>
                               </View>
                             </View>
@@ -678,21 +676,21 @@ export default function HomeScreen() {
               <View style={styles.statsRow}>
                 <StatCard
                   value={allSuppliers ? `${allSuppliers.length}` : "—"}
-                  label="Suppliers"
+                label={t("tabSuppliers")}
                   icon="store"
                   color={COLORS.primary}
                   onPress={() => router.push("/(tabs)/suppliers")}
                 />
                 <StatCard
                   value={`${CATEGORIES.length}`}
-                  label="Categories"
+                label={t("categories")}
                   icon="package-variant"
                   color={COLORS.secondary}
                   onPress={() => router.push("/(tabs)/materials")}
                 />
                 <StatCard
                   value="Daily"
-                  label="Updates"
+                label={t("updates")}
                   icon="refresh"
                   color={COLORS.success}
                   onPress={handleDailyUpdatesPress}
@@ -708,7 +706,7 @@ export default function HomeScreen() {
                       { color: theme.colors.onBackground },
                     ]}
                   >
-                    Browse by Category
+                    {t("browseByCategory")}
                   </Text>
                   <TouchableOpacity
                     onPress={() => router.push("/(tabs)/materials")}
@@ -716,7 +714,7 @@ export default function HomeScreen() {
                     <Text
                       style={[styles.seeAll, { color: theme.colors.primary }]}
                     >
-                      See All
+                    {t("seeAll")}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -774,11 +772,11 @@ export default function HomeScreen() {
                       { color: theme.colors.onBackground },
                     ]}
                   >
-                    Today's Lowest Prices
+                    {t("todaysLowestPrices")}
                   </Text>
                   <View style={styles.updatedBadge}>
                     <View style={styles.liveDot} />
-                    <Text style={styles.updatedText}>Live</Text>
+                    <Text style={styles.updatedText}>{t("live")}</Text>
                   </View>
                 </View>
 
@@ -797,7 +795,7 @@ export default function HomeScreen() {
                       fontSize: 13,
                     }}
                   >
-                    No material prices listed yet.
+                    {t("noMaterialPricesYet")}
                   </Text>
                 ) : (
                   categoryLowestPrices.map((item) => {
@@ -885,7 +883,7 @@ export default function HomeScreen() {
                                   },
                                 ]}
                               >
-                                Lowest
+                                {t("lowest")}
                               </Text>
                             </View>
                             <Text
@@ -920,7 +918,7 @@ export default function HomeScreen() {
                       { color: theme.colors.onBackground },
                     ]}
                   >
-                    Top Suppliers
+                    {t("topSuppliers")}
                   </Text>
                   <TouchableOpacity
                     onPress={() => router.push("/(tabs)/suppliers")}
@@ -928,7 +926,7 @@ export default function HomeScreen() {
                     <Text
                       style={[styles.seeAll, { color: theme.colors.primary }]}
                     >
-                      See All
+                    {t("seeAll")}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -948,7 +946,7 @@ export default function HomeScreen() {
                       fontSize: 13,
                     }}
                   >
-                    No suppliers registered yet.
+                    {t("noSuppliersYet")}
                   </Text>
                 ) : (
                   topSuppliers.map((supplier) => {
@@ -1024,9 +1022,8 @@ export default function HomeScreen() {
                                   { color: theme.colors.onSurfaceVariant },
                                 ]}
                               >
-                                {supplier.materialCount} material
-                                {supplier.materialCount !== 1 ? "s" : ""} ·{" "}
-                                {supplier.area}
+                                 {supplier.materialCount} {supplier.materialCount !== 1 ? t("materialsPlural") : t("materialSingular")} ·{" "}
+                                 {supplier.area}
                               </Text>
                             </View>
                           </View>

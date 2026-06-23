@@ -24,6 +24,7 @@ import { useQuery } from "convex/react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { api } from "../convex/_generated/api";
 import { useAppTheme } from "../context/ThemeContext";
+import { useTranslation } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { useCompare } from "../context/CompareContext";
 import { COLORS } from "../constants/theme";
@@ -75,6 +76,7 @@ export default function SupplierDetailScreen() {
   const { user } = useAuth();
   const { addToCompare, removeFromCompare, isInCompare } = useCompare();
   const isDark = resolvedScheme === "dark";
+  const { t } = useTranslation();
 
   const supplier = useQuery(
     api.suppliers.getSupplier,
@@ -138,13 +140,13 @@ export default function SupplierDetailScreen() {
       default: `https://www.google.com/maps/search/?api=1&query=${query}`,
     });
     Linking.openURL(url).catch(() => {
-      showToast("Could not open map.");
+      showToast(t("couldNotOpenMap"));
     });
   };
 
   const copyToClipboard = (text: string, label: string) => {
     Clipboard.setString(text);
-    showToast(`${label} copied to clipboard!`);
+    showToast(`${label} ${t("copiedToClipboard")}`);
   };
 
   const handleShare = async () => {
@@ -162,7 +164,7 @@ export default function SupplierDetailScreen() {
         message: shareMessage,
       });
     } catch {
-      showToast("Could not share profile.");
+      showToast(t("couldNotShareProfile"));
     }
   };
 
@@ -190,14 +192,14 @@ export default function SupplierDetailScreen() {
           variant="titleMedium"
           style={{ marginTop: 16, color: theme.colors.onBackground }}
         >
-          Supplier Not Found
+          {t("supplierNotFound")}
         </Text>
         <Button
           mode="contained"
           onPress={() => router.back()}
           style={{ marginTop: 16 }}
         >
-          Go Back
+          {t("goBack")}
         </Button>
       </View>
     );
@@ -331,7 +333,7 @@ export default function SupplierDetailScreen() {
                   <Text
                     style={[styles.statusBadgeText, { color: COLORS.primary }]}
                   >
-                    VERIFIED SUPPLIER
+                    {supplier.verified ? t("verifiedSupplierBadge") : ""}
                   </Text>
                 </View>
               )}
@@ -349,7 +351,7 @@ export default function SupplierDetailScreen() {
               contentStyle={{ height: 48 }}
               labelStyle={{ fontSize: 13, fontWeight: "700" }}
             >
-              Manage Materials
+              {t("manageMaterialsTitle")}
             </Button>
           )}
 
@@ -397,7 +399,7 @@ export default function SupplierDetailScreen() {
                       { color: theme.colors.onSurfaceVariant, marginBottom: 0 },
                     ]}
                   >
-                    Material Catalog
+                    {t("materialCatalog")}
                   </Text>
                 </View>
                 <Surface
@@ -418,7 +420,7 @@ export default function SupplierDetailScreen() {
                       color: theme.colors.primary,
                     }}
                   >
-                    {materials.length} Item{materials.length > 1 ? "s" : ""}
+                    {materials.length} {materials.length > 1 ? t("itemsPlural") : t("itemSingular")}
                   </Text>
                 </Surface>
               </View>
@@ -587,7 +589,7 @@ export default function SupplierDetailScreen() {
                               marginTop: 2,
                             }}
                           >
-                            {isAvailable ? "Available" : "Out of Stock"}
+                            {isAvailable ? t("available") : t("outOfStock")}
                           </Text>
                         </View>
                       </View>
@@ -611,7 +613,7 @@ export default function SupplierDetailScreen() {
                 { color: theme.colors.onSurfaceVariant },
               ]}
             >
-              Business Details
+                {t("businessDetails")}
             </Text>
 
             <View style={styles.contactItemRow}>
@@ -627,7 +629,7 @@ export default function SupplierDetailScreen() {
                     { color: theme.colors.onSurfaceVariant },
                   ]}
                 >
-                  Phone Number
+                  {t("phoneNumber")}
                 </Text>
                 <Text
                   style={[
@@ -639,7 +641,7 @@ export default function SupplierDetailScreen() {
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={() => copyToClipboard(supplier.phone, "Phone number")}
+                onPress={() => copyToClipboard(supplier.phone, t("phoneNumberLabel"))}
                 style={styles.copyButton}
               >
                 <MaterialCommunityIcons
@@ -665,7 +667,7 @@ export default function SupplierDetailScreen() {
                     { color: theme.colors.onSurfaceVariant },
                   ]}
                 >
-                  Email Address
+                  {t("emailAddress")}
                 </Text>
                 <Text
                   style={[
@@ -677,7 +679,7 @@ export default function SupplierDetailScreen() {
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={() => copyToClipboard(supplier.email, "Email address")}
+                onPress={() => copyToClipboard(supplier.email, t("emailAddressLabel"))}
                 style={styles.copyButton}
               >
                 <MaterialCommunityIcons
@@ -703,7 +705,7 @@ export default function SupplierDetailScreen() {
                     { color: theme.colors.onSurfaceVariant },
                   ]}
                 >
-                  Member Since
+                  {t("memberSince")}
                 </Text>
                 <Text
                   style={[
@@ -730,7 +732,7 @@ export default function SupplierDetailScreen() {
                 { color: theme.colors.onSurfaceVariant },
               ]}
             >
-              Warehouse Location
+                {t("warehouseLocation")}
             </Text>
 
             <View style={styles.locationItemBlock}>
@@ -748,7 +750,7 @@ export default function SupplierDetailScreen() {
                       { color: theme.colors.onSurfaceVariant },
                     ]}
                   >
-                    Location Coverage
+                    {t("locationCoverage")}
                   </Text>
                   <Text
                     style={[
@@ -787,7 +789,7 @@ export default function SupplierDetailScreen() {
                   style={styles.mapsActionButton}
                   labelStyle={styles.mapsButtonLabel}
                 >
-                  View on Maps
+                  {t("viewOnMaps")}
                 </Button>
               )}
             </View>
@@ -807,7 +809,7 @@ export default function SupplierDetailScreen() {
                   { color: theme.colors.onSurfaceVariant },
                 ]}
               >
-                Supplier Description
+                {t("supplierDescription")}
               </Text>
               <View style={styles.notesContainer}>
                 <MaterialCommunityIcons
@@ -902,7 +904,7 @@ export default function SupplierDetailScreen() {
             onPress={() => {
               if (isInCompare(supplier._id)) {
                 removeFromCompare(supplier._id);
-                showToast("Removed from comparison.");
+                showToast(t("removedFromComparison"));
               } else {
                 const result = addToCompare(supplier._id);
                 showToast(result.message);
@@ -921,7 +923,7 @@ export default function SupplierDetailScreen() {
               color="#FFF"
             />
             <Text style={styles.footerPrimaryLabel}>
-              {isInCompare(supplier._id) ? "In Compare" : "Compare"}
+              {isInCompare(supplier._id) ? t("inCompare") : t("compare")}
             </Text>
           </TouchableOpacity>
         </View>
