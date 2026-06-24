@@ -1,4 +1,4 @@
-# <img src="assets/CustomSplashScreenImage.png" width="40" height="44" style="vertical-align: middle; margin-right: 10px;" /> BuildRate
+# <img src="assets/CustomSplashScreenImage.png" width="40" height="44" align="center" /> BuildRate
 
 BuildRate is a premium **Construction Price Platform** designed to simplify sourcing building materials. It allows users to track daily updated prices of essential construction products, identify lowest local rates, and connect with verified suppliers.
 
@@ -37,6 +37,9 @@ Here are the technologies powering the BuildRate mobile application:
   <a href="https://www.typescriptlang.org/">
     <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
   </a>
+  <a href="https://github.com/react-native-netinfo/react-native-netinfo">
+    <img src="https://img.shields.io/badge/NetInfo-000000?style=for-the-badge&logo=react&logoColor=white" alt="NetInfo" />
+  </a>
 </p>
 
 - **Frontend Framework**: Expo (React Native) for building cross-platform native mobile applications.
@@ -44,6 +47,7 @@ Here are the technologies powering the BuildRate mobile application:
 - **UI Library**: React Native Paper for fully customizable Material Design components.
 - **Location Services**: Expo Location for device-level GPS tracking and reverse geocoding.
 - **Navigation**: Expo Router (file-based navigation system).
+- **Network Status Monitoring**: `@react-native-community/netinfo` for device-level network reachability monitoring.
 
 ---
 
@@ -53,3 +57,5 @@ Here are the technologies powering the BuildRate mobile application:
 2. **Advanced Area Filters**: Easily filter suppliers by area in the supplier browser list.
 3. **Fluid Interactions**: Micro-animations, bottom sheets, and native screen transitions.
 4. **Real-time Live Sync**: Dynamic pricing updates from Convex real-time synchronization framework.
+5. **Offline-First Support & Caching**: Cache all suppliers, materials, categories, and pricing locally using persistent AsyncStorage. Cached data loads immediately on screen mount, while background queries refresh data in the background. If the device is offline, it continues displaying cached data alongside a non-intrusive "No Connection" bottom banner.
+6. **Gujarati Language Support (ગુજરાતી અનુવાદ)**: Full support for both English and Gujarati languages, allowing users to toggle their preferred language seamlessly.
