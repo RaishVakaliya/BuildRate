@@ -14,6 +14,7 @@ import * as SplashScreen from "expo-splash-screen";
 import Animated, { FadeOut } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { OfflineBanner } from "../components/OfflineBanner";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -52,6 +53,7 @@ function AppContent() {
     <PaperProvider theme={theme}>
       <StatusBar style={resolvedScheme === "dark" ? "light" : "dark"} />
       <Stack screenOptions={{ headerShown: false }} />
+      <OfflineBanner />
 
       {showCustomSplash && (
         <Animated.View

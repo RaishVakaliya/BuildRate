@@ -18,7 +18,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
 import { useTranslation } from "../../context/LanguageContext";
@@ -32,6 +31,8 @@ import {
   handleEmail as contactEmail,
   handleWhatsApp as contactWhatsApp,
 } from "../../utils/contact";
+import { useOfflineCache } from "../../utils/useOfflineCache";
+import type { SupplierDoc } from "../../types/convex";
 
 const CATEGORIES = [
   { label: "All", icon: "apps", color: "#1A56DB" },
@@ -83,12 +84,16 @@ export default function SuppliersScreen() {
   const isDark = resolvedScheme === "dark";
   const { t } = useTranslation();
 
-  const suppliers = useQuery(api.suppliers.listSuppliers);
+  const { data: suppliers, isLoading: suppliersLoading } = useOfflineCache(
+    api.suppliers.listSuppliers,
+    {},
+    "@buildrate/allSuppliers"
+  );
 
   const AREAS = useMemo(() => {
     if (!suppliers) return ["All"];
     const areaSet = new Set<string>();
-    suppliers.forEach((s) => {
+    suppliers.forEach((s: SupplierDoc) => {
       if (s.area) {
         const trimmed = s.area.trim();
         if (trimmed) {
@@ -136,7 +141,7 @@ export default function SuppliersScreen() {
   const filteredSuppliers = useMemo(() => {
     if (!suppliers) return [];
 
-    return suppliers.filter((supplier) => {
+    return suppliers.filter((supplier: SupplierDoc) => {
       if (user?.role !== "admin") {
         if (supplier.status !== "active") return false;
       } else {
@@ -430,7 +435,7 @@ export default function SuppliersScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {suppliers === undefined ? (
+        {suppliersLoading ? (
           <View style={styles.centered}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
           </View>
@@ -456,7 +461,7 @@ export default function SuppliersScreen() {
             </Text>
           </View>
         ) : (
-          sortedSuppliers.map((supplier) => {
+          sortedSuppliers.map((supplier: SupplierDoc) => {
             const isMyBusiness =
               user?.role === "supplier" && user?.id === supplier._id;
             const avColors = getAvatarColor(supplier.businessName);
@@ -575,7 +580,7 @@ export default function SuppliersScreen() {
                   </View>
 
                   <View style={[styles.categoryWrap, { marginTop: 12 }]}>
-                    {supplier.categories.map((cat) => {
+                    {supplier.categories.map((cat: string) => {
                       const matchedCat = CATEGORIES.find(
                         (c) => c.label === cat,
                       );

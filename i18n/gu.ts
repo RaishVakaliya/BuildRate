@@ -40,7 +40,7 @@ const gu: Translations = {
   categories: "શ્રેણીઓ",
   updates: "અપડેટ્સ",
   daily: "દૈનિક",
-  browseByCategory: "શ્રેણી પ્રમાણે બ્રાઉઝ કરો",
+  browseByCategory: "શ્રેણી પ્રમાણે જુઓ",
   todaysLowestPrices: "આજના સૌથી ઓછા ભાવ",
   noMaterialPricesYet: "હજુ સુધી કોઈ ભાવ નોંધ્યા નથી.",
   topSuppliers: "ટોચના સપ્લાયર્સ",

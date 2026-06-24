@@ -22,12 +22,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { COLORS } from "../../constants/theme";
 import { useAppTheme } from "../../context/ThemeContext";
-import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useRouter } from "expo-router";
 import { useLocation } from "../../utils/useLocation";
 import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from "../../context/LanguageContext";
+import { useOfflineCache } from "../../utils/useOfflineCache";
+import type { SupplierDoc, MaterialDoc } from "../../types/convex";
 import * as Location from "expo-location";
 
 const CATEGORIES = [
@@ -166,8 +167,16 @@ export default function HomeScreen() {
       ? t("locationOff")
       : (location.area ?? location.city ?? t("locationOff"));
 
-  const allMaterials = useQuery(api.materials.listAllMaterials);
-  const allSuppliers = useQuery(api.suppliers.listSuppliers);
+  const { data: allMaterials, isLoading: materialsLoading } = useOfflineCache(
+    api.materials.listAllMaterials,
+    {},
+    "@buildrate/allMaterials"
+  );
+  const { data: allSuppliers, isLoading: suppliersLoading } = useOfflineCache(
+    api.suppliers.listSuppliers,
+    {},
+    "@buildrate/allSuppliers"
+  );
 
   const categoryLowestPrices = useMemo(() => {
     if (!allMaterials) return [];
@@ -186,13 +195,13 @@ export default function HomeScreen() {
     );
   }, [allMaterials]);
 
-  const getSupplierCount = (item: any) => {
+  const getSupplierCount = (item: MaterialDoc) => {
     if (!allMaterials) return 0;
     const normName = item.name.toLowerCase().trim();
     const normBrand = item.brand.toLowerCase().trim();
     const normUnit = item.unit.toLowerCase().trim();
     return allMaterials.filter(
-      (m) =>
+      (m: MaterialDoc) =>
         m.category === item.category &&
         m.name.toLowerCase().trim() === normName &&
         m.brand.toLowerCase().trim() === normBrand &&
@@ -208,13 +217,18 @@ export default function HomeScreen() {
       materialCounts[m.supplierId] = (materialCounts[m.supplierId] || 0) + 1;
     }
 
-    const suppliersWithCounts = allSuppliers.map((s) => ({
+    const suppliersWithCounts = allSuppliers.map((s: SupplierDoc) => ({
       ...s,
       materialCount: materialCounts[s._id] || 0,
     }));
 
     return suppliersWithCounts
-      .sort((a, b) => b.materialCount - a.materialCount)
+      .sort(
+        (
+          a: SupplierDoc & { materialCount: number },
+          b: SupplierDoc & { materialCount: number }
+        ) => b.materialCount - a.materialCount
+      )
       .slice(0, 3);
   }, [allSuppliers, allMaterials]);
 
@@ -222,7 +236,7 @@ export default function HomeScreen() {
     if (!searchQuery.trim() || !allMaterials) return [];
     const q = searchQuery.toLowerCase().trim();
     return allMaterials.filter(
-      (m) =>
+      (m: MaterialDoc) =>
         m.name.toLowerCase().includes(q) ||
         m.brand.toLowerCase().includes(q) ||
         m.category.toLowerCase().includes(q),
@@ -240,17 +254,17 @@ export default function HomeScreen() {
 
     return allSuppliers
       .filter(
-        (s) =>
+        (s: SupplierDoc) =>
           s.businessName.toLowerCase().includes(q) ||
           s.area.toLowerCase().includes(q),
       )
-      .map((s) => ({
+      .map((s: SupplierDoc) => ({
         ...s,
         materialCount: materialCounts[s._id] || 0,
       }));
   }, [searchQuery, allSuppliers, allMaterials]);
 
-  const isLoading = allMaterials === undefined || allSuppliers === undefined;
+  const isLoading = materialsLoading || suppliersLoading;
 
   return (
     <View
@@ -495,7 +509,7 @@ export default function HomeScreen() {
                       >
                         {t("tabMaterials")} ({filteredMaterials.length})
                       </Text>
-                      {filteredMaterials.map((item) => {
+                      {filteredMaterials.map((item: MaterialDoc) => {
                         const sCount = getSupplierCount(item);
                         return (
                           <TouchableOpacity
@@ -590,7 +604,7 @@ export default function HomeScreen() {
                       >
                         {t("tabSuppliers")} ({filteredSuppliers.length})
                       </Text>
-                      {filteredSuppliers.map((supplier) => (
+                      {filteredSuppliers.map((supplier: SupplierDoc & { materialCount: number }) => (
                         <TouchableOpacity
                           key={supplier._id}
                           activeOpacity={0.8}
@@ -949,7 +963,7 @@ export default function HomeScreen() {
                     {t("noSuppliersYet")}
                   </Text>
                 ) : (
-                  topSuppliers.map((supplier) => {
+                  topSuppliers.map((supplier: SupplierDoc & { materialCount: number }) => {
                     const isMySupplier =
                       user?.role === "supplier" && user?.id === supplier._id;
                     return (

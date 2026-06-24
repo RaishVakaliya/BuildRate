@@ -20,13 +20,15 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
 import { useRouter } from "expo-router";
 import { api } from "../convex/_generated/api";
 import { useAuth } from "../context/AuthContext";
 import { useAppTheme } from "../context/ThemeContext";
 import { styles } from "../components/styles/manageMaterialsStyles";
 import { Dropdown } from "react-native-element-dropdown";
+import { useOfflineCache } from "../utils/useOfflineCache";
+import type { MaterialDoc } from "../types/convex";
 
 const CATEGORIES = [
   { label: "Cement", icon: "circle-outline", color: "#6B7280" },
@@ -153,9 +155,10 @@ export default function ManageMaterialsScreen() {
     }
   }, [user, router]);
 
-  const materials = useQuery(
+  const { data: materials, isLoading: materialsLoading } = useOfflineCache(
     api.materials.listSupplierMaterials,
-    user?.id ? { supplierId: user.id as any } : ("skip" as any),
+    user?.id ? { supplierId: user.id as any } : "skip",
+    user?.id ? `@buildrate/supplierMaterials_${user.id}` : "@buildrate/supplierMaterials_me"
   );
 
   const addMaterial = useMutation(api.materials.addMaterial);
@@ -379,7 +382,7 @@ export default function ManageMaterialsScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {materials === undefined ? (
+        {materialsLoading ? (
           <View style={styles.centered}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
           </View>
@@ -406,7 +409,7 @@ export default function ManageMaterialsScreen() {
             </Text>
           </View>
         ) : (
-          materials.map((item) => {
+          (materials || []).map((item: MaterialDoc) => {
             const catInfo = CATEGORY_MAP[item.category] || CATEGORY_MAP.Cement;
             const isAvailable = item.status === "available";
 

@@ -10,9 +10,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useQuery } from "convex/react";
-import { useRouter } from "expo-router";
 import { api } from "../../convex/_generated/api";
+import { useRouter } from "expo-router";
 import { useAppTheme } from "../../context/ThemeContext";
 import { useTranslation } from "../../context/LanguageContext";
 import { useCompare } from "../../context/CompareContext";
@@ -27,6 +26,8 @@ import {
   handleCall as contactCall,
   handleWhatsApp as contactWhatsApp,
 } from "../../utils/contact";
+import { useOfflineCache } from "../../utils/useOfflineCache";
+import type { SupplierDoc } from "../../types/convex";
 
 const CATEGORY_ICONS: Record<string, string> = {
   Cement: "circle-outline",
@@ -161,26 +162,37 @@ export default function CompareScreen() {
   const isDark = resolvedScheme === "dark";
   const { t } = useTranslation();
 
-  const allSuppliers = useQuery(api.suppliers.listSuppliers);
+  const { data: allSuppliers, isLoading: suppliersLoading } = useOfflineCache(
+    api.suppliers.listSuppliers,
+    {},
+    "@buildrate/allSuppliers"
+  );
 
   const selectedSuppliers = useMemo(() => {
     if (!allSuppliers) return [];
     return compareIds
-      .map((id) => allSuppliers.find((s) => s._id === id))
+      .map((id) => allSuppliers.find((s: SupplierDoc) => s._id === id))
       .filter(Boolean) as typeof allSuppliers;
   }, [allSuppliers, compareIds]);
 
-  const allMaterials0 = useQuery(
+  const sup0Id = selectedSuppliers[0]?._id;
+  const sup1Id = selectedSuppliers[1]?._id;
+  const sup2Id = selectedSuppliers[2]?._id;
+
+  const { data: allMaterials0 } = useOfflineCache(
     api.materials.listSupplierMaterials,
-    selectedSuppliers[0] ? { supplierId: selectedSuppliers[0]._id } : "skip",
+    sup0Id ? { supplierId: sup0Id } : "skip",
+    sup0Id ? `@buildrate/supplierMaterials_${sup0Id}` : "@buildrate/supplierMaterials_0"
   );
-  const allMaterials1 = useQuery(
+  const { data: allMaterials1 } = useOfflineCache(
     api.materials.listSupplierMaterials,
-    selectedSuppliers[1] ? { supplierId: selectedSuppliers[1]._id } : "skip",
+    sup1Id ? { supplierId: sup1Id } : "skip",
+    sup1Id ? `@buildrate/supplierMaterials_${sup1Id}` : "@buildrate/supplierMaterials_1"
   );
-  const allMaterials2 = useQuery(
+  const { data: allMaterials2 } = useOfflineCache(
     api.materials.listSupplierMaterials,
-    selectedSuppliers[2] ? { supplierId: selectedSuppliers[2]._id } : "skip",
+    sup2Id ? { supplierId: sup2Id } : "skip",
+    sup2Id ? `@buildrate/supplierMaterials_${sup2Id}` : "@buildrate/supplierMaterials_2"
   );
 
   const supplierMaterials = [allMaterials0, allMaterials1, allMaterials2];
@@ -211,7 +223,7 @@ export default function CompareScreen() {
     contactWhatsApp(phone, businessName, showToast);
   };
 
-  const isLoading = allSuppliers === undefined;
+  const isLoading = suppliersLoading;
   const hasEnough = selectedSuppliers.length >= 2;
 
   return (
@@ -314,7 +326,7 @@ export default function CompareScreen() {
           )}
 
           <View style={styles.headerCardsRow}>
-            {selectedSuppliers.map((supplier) => {
+            {selectedSuppliers.map((supplier: SupplierDoc) => {
               const avColors = getAvatarColor(supplier.businessName);
               const avatarBg = isDark ? avColors.bgDark : avColors.bgLight;
               const avatarText = isDark
@@ -458,12 +470,12 @@ export default function CompareScreen() {
                 defaultCollapsed={true}
               >
                 <View style={styles.materialsGridRow}>
-                  {selectedSuppliers.map((supplier) => (
+                  {selectedSuppliers.map((supplier: SupplierDoc) => (
                     <View
                       key={supplier._id}
                       style={[styles.materialsCol, { width: colWidth }]}
                     >
-                      {supplier.categories.map((cat) => {
+                      {supplier.categories.map((cat: string) => {
                         const icon = CATEGORY_ICONS[cat] ?? "circle-outline";
                         const color = CATEGORY_COLORS[cat] ?? "#6B7280";
                         return (

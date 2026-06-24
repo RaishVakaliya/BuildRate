@@ -20,9 +20,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useQuery } from "convex/react";
-import { useLocalSearchParams, useRouter } from "expo-router";
 import { api } from "../convex/_generated/api";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAppTheme } from "../context/ThemeContext";
 import { useTranslation } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
@@ -33,6 +32,8 @@ import {
   handleEmail as contactEmail,
   handleWhatsApp as contactWhatsApp,
 } from "../utils/contact";
+import { useOfflineCache } from "../utils/useOfflineCache";
+import type { MaterialDoc } from "../types/convex";
 
 const CATEGORY_DETAILS: Record<string, { color: string; icon: string }> = {
   Cement: { color: "#6B7280", icon: "circle-outline" },
@@ -78,20 +79,22 @@ export default function SupplierDetailScreen() {
   const isDark = resolvedScheme === "dark";
   const { t } = useTranslation();
 
-  const supplier = useQuery(
+  const { data: supplier, isLoading: supplierLoading } = useOfflineCache(
     api.suppliers.getSupplier,
-    id ? { id: id as any } : ("skip" as any),
+    id ? { id: id as any } : "skip",
+    id ? `@buildrate/supplier_${id}` : "@buildrate/supplier_unknown"
   );
 
-  const materials = useQuery(
+  const { data: materials, isLoading: materialsLoading } = useOfflineCache(
     api.materials.listSupplierMaterials,
     id ? { supplierId: id as any } : "skip",
+    id ? `@buildrate/supplierMaterials_${id}` : "@buildrate/supplierMaterials_unknown"
   );
 
   const materialCategories = useMemo(() => {
     if (!materials) return [];
     const cats = new Set<string>();
-    materials.forEach((m) => cats.add(m.category));
+    materials.forEach((m: MaterialDoc) => cats.add(m.category));
     return Array.from(cats);
   }, [materials]);
 
@@ -105,7 +108,7 @@ export default function SupplierDetailScreen() {
 
   const displayedMaterials = useMemo(() => {
     if (!materials || !selectedMatCat) return [];
-    return materials.filter((m) => m.category === selectedMatCat);
+    return materials.filter((m: MaterialDoc) => m.category === selectedMatCat);
   }, [materials, selectedMatCat]);
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -168,7 +171,7 @@ export default function SupplierDetailScreen() {
     }
   };
 
-  if (supplier === undefined) {
+  if (supplierLoading) {
     return (
       <View
         style={[styles.centered, { backgroundColor: theme.colors.background }]}
@@ -355,7 +358,7 @@ export default function SupplierDetailScreen() {
             </Button>
           )}
 
-          {materials === undefined ? (
+          {materialsLoading ? (
             <Surface
               style={[
                 styles.contentCard,
@@ -485,7 +488,7 @@ export default function SupplierDetailScreen() {
               )}
 
               <View style={{ gap: 8 }}>
-                {displayedMaterials.map((mat, idx) => {
+                {displayedMaterials.map((mat: MaterialDoc, idx: number) => {
                   const isAvailable = mat.status === "available";
                   return (
                     <View key={mat._id}>
@@ -933,7 +936,7 @@ export default function SupplierDetailScreen() {
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
         duration={2500}
-        style={{ marginBottom: Platform.OS === "ios" ? -4 : -20 }}
+        style={{ marginBottom: insets.bottom + 64 }}
       >
         {snackbarMessage}
       </Snackbar>

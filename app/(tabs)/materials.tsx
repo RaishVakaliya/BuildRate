@@ -11,14 +11,13 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import Animated, {
   FadeIn,
   FadeOut,
   LinearTransition,
 } from "react-native-reanimated";
-import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
 import { useTranslation } from "../../context/LanguageContext";
 import { useCompare } from "../../context/CompareContext";
@@ -28,6 +27,8 @@ import {
   handleCall as contactCall,
   handleWhatsApp as contactWhatsApp,
 } from "../../utils/contact";
+import { useOfflineCache } from "../../utils/useOfflineCache";
+import type { SupplierDoc } from "../../types/convex";
 
 const AnimatedSurface = Animated.createAnimatedComponent(Surface);
 
@@ -52,8 +53,16 @@ export default function MaterialsScreen() {
 
   const { compareIds, addToCompare, removeFromCompare } = useCompare();
 
-  const allMaterials = useQuery(api.materials.listAllMaterials);
-  const allSuppliers = useQuery(api.suppliers.listSuppliers);
+  const { data: allMaterials, isLoading: materialsLoading } = useOfflineCache(
+    api.materials.listAllMaterials,
+    {},
+    "@buildrate/allMaterials"
+  );
+  const { data: allSuppliers, isLoading: suppliersLoading } = useOfflineCache(
+    api.suppliers.listSuppliers,
+    {},
+    "@buildrate/allSuppliers"
+  );
 
   const { category: paramCategory, search: paramSearch } =
     useLocalSearchParams<{ category?: string; search?: string }>();
@@ -192,7 +201,7 @@ export default function MaterialsScreen() {
     });
   }, [groupedMaterials, selectedCategory, searchQuery]);
 
-  const isLoading = allMaterials === undefined || allSuppliers === undefined;
+  const isLoading = materialsLoading || suppliersLoading;
 
   return (
     <View style={[styles.root, { backgroundColor: theme.colors.background }]}>
@@ -470,7 +479,7 @@ export default function MaterialsScreen() {
 
                     {item.offers.map((offer, index) => {
                       const supplier = allSuppliers.find(
-                        (s) => s._id === offer.supplierId,
+                        (s: SupplierDoc) => s._id === offer.supplierId,
                       );
                       if (!supplier) return null;
 
