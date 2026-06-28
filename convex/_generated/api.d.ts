@@ -10,6 +10,7 @@
 
 import type * as auth from "../auth.js";
 import type * as materials from "../materials.js";
+import type * as supplierApplications from "../supplierApplications.js";
 import type * as suppliers from "../suppliers.js";
 
 import type {
@@ -21,6 +22,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   materials: typeof materials;
+  supplierApplications: typeof supplierApplications;
   suppliers: typeof suppliers;
 }>;
 

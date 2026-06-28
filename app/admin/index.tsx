@@ -44,6 +44,7 @@ export default function AdminPanelScreen() {
   const suppliers = useQuery(api.suppliers.listSuppliers);
   const toggleStatus = useMutation(api.suppliers.toggleStatus);
   const deleteSupplier = useMutation(api.suppliers.deleteSupplier);
+  const pendingCount = useQuery(api.supplierApplications.getPendingCount, {});
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -195,6 +196,100 @@ export default function AdminPanelScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => router.push("/admin/supplier-applications")}
+          style={{
+            borderRadius: 16,
+            overflow: "hidden",
+            marginBottom: 4,
+          }}
+        >
+          <View
+            style={[
+              {
+                borderRadius: 20,
+                padding: 16,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 14,
+                backgroundColor: theme.colors.surface,
+                borderWidth: 1,
+                borderColor: "rgba(0,0,0,0.06)",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.05,
+                shadowRadius: 10,
+                elevation: 2,
+              },
+            ]}
+          >
+            <View
+              style={{
+                width: 46,
+                height: 46,
+                borderRadius: 23,
+                backgroundColor: isDark
+                  ? "rgba(79,142,247,0.15)"
+                  : "rgba(26,86,219,0.1)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <MaterialCommunityIcons
+                name="file-document-multiple"
+                size={22}
+                color={theme.colors.primary}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: "800",
+                  color: theme.colors.onSurface,
+                  marginBottom: 2,
+                }}
+              >
+                Supplier Applications
+              </Text>
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "500",
+                  color: theme.colors.onSurfaceVariant,
+                }}
+              >
+                Review pending applications
+              </Text>
+            </View>
+            {(pendingCount ?? 0) > 0 && (
+              <View
+                style={{
+                  minWidth: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  backgroundColor: "#D97706",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingHorizontal: 6,
+                }}
+              >
+                <Text
+                  style={{ fontSize: 12, fontWeight: "800", color: "#FFF" }}
+                >
+                  {pendingCount}
+                </Text>
+              </View>
+            )}
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={20}
+              color={theme.colors.onSurfaceVariant}
+            />
+          </View>
+        </TouchableOpacity>
+
         {suppliers === undefined ? (
           <View style={styles.centered}>
             <ActivityIndicator size="large" color={theme.colors.primary} />

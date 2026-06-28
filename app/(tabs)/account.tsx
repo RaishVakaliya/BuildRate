@@ -77,6 +77,7 @@ function LoginScreen({
 }) {
   const theme = useTheme();
   const { login } = useAuth();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t, language, setLanguage } = useTranslation();
 
@@ -215,6 +216,49 @@ function LoginScreen({
         </Surface>
 
         <View style={{ height: 16 }} />
+
+        <TouchableOpacity
+          onPress={() => router.push("/become-supplier")}
+          activeOpacity={0.82}
+          style={[
+            styles.infoCard,
+            {
+              backgroundColor: isDark ? "rgba(26,86,219,0.15)" : "rgba(26,86,219,0.07)",
+              borderRadius: 18,
+              borderWidth: 1.5,
+              borderColor: isDark ? "rgba(79,142,247,0.3)" : "rgba(26,86,219,0.18)",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 14,
+              paddingVertical: 16,
+              paddingHorizontal: 18,
+            },
+          ]}
+        >
+          <View
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 22,
+              backgroundColor: isDark ? "rgba(79,142,247,0.2)" : "rgba(26,86,219,0.12)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <MaterialCommunityIcons name="store-plus" size={22} color={isDark ? "#4F8EF7" : "#1A56DB"} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 15, fontWeight: "800", color: isDark ? "#4F8EF7" : "#1A56DB", marginBottom: 2 }}>
+              Become a Supplier
+            </Text>
+            <Text style={{ fontSize: 12, fontWeight: "500", color: isDark ? "rgba(79,142,247,0.75)" : "rgba(26,86,219,0.7)" }}>
+              Apply to list your business on BuildRate
+            </Text>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={20} color={isDark ? "#4F8EF7" : "#1A56DB"} />
+        </TouchableOpacity>
+
+        <View style={{ height: 4 }} />
 
         <Surface
           style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}

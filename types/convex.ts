@@ -31,3 +31,22 @@ export type MaterialDoc = {
   notes?: string;
   createdAt: number;
 };
+
+export type SupplierApplicationDoc = {
+  _id: Id<"supplierApplications">;
+  _creationTime: number;
+  businessName: string;
+  username: string;
+  phone: string;
+  email: string;
+  area: string;
+  address?: string;
+  gstNumber?: string;
+  mapUrl?: string;
+  categories: string[];
+  notes?: string;
+  status: "pending" | "approved" | "rejected";
+  rejectionReason?: string;
+  createdAt: number;
+  reviewedAt?: number;
+};

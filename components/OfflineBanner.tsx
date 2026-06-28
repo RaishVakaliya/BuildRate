@@ -52,7 +52,9 @@ export function OfflineBanner() {
           color={textAndIconColor}
           style={{ marginRight: 6 }}
         />
-        <Text style={[styles.label, { color: textAndIconColor }]}>No Connection</Text>
+        <Text style={[styles.label, { color: textAndIconColor }]}>
+          No Connection
+        </Text>
       </View>
     </Animated.View>
   );
