@@ -8,13 +8,13 @@ import {
   Dialog,
   Portal,
   useTheme,
-  ActivityIndicator,
 } from "react-native-paper";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useMutation } from "convex/react";
 import { api } from "../convex/_generated/api";
 import type { SupplierApplicationDoc } from "../types/convex";
 import type { Id } from "../convex/_generated/dataModel";
+import { SupplierSuccessDialog } from "./SupplierSuccessDialog";
 
 const ALL_CATEGORIES = [
   { label: "Cement", icon: "circle-outline", color: "#6B7280" },
@@ -65,6 +65,7 @@ export function ApproveSupplierDialog({
   );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const toggleCategory = (label: string) => {
     setSelectedCategories((prev) =>
@@ -101,7 +102,7 @@ export function ApproveSupplierDialog({
       await approveApplication({
         id: application._id as Id<"supplierApplications">,
       });
-      onSuccess();
+      setShowSuccess(true);
     } catch (e: any) {
       setError(e?.message ?? "Failed to create supplier. Please try again.");
     } finally {
@@ -111,288 +112,303 @@ export function ApproveSupplierDialog({
 
   return (
     <Portal>
-      <Dialog
-        visible={visible}
-        onDismiss={onDismiss}
-        style={{
-          borderRadius: 20,
-          maxHeight: "90%",
-          backgroundColor: theme.colors.surface,
-        }}
-      >
-        <Dialog.Title style={{ fontWeight: "800", fontSize: 18 }}>
-          Create Supplier Account
-        </Dialog.Title>
-        <Dialog.ScrollArea style={styles.dialogScrollArea}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-          >
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
+      {showSuccess ? (
+        <SupplierSuccessDialog
+          visible={showSuccess}
+          businessName={businessName.trim()}
+          phone={phone.trim()}
+          password={password}
+          onDismiss={() => {
+            setShowSuccess(false);
+            onSuccess();
+          }}
+        />
+      ) : (
+        <Dialog
+          visible={visible}
+          onDismiss={onDismiss}
+          style={{
+            borderRadius: 20,
+            maxHeight: "90%",
+            backgroundColor: theme.colors.surface,
+          }}
+        >
+          <Dialog.Title style={{ fontWeight: "800", fontSize: 18 }}>
+            Create Supplier Account
+          </Dialog.Title>
+          <Dialog.ScrollArea style={styles.dialogScrollArea}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
             >
-              <View style={{ padding: 4, paddingBottom: 16 }}>
-                {error ? (
-                  <View style={styles.dialogErrorBox}>
-                    <MaterialCommunityIcons
-                      name="alert-circle"
-                      size={14}
-                      color="#DC2626"
-                    />
-                    <Text style={styles.dialogErrorText}>{error}</Text>
-                  </View>
-                ) : null}
-
-                <View style={styles.dialogSection}>
-                  <Text
-                    style={[
-                      styles.dialogSectionTitle,
-                      { color: theme.colors.onSurfaceVariant },
-                    ]}
-                  >
-                    Business Details
-                  </Text>
-                  <TextInput
-                    label="Business Name *"
-                    value={businessName}
-                    onChangeText={(t) => {
-                      setBusinessName(t);
-                      setError("");
-                    }}
-                    mode="outlined"
-                    dense
-                    left={<TextInput.Icon icon="store" />}
-                    style={styles.dialogInput}
-                    outlineColor={theme.colors.outline}
-                    activeOutlineColor={theme.colors.primary}
-                  />
-                  <TextInput
-                    label="Area *"
-                    value={area}
-                    onChangeText={(t) => {
-                      setArea(t);
-                      setError("");
-                    }}
-                    mode="outlined"
-                    dense
-                    left={<TextInput.Icon icon="map-marker" />}
-                    style={styles.dialogInput}
-                    outlineColor={theme.colors.outline}
-                    activeOutlineColor={theme.colors.primary}
-                  />
-                  <TextInput
-                    label="Full Address"
-                    value={address}
-                    onChangeText={setAddress}
-                    mode="outlined"
-                    dense
-                    left={<TextInput.Icon icon="home" />}
-                    style={styles.dialogInput}
-                    outlineColor={theme.colors.outline}
-                    activeOutlineColor={theme.colors.primary}
-                  />
-                  <TextInput
-                    label="Google Map URL"
-                    value={mapUrl}
-                    onChangeText={setMapUrl}
-                    mode="outlined"
-                    dense
-                    autoCapitalize="none"
-                    left={<TextInput.Icon icon="map-marker-outline" />}
-                    style={styles.dialogInput}
-                    outlineColor={theme.colors.outline}
-                    activeOutlineColor={theme.colors.primary}
-                  />
-                </View>
-
-                <View style={styles.dialogSection}>
-                  <Text
-                    style={[
-                      styles.dialogSectionTitle,
-                      { color: theme.colors.onSurfaceVariant },
-                    ]}
-                  >
-                    Login Credentials
-                  </Text>
-                  <TextInput
-                    label="Username *"
-                    value={username}
-                    onChangeText={(t) => {
-                      setUsername(t);
-                      setError("");
-                    }}
-                    mode="outlined"
-                    dense
-                    autoCapitalize="none"
-                    left={<TextInput.Icon icon="account" />}
-                    style={styles.dialogInput}
-                    outlineColor={theme.colors.outline}
-                    activeOutlineColor={theme.colors.primary}
-                  />
-                  <TextInput
-                    label="Email *"
-                    value={email}
-                    onChangeText={(t) => {
-                      setEmail(t);
-                      setError("");
-                    }}
-                    mode="outlined"
-                    dense
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    left={<TextInput.Icon icon="email" />}
-                    style={styles.dialogInput}
-                    outlineColor={theme.colors.outline}
-                    activeOutlineColor={theme.colors.primary}
-                  />
-                  <TextInput
-                    label="Phone *"
-                    value={phone}
-                    onChangeText={(t) => {
-                      setPhone(t);
-                      setError("");
-                    }}
-                    mode="outlined"
-                    dense
-                    keyboardType="phone-pad"
-                    left={<TextInput.Icon icon="phone" />}
-                    style={styles.dialogInput}
-                    outlineColor={theme.colors.outline}
-                    activeOutlineColor={theme.colors.primary}
-                  />
-                  <TextInput
-                    label="Password *"
-                    value={password}
-                    onChangeText={(t) => {
-                      setPassword(t);
-                      setError("");
-                    }}
-                    mode="outlined"
-                    dense
-                    secureTextEntry={!showPassword}
-                    autoCapitalize="none"
-                    left={<TextInput.Icon icon="lock" />}
-                    right={
-                      <TextInput.Icon
-                        icon={showPassword ? "eye-off" : "eye"}
-                        onPress={() => setShowPassword((v) => !v)}
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+              >
+                <View style={{ padding: 4, paddingBottom: 16 }}>
+                  {error ? (
+                    <View style={styles.dialogErrorBox}>
+                      <MaterialCommunityIcons
+                        name="alert-circle"
+                        size={14}
+                        color="#DC2626"
                       />
-                    }
-                    style={styles.dialogInput}
-                    outlineColor={theme.colors.outline}
-                    activeOutlineColor={theme.colors.primary}
-                  />
-                </View>
+                      <Text style={styles.dialogErrorText}>{error}</Text>
+                    </View>
+                  ) : null}
 
-                <View style={styles.dialogSection}>
-                  <Text
-                    style={[
-                      styles.dialogSectionTitle,
-                      { color: theme.colors.onSurfaceVariant },
-                    ]}
-                  >
-                    Categories *
-                  </Text>
-                  <View style={styles.dialogCategoryGrid}>
-                    {ALL_CATEGORIES.map((cat) => {
-                      const selected = selectedCategories.includes(cat.label);
-                      return (
-                        <View
-                          key={cat.label}
-                          style={[
-                            styles.dialogCatTile,
-                            {
-                              backgroundColor: selected
-                                ? cat.color + "18"
-                                : theme.colors.surfaceVariant,
-                              borderColor: selected ? cat.color : "transparent",
-                            },
-                          ]}
-                        >
-                          <MaterialCommunityIcons
-                            name={cat.icon as any}
-                            size={14}
-                            color={
-                              selected
-                                ? cat.color
-                                : theme.colors.onSurfaceVariant
-                            }
-                            onPress={() => {
-                              toggleCategory(cat.label);
-                              setError("");
-                            }}
-                          />
-                          <Text
+                  <View style={styles.dialogSection}>
+                    <Text
+                      style={[
+                        styles.dialogSectionTitle,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      Business Details
+                    </Text>
+                    <TextInput
+                      label="Business Name *"
+                      value={businessName}
+                      onChangeText={(t) => {
+                        setBusinessName(t);
+                        setError("");
+                      }}
+                      mode="outlined"
+                      dense
+                      left={<TextInput.Icon icon="store" />}
+                      style={styles.dialogInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
+                    <TextInput
+                      label="Area *"
+                      value={area}
+                      onChangeText={(t) => {
+                        setArea(t);
+                        setError("");
+                      }}
+                      mode="outlined"
+                      dense
+                      left={<TextInput.Icon icon="map-marker" />}
+                      style={styles.dialogInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
+                    <TextInput
+                      label="Full Address"
+                      value={address}
+                      onChangeText={setAddress}
+                      mode="outlined"
+                      dense
+                      left={<TextInput.Icon icon="home" />}
+                      style={styles.dialogInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
+                    <TextInput
+                      label="Google Map URL"
+                      value={mapUrl}
+                      onChangeText={setMapUrl}
+                      mode="outlined"
+                      dense
+                      autoCapitalize="none"
+                      left={<TextInput.Icon icon="map-marker-outline" />}
+                      style={styles.dialogInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
+                  </View>
+
+                  <View style={styles.dialogSection}>
+                    <Text
+                      style={[
+                        styles.dialogSectionTitle,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      Login Credentials
+                    </Text>
+                    <TextInput
+                      label="Username *"
+                      value={username}
+                      onChangeText={(t) => {
+                        setUsername(t);
+                        setError("");
+                      }}
+                      mode="outlined"
+                      dense
+                      autoCapitalize="none"
+                      left={<TextInput.Icon icon="account" />}
+                      style={styles.dialogInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
+                    <TextInput
+                      label="Email *"
+                      value={email}
+                      onChangeText={(t) => {
+                        setEmail(t);
+                        setError("");
+                      }}
+                      mode="outlined"
+                      dense
+                      autoCapitalize="none"
+                      keyboardType="email-address"
+                      left={<TextInput.Icon icon="email" />}
+                      style={styles.dialogInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
+                    <TextInput
+                      label="Phone *"
+                      value={phone}
+                      onChangeText={(t) => {
+                        setPhone(t);
+                        setError("");
+                      }}
+                      mode="outlined"
+                      dense
+                      keyboardType="phone-pad"
+                      left={<TextInput.Icon icon="phone" />}
+                      style={styles.dialogInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
+                    <TextInput
+                      label="Password *"
+                      value={password}
+                      onChangeText={(t) => {
+                        setPassword(t);
+                        setError("");
+                      }}
+                      mode="outlined"
+                      dense
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                      left={<TextInput.Icon icon="lock" />}
+                      right={
+                        <TextInput.Icon
+                          icon={showPassword ? "eye-off" : "eye"}
+                          onPress={() => setShowPassword((v) => !v)}
+                        />
+                      }
+                      style={styles.dialogInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
+                  </View>
+
+                  <View style={styles.dialogSection}>
+                    <Text
+                      style={[
+                        styles.dialogSectionTitle,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      Categories *
+                    </Text>
+                    <View style={styles.dialogCategoryGrid}>
+                      {ALL_CATEGORIES.map((cat) => {
+                        const selected = selectedCategories.includes(cat.label);
+                        return (
+                          <View
+                            key={cat.label}
                             style={[
-                              styles.dialogCatText,
+                              styles.dialogCatTile,
                               {
-                                color: selected
+                                backgroundColor: selected
+                                  ? cat.color + "18"
+                                  : theme.colors.surfaceVariant,
+                                borderColor: selected
                                   ? cat.color
-                                  : theme.colors.onSurface,
+                                  : "transparent",
                               },
                             ]}
-                            onPress={() => {
-                              toggleCategory(cat.label);
-                              setError("");
-                            }}
                           >
-                            {cat.label}
-                          </Text>
-                        </View>
-                      );
-                    })}
+                            <MaterialCommunityIcons
+                              name={cat.icon as any}
+                              size={14}
+                              color={
+                                selected
+                                  ? cat.color
+                                  : theme.colors.onSurfaceVariant
+                              }
+                              onPress={() => {
+                                toggleCategory(cat.label);
+                                setError("");
+                              }}
+                            />
+                            <Text
+                              style={[
+                                styles.dialogCatText,
+                                {
+                                  color: selected
+                                    ? cat.color
+                                    : theme.colors.onSurface,
+                                },
+                              ]}
+                              onPress={() => {
+                                toggleCategory(cat.label);
+                                setError("");
+                              }}
+                            >
+                              {cat.label}
+                            </Text>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </View>
+
+                  <View style={styles.dialogSection}>
+                    <Text
+                      style={[
+                        styles.dialogSectionTitle,
+                        { color: theme.colors.onSurfaceVariant },
+                      ]}
+                    >
+                      Admin Notes
+                    </Text>
+                    <TextInput
+                      label="Internal notes (optional)"
+                      value={notes}
+                      onChangeText={setNotes}
+                      mode="outlined"
+                      dense
+                      multiline
+                      numberOfLines={2}
+                      left={<TextInput.Icon icon="note-text" />}
+                      style={styles.dialogInput}
+                      outlineColor={theme.colors.outline}
+                      activeOutlineColor={theme.colors.primary}
+                    />
                   </View>
                 </View>
-
-                <View style={styles.dialogSection}>
-                  <Text
-                    style={[
-                      styles.dialogSectionTitle,
-                      { color: theme.colors.onSurfaceVariant },
-                    ]}
-                  >
-                    Admin Notes
-                  </Text>
-                  <TextInput
-                    label="Internal notes (optional)"
-                    value={notes}
-                    onChangeText={setNotes}
-                    mode="outlined"
-                    dense
-                    multiline
-                    numberOfLines={2}
-                    left={<TextInput.Icon icon="note-text" />}
-                    style={styles.dialogInput}
-                    outlineColor={theme.colors.outline}
-                    activeOutlineColor={theme.colors.primary}
-                  />
-                </View>
-              </View>
-            </ScrollView>
-          </KeyboardAvoidingView>
-        </Dialog.ScrollArea>
-        <Dialog.Actions
-          style={{ gap: 8, paddingHorizontal: 16, paddingBottom: 16 }}
-        >
-          <Button
-            onPress={onDismiss}
-            disabled={loading}
-            textColor={theme.colors.onSurfaceVariant}
+              </ScrollView>
+            </KeyboardAvoidingView>
+          </Dialog.ScrollArea>
+          <Dialog.Actions
+            style={{ gap: 8, paddingHorizontal: 16, paddingBottom: 16 }}
           >
-            Cancel
-          </Button>
-          <Button
-            mode="contained"
-            onPress={handleCreate}
-            loading={loading}
-            disabled={loading}
-            style={{ borderRadius: 10 }}
-            contentStyle={{ height: 42 }}
-          >
-            {loading ? "Creating..." : "Create Supplier Account"}
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
+            <Button
+              onPress={onDismiss}
+              disabled={loading}
+              textColor={theme.colors.onSurfaceVariant}
+            >
+              Cancel
+            </Button>
+            <Button
+              mode="contained"
+              onPress={handleCreate}
+              loading={loading}
+              disabled={loading}
+              style={{ borderRadius: 10 }}
+              contentStyle={{ height: 42 }}
+            >
+              {loading ? "Creating..." : "Create Supplier Account"}
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      )}
     </Portal>
   );
 }

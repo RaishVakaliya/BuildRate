@@ -16,6 +16,7 @@ import { useRouter } from "expo-router";
 import { api } from "../../convex/_generated/api";
 import { useAppTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
+import { SupplierSuccessDialog } from "../../components/SupplierSuccessDialog";
 
 const ALL_CATEGORIES = [
   { label: "Cement", icon: "circle-outline", color: "#6B7280" },
@@ -55,6 +56,7 @@ export default function AddSupplierScreen() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const gradientColors = isDark
     ? (["#1b2e2eff", "#0F172A"] as const)
@@ -91,7 +93,7 @@ export default function AddSupplierScreen() {
         notes: notes.trim() || undefined,
         mapUrl: mapUrl.trim() || undefined,
       });
-      router.back();
+      setShowSuccess(true);
     } catch (e: any) {
       setError(e?.message ?? "Failed to add supplier. Please try again.");
     } finally {
@@ -427,6 +429,18 @@ export default function AddSupplierScreen() {
           {loading ? "Adding Supplier..." : "Add Supplier"}
         </Button>
       </ScrollView>
+      {showSuccess && (
+        <SupplierSuccessDialog
+          visible={showSuccess}
+          businessName={businessName.trim()}
+          phone={phone.trim()}
+          password={password}
+          onDismiss={() => {
+            setShowSuccess(false);
+            router.back();
+          }}
+        />
+      )}
     </KeyboardAvoidingView>
   );
 }
