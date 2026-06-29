@@ -171,7 +171,7 @@ export default function SupplierApplicationsScreen() {
                         {app.businessName}
                       </Text>
                       <Text style={[styles.appOwnerName, { color: theme.colors.onSurfaceVariant }]}>
-                        {app.username}
+                        {app.username || app.ownerName || "Unknown"}
                       </Text>
                     </View>
                     <View style={[styles.statusBadge, { backgroundColor: st.bg }]}>

@@ -208,19 +208,12 @@ export default function AdminPanelScreen() {
           <View
             style={[
               {
-                borderRadius: 20,
+                borderRadius: 16,
                 padding: 16,
                 flexDirection: "row",
                 alignItems: "center",
                 gap: 14,
                 backgroundColor: theme.colors.surface,
-                borderWidth: 1,
-                borderColor: "rgba(0,0,0,0.06)",
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.05,
-                shadowRadius: 10,
-                elevation: 2,
               },
             ]}
           >

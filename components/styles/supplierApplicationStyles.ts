@@ -89,18 +89,7 @@ export const styles = StyleSheet.create({
   submitContent: { height: 54 },
   submitLabel: { fontSize: 15, fontWeight: "700", letterSpacing: 0.3 },
 
-  appCard: {
-    borderRadius: 20,
-    padding: 16,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.06)",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-  },
+  appCard: { borderRadius: 14, padding: 14, gap: 12 },
   appCardHeader: { flexDirection: "row", alignItems: "center", gap: 12 },
   appAvatarCircle: {
     width: 44,

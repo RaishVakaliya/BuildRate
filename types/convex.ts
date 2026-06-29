@@ -36,7 +36,8 @@ export type SupplierApplicationDoc = {
   _id: Id<"supplierApplications">;
   _creationTime: number;
   businessName: string;
-  username: string;
+  username?: string;
+  ownerName?: string;
   phone: string;
   email: string;
   area: string;

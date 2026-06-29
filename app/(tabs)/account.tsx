@@ -22,6 +22,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import { useAppTheme, useThemeColors } from "../../context/ThemeContext";
 import { useTranslation } from "../../context/LanguageContext";
 import { type Language } from "../../i18n";
@@ -223,10 +225,14 @@ function LoginScreen({
           style={[
             styles.infoCard,
             {
-              backgroundColor: isDark ? "rgba(26,86,219,0.15)" : "rgba(26,86,219,0.07)",
+              backgroundColor: isDark
+                ? "rgba(26,86,219,0.15)"
+                : "rgba(26,86,219,0.07)",
               borderRadius: 18,
               borderWidth: 1.5,
-              borderColor: isDark ? "rgba(79,142,247,0.3)" : "rgba(26,86,219,0.18)",
+              borderColor: isDark
+                ? "rgba(79,142,247,0.3)"
+                : "rgba(26,86,219,0.18)",
               flexDirection: "row",
               alignItems: "center",
               gap: 14,
@@ -240,22 +246,45 @@ function LoginScreen({
               width: 44,
               height: 44,
               borderRadius: 22,
-              backgroundColor: isDark ? "rgba(79,142,247,0.2)" : "rgba(26,86,219,0.12)",
+              backgroundColor: isDark
+                ? "rgba(79,142,247,0.2)"
+                : "rgba(26,86,219,0.12)",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <MaterialCommunityIcons name="store-plus" size={22} color={isDark ? "#4F8EF7" : "#1A56DB"} />
+            <MaterialCommunityIcons
+              name="store-plus"
+              size={22}
+              color={isDark ? "#4F8EF7" : "#1A56DB"}
+            />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 15, fontWeight: "800", color: isDark ? "#4F8EF7" : "#1A56DB", marginBottom: 2 }}>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: "800",
+                color: isDark ? "#4F8EF7" : "#1A56DB",
+                marginBottom: 2,
+              }}
+            >
               Become a Supplier
             </Text>
-            <Text style={{ fontSize: 12, fontWeight: "500", color: isDark ? "rgba(79,142,247,0.75)" : "rgba(26,86,219,0.7)" }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "500",
+                color: isDark ? "rgba(79,142,247,0.75)" : "rgba(26,86,219,0.7)",
+              }}
+            >
               Apply to list your business on BuildRate
             </Text>
           </View>
-          <MaterialCommunityIcons name="chevron-right" size={20} color={isDark ? "#4F8EF7" : "#1A56DB"} />
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={20}
+            color={isDark ? "#4F8EF7" : "#1A56DB"}
+          />
         </TouchableOpacity>
 
         <View style={{ height: 4 }} />
@@ -279,8 +308,16 @@ function LoginScreen({
             }
             style={styles.segmented}
             buttons={[
-              { value: "light", label: t("themeLight"), icon: "white-balance-sunny" },
-              { value: "system", label: t("themeSystem"), icon: "theme-light-dark" },
+              {
+                value: "light",
+                label: t("themeLight"),
+                icon: "white-balance-sunny",
+              },
+              {
+                value: "system",
+                label: t("themeSystem"),
+                icon: "theme-light-dark",
+              },
               { value: "dark", label: t("themeDark"), icon: "weather-night" },
             ]}
           />
@@ -325,6 +362,7 @@ function ProfileScreen({
   const router = useRouter();
   const { user, logout } = useAuth();
   const { t, language, setLanguage } = useTranslation();
+  const pendingCount = useQuery(api.supplierApplications.getPendingCount) ?? 0;
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
@@ -472,7 +510,9 @@ function ProfileScreen({
                 />
               </View>
               <View>
-                <Text style={styles.adminPanelTitle}>{t("manageMaterialsTitle")}</Text>
+                <Text style={styles.adminPanelTitle}>
+                  {t("manageMaterialsTitle")}
+                </Text>
                 <Text style={styles.adminPanelSub}>
                   {t("manageMaterialsSub")}
                 </Text>
@@ -772,17 +812,40 @@ function ProfileScreen({
                 />
               </View>
               <View>
-                <Text style={styles.adminPanelTitle}>{t("adminPanelTitle")}</Text>
-                <Text style={styles.adminPanelSub}>
-                  {t("adminPanelSub")}
+                <Text style={styles.adminPanelTitle}>
+                  {t("adminPanelTitle")}
                 </Text>
+                <Text style={styles.adminPanelSub}>{t("adminPanelSub")}</Text>
               </View>
             </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={22}
-              color="rgba(255,255,255,0.7)"
-            />
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+            >
+              {pendingCount > 0 && (
+                <View
+                  style={{
+                    backgroundColor: "#DC2626",
+                    borderRadius: 12,
+                    minWidth: 24,
+                    height: 24,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 6,
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 12, color: "#FFF", fontWeight: "800" }}
+                  >
+                    {pendingCount > 99 ? "99+" : pendingCount}
+                  </Text>
+                </View>
+              )}
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={22}
+                color="rgba(255,255,255,0.7)"
+              />
+            </View>
           </TouchableOpacity>
         )}
 
@@ -805,8 +868,16 @@ function ProfileScreen({
             }
             style={styles.segmented}
             buttons={[
-              { value: "light", label: t("themeLight"), icon: "white-balance-sunny" },
-              { value: "system", label: t("themeSystem"), icon: "theme-light-dark" },
+              {
+                value: "light",
+                label: t("themeLight"),
+                icon: "white-balance-sunny",
+              },
+              {
+                value: "system",
+                label: t("themeSystem"),
+                icon: "theme-light-dark",
+              },
               { value: "dark", label: t("themeDark"), icon: "weather-night" },
             ]}
           />

@@ -285,7 +285,7 @@ export default function ApplicationDetailScreen() {
           <InfoRow
             icon="account"
             label="Username"
-            value={application.username}
+            value={application.username || application.ownerName || "Unknown"}
             isDark={isDark}
             theme={theme}
           />

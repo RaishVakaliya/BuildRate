@@ -34,7 +34,8 @@ export default defineSchema({
   }).index("by_supplier", ["supplierId"]),
   supplierApplications: defineTable({
     businessName: v.string(),
-    username: v.string(),
+    username: v.optional(v.string()),
+    ownerName: v.optional(v.string()),
     phone: v.string(),
     email: v.string(),
     area: v.string(),

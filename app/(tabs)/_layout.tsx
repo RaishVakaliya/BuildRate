@@ -7,6 +7,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useCompare } from "../../context/CompareContext";
 import { useTranslation } from "../../context/LanguageContext";
+import { useAuth } from "../../context/AuthContext";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export default function TabLayout() {
   const { t } = useTranslation();
@@ -83,6 +86,8 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { compareIds } = useCompare();
+  const { user } = useAuth();
+  const pendingCount = useQuery(api.supplierApplications.getPendingCount) ?? 0;
 
   const bottomPadding = Math.max(insets.bottom, 12);
   const tabBarHeight =
@@ -170,6 +175,28 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
                     style={{ fontSize: 9, color: "#FFF", fontWeight: "800" }}
                   >
                     {Math.min(compareIds.length, 3)}
+                  </Text>
+                </View>
+              )}
+              {route.name === "account" && user?.role === "admin" && pendingCount > 0 && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -2,
+                    right: -6,
+                    backgroundColor: "#DC2626",
+                    borderRadius: 8,
+                    minWidth: 16,
+                    height: 16,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 3,
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 9, color: "#FFF", fontWeight: "800" }}
+                  >
+                    {pendingCount > 99 ? "99+" : pendingCount}
                   </Text>
                 </View>
               )}
