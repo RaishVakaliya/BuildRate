@@ -30,6 +30,8 @@ import { type Language } from "../../i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import AboutBuildRateCard from "../../components/AboutBuildRateCard";
+import { ChangePasswordDialog } from "../../components/ChangePasswordDialog";
+import { Alert } from "react-native";
 
 export default function AccountScreen() {
   const theme = useTheme();
@@ -365,6 +367,7 @@ function ProfileScreen({
   const pendingCount = useQuery(api.supplierApplications.getPendingCount) ?? 0;
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [changePasswordVisible, setChangePasswordVisible] = useState(false);
 
   useEffect(() => {
     if (user?.email) {
@@ -906,6 +909,27 @@ function ProfileScreen({
           />
         </Surface>
 
+        {user?.role === "supplier" && user.id && (
+          <Surface
+            style={[styles.infoCard, { backgroundColor: theme.colors.surface }]}
+            elevation={1}
+          >
+            <Text
+              style={[styles.cardTitle, { color: theme.colors.onSurfaceVariant }]}
+            >
+              Account Security
+            </Text>
+            <Button
+              mode="contained-tonal"
+              onPress={() => setChangePasswordVisible(true)}
+              icon="lock-reset"
+              style={{ marginTop: 8, borderRadius: 12 }}
+            >
+              Change Password
+            </Button>
+          </Surface>
+        )}
+
         <Button
           mode="outlined"
           onPress={logout}
@@ -943,6 +967,18 @@ function ProfileScreen({
           </Text>
         </View>
       </ScrollView>
+
+      {user?.role === "supplier" && user.id && (
+        <ChangePasswordDialog
+          visible={changePasswordVisible}
+          supplierId={user.id}
+          onDismiss={() => setChangePasswordVisible(false)}
+          onSuccess={() => {
+            setChangePasswordVisible(false);
+            Alert.alert("Success", "Your password has been changed successfully.");
+          }}
+        />
+      )}
     </View>
   );
 }

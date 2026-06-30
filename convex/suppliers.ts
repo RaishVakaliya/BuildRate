@@ -1,5 +1,5 @@
 import { mutation, query } from "./_generated/server";
-import { v } from "convex/values";
+import { v, ConvexError } from "convex/values";
 
 export const addSupplier = mutation({
   args: {
@@ -56,6 +56,21 @@ export const updateSupplier = mutation({
       Object.entries(fields).filter(([, v]) => v !== undefined),
     );
     await ctx.db.patch(id, cleaned);
+  },
+});
+
+export const changePassword = mutation({
+  args: {
+    id: v.id("suppliers"),
+    oldPassword: v.string(),
+    newPassword: v.string(),
+  },
+  handler: async (ctx, { id, oldPassword, newPassword }) => {
+    const supplier = await ctx.db.get(id);
+    if (!supplier) throw new Error("Supplier not found");
+    if (supplier.password !== oldPassword) throw new ConvexError("Incorrect old password");
+    
+    await ctx.db.patch(id, { password: newPassword });
   },
 });
 
