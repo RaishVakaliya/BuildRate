@@ -59,3 +59,7 @@ Here are the technologies powering the BuildRate mobile application:
 4. **Real-time Live Sync**: Dynamic pricing updates from Convex real-time synchronization framework.
 5. **Offline-First Support & Caching**: Cache all suppliers, materials, categories, and pricing locally using persistent AsyncStorage. Cached data loads immediately on screen mount, while background queries refresh data in the background. If the device is offline, it continues displaying cached data alongside a non-intrusive "No Connection" bottom banner.
 6. **Gujarati Language Support (ગુજરાતી અનુવાદ)**: Full support for both English and Gujarati languages, allowing users to toggle their preferred language seamlessly.
+7. **Supplier Onboarding Workflow**: Unauthenticated users can submit a 'Become a Supplier' application with their business details directly from the Account screen.
+8. **Admin Application Management**: Dedicated admin panel to review, approve, or reject pending supplier applications.
+9. **WhatsApp Integration**: After an admin creates a supplier account, a success dialog displays the generated credentials and allows the admin to instantly share them via a native WhatsApp deep link.
+10. **Account Security**: Secure password management allowing suppliers to change their passwords directly within the app by validating their old password.
